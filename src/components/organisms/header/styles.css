@@ -1,0 +1,60 @@
+.header {
+    width: 100%;
+    background-color: transparent;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    position: fixed;
+}
+.header .logo {
+    width: fit-content;
+}
+.header .logo img {
+    width: 3rem;
+}
+.header .navbar .nav-items {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    margin: 0;
+}
+.header .navbar .nav-items li {
+    display: inline;
+}
+.header .navbar .nav-items li:hover a {
+    display: inline;
+    background-color: #fad6dc;
+    border-radius: .6rem;
+    color: #a63f50;
+    font-weight: bold;
+}
+.header .navbar .nav-items li a {
+    padding: 0.4rem;
+    text-decoration: none;
+    margin: 0 .5rem;
+    color:#484644;
+    font-weight: 400;
+}
+.header .navbar .nav-items .btn {
+    border-radius: 1rem;
+    border-color: #484644;
+    width: fit-content;
+    margin: .3rem;
+}
+.header .navbar .nav-items .btn:active,
+.header .navbar .nav-items .btn:focus {
+    border-color: #D9546A !important;
+    box-shadow: none;
+}
+.header .navbar .nav-items .btn a{
+    text-decoration: none;
+    color: #484644;
+}
+.header .navbar .nav-items .btn:hover, .header .navbar .nav-items .btn a:hover {
+    border-color: #D9546A;
+    background-color: #D9546A;
+    color: #fff;
+}
