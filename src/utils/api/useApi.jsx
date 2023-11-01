@@ -1,42 +1,44 @@
 import { useState, useEffect, useCallback } from "react";
 
 export const useApi = (config) => {
-  const { apiEndpoint, httpVerb, data: requestData } = config; // Incluye los datos a enviar
+  const { apiEndpoint, httpVerb, data: requestData } = config;
   const [data, setData] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
   const fetchData = useCallback(async () => {
+    const result = {
+      data: null,
+      error: null,
+    };
     try {
       setLoading(true);
       const response = await fetch(apiEndpoint, {
-        method: httpVerb, // Usa el verbo HTTP especificado (GET o POST)
+        method: httpVerb,
         headers: {
-          "Content-Type": "application/json", // Establece el tipo de contenido si es necesario
+          "Content-Type": "application/json",
         },
-        body: JSON.stringify(requestData), // Convierte los datos a JSON y envíalos
+        body: JSON.stringify(requestData),
       });
-
       if (!response.ok) {
-        throw new Error(`HTTP Error: ${response.status} - ${response.statusText}`);
+        throw new Error(`HTTP Error: ${response.status}`);
+      } else {
+        const responseData = await response.json();
+        setData(responseData);
+        setError(null);
+        return response;
       }
-
-      const responseData = await response.json();
-      setData(responseData);
-      setError(null);
     } catch (error) {
       setError(error.message);
+      return error;
     } finally {
       setLoading(false);
-
     }
+
   }, [apiEndpoint, httpVerb, requestData]);
 
-  useEffect(() => {
-  }, [fetchData]);
-
   const request = useCallback(() => {
-    fetchData();
+    return fetchData();
   }, [fetchData]);
 
   return {
