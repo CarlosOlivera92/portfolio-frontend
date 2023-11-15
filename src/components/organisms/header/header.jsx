@@ -1,10 +1,11 @@
 import Logo from "../../atoms/logo/logo";
 import Navbar from "../../molecules/navbar/navbar";
 import { useLocation } from 'react-router-dom';
-
+import { useAuth } from "../../../utils/hooks/useAuth";
 import "./styles.css"
 const Header = () => {
     const location = useLocation();
+    const { isAuthenticated, login, logout } = useAuth();
 
     // Comprueba si la ruta actual es "/signup"
     const isSignupPage = location.pathname === '/signup';
@@ -15,7 +16,7 @@ const Header = () => {
     return (
         <div className="header p-2">
             <Logo/>
-            <Navbar></Navbar>
+            <Navbar isAuthenticated={isAuthenticated} ></Navbar>
         </div>
     )
 }

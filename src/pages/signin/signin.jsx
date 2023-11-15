@@ -1,40 +1,51 @@
-import Form from '../../components/organisms/form/form';
 import { signInForm } from '../../utils/form-utils/forms-config';
 import { useState, useEffect } from 'react';
 import { useApi } from '../../utils/api/useApi';
 import './styles.css';
 import Toast from '../../components/organisms/toast/toast';
+import Form from '../../components/organisms/form/form';
+import history from '../../utils/context/history';
+import { useAuth } from '../../utils/hooks/useAuth';
+import { useNavigate } from "react-router-dom";
+
 
 const Signin = () => {
     const [errorApi, setErrorApi] = useState();
     const [formData, setFormData] = useState({});
     const [message, setMessage] = useState(null);
     const [formCompleted, setFormCompleted] = useState(false);
-    const { loading, error, request, data } = useApi({
-        apiEndpoint: "http://localhost:8080/api/auth/signin",
+    const config = {
         httpVerb: "POST",
         data: formData
-    });
+    };
+    const { loading, error, request, data } = useApi();
     const [showToast, setShowToast] = useState(false);
+    const { isAuthenticated, login, logout } = useAuth();
+    const navigate = useNavigate(); 
 
-    const sendRequest = async () => {
+    const signIn = async (endpoint) => {
         try {
-            const response = await request(); // Obtiene el response y los datos
+            const response = await request(endpoint, config);
             if (!response.ok) {
-                console.log(response)
-                throw new Error(`${response}`);
+                throw response;
             }
             setErrorApi(false);
             setMessage("¡Inicio de sesión exitoso!");
+            try {
+                const responseBody = await response.json();
+                login(responseBody.token, responseBody.id)
+                setTimeout(() => {
+                    history.push('/portfolio');
+                    navigate("/portfolio"); 
+
+                }, 3000);
+            } catch (error) {
+                console.error("Error al parsear la respuesta JSON:", error);
+            }
         } catch (error) {
-            alert(error.message)
-            if (error.response) {
-                // Error relacionado con la respuesta HTTP.
-                setMessage(`HTTP Error: ${error.response.status} - ${error.response} adasdasas`);
-            } else if (error.message.includes('net::ERR_CONNECTION_REFUSED')) {
-                // Error de conexión rechazada.
-                setMessage('Error de conexión. Verifica que el servidor esté en ejecución.');
-            } else {
+            if (error.status === 500) {
+                setMessage('Error de conexión con el servidor, intente nuevamente.');
+            } else if (error.status === 403) {
                 setMessage('Error en el inicio de sesión. Verifique que sus credenciales son correctas.');
             }
             setErrorApi(true);
@@ -44,7 +55,7 @@ const Signin = () => {
 
     useEffect(() => {
         if (formCompleted && Object.keys(formData).length > 0) {
-            sendRequest();
+            signIn("http://localhost:8080/api/auth/signin");
         }
     }, [formCompleted, formData]);
     const handleToastVisibility = (visible) => {

@@ -1,30 +1,24 @@
 import { useState, useEffect, useCallback } from "react";
 
-export const useApi = (config) => {
-  const { apiEndpoint, httpVerb, data: requestData } = config;
+export const useApi = () => {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  const fetchData = useCallback(async () => {
-    const result = {
-      data: null,
-      error: null,
-    };
+  const fetchData = useCallback(async (apiEndpoint, config) => {
     try {
       setLoading(true);
       const response = await fetch(apiEndpoint, {
-        method: httpVerb,
+        method: config.httpVerb,
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(requestData),
+        body: JSON.stringify(config.data),
       });
       if (!response.ok) {
-        throw new Error(`HTTP Error: ${response.status}`);
+        throw response;
       } else {
-        const responseData = await response.json();
-        setData(responseData);
+        setData(response);
         setError(null);
         return response;
       }
@@ -34,11 +28,10 @@ export const useApi = (config) => {
     } finally {
       setLoading(false);
     }
+  }, []);
 
-  }, [apiEndpoint, httpVerb, requestData]);
-
-  const request = useCallback(() => {
-    return fetchData();
+  const request = useCallback((apiEndpoint, config) => {
+    return fetchData(apiEndpoint, config);
   }, [fetchData]);
 
   return {

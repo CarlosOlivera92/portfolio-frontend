@@ -17,8 +17,7 @@ const FormItem = ({ props, type, name, label, required, value, onChange, error }
         <div className="form-item d-flex flex-column">
           <label htmlFor={name}>{label}</label>
           <InputItem {...props} type={type} name={name} value={value} onChange={onChange} required={false}/>
-          {isValid && <div className="valid">Correcto</div>}
-          {error && <div className="error">{error}</div>}
+          {!isValid && <div className="error">{error}</div>}
         </div>
       )}
 

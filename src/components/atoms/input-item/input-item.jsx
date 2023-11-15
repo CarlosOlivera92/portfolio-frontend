@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 const InputItem = ({ type, id, name, value, props, required, onChange}) => {
   if (type === "checkbox") {
     return <input type={type} id={props.id} name={name} value={props.id} />;
