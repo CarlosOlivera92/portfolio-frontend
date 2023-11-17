@@ -25,7 +25,7 @@ const Signin = () => {
 
     const signIn = async (endpoint) => {
         try {
-            const response = await request(endpoint, config);
+            const response = await request(endpoint, config, isAuthenticated);
             if (!response.ok) {
                 throw response;
             }
@@ -33,11 +33,10 @@ const Signin = () => {
             setMessage("¡Inicio de sesión exitoso!");
             try {
                 const responseBody = await response.json();
-                login(responseBody.token, responseBody.id)
+                login(responseBody.token, responseBody.username)
                 setTimeout(() => {
-                    history.push('/portfolio');
-                    navigate("/portfolio"); 
-
+                    history.push(`/portfolio/${responseBody.username}`);
+                    navigate(`/portfolio/${responseBody.username}`);
                 }, 3000);
             } catch (error) {
                 console.error("Error al parsear la respuesta JSON:", error);
@@ -54,7 +53,7 @@ const Signin = () => {
     };
 
     useEffect(() => {
-        if (formCompleted && Object.keys(formData).length > 0) {
+        if (formCompleted && Object.keys(formData).length > 0 && !isAuthenticated) {
             signIn("http://localhost:8080/api/auth/signin");
         }
     }, [formCompleted, formData]);
@@ -71,10 +70,10 @@ const Signin = () => {
         <main className='signup' id='signup'>
             <div className="background container-fluid">
                 <div className="form container-fluid">
-                    <div className="signup-form container">
-                        <Form title={"Iniciar Sesión"} fields={signInForm} onSubmit={handleFormSubmit}/>
-                        <Toast text={message} error={errorApi} showToasty={showToast} onToastClose={handleToastVisibility}/>
-                    </div>
+                        <div className={`signup-form container ${isAuthenticated ? "dissappear" : ""}`}>
+                            <Form title={"Iniciar Sesión"} fields={signInForm} onSubmit={handleFormSubmit}/>
+                        </div>
+                    <Toast text={message} error={errorApi} showToasty={showToast} onToastClose={handleToastVisibility}/>
                 </div>
             </div>
         </main>

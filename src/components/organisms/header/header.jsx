@@ -9,12 +9,13 @@ const Header = () => {
 
     // Comprueba si la ruta actual es "/signup"
     const isSignupPage = location.pathname === '/signup';
-  
+    const isPortfolioPage = location.pathname.startsWith('/portfolio/');
+
     if (isSignupPage) {
       return null; // No renderiza nada si estás en la página de registro
     }
     return (
-        <div className="header p-2">
+        <div className={ `${isPortfolioPage ? "header portfolio-header container my-3" : "header"}  p-2` }>
             <Logo/>
             <Navbar isAuthenticated={isAuthenticated} ></Navbar>
         </div>

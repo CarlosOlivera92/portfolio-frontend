@@ -1,17 +1,22 @@
 import { useState, useEffect, useCallback } from "react";
-
 export const useApi = () => {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  const fetchData = useCallback(async (apiEndpoint, config) => {
+  const fetchData = useCallback(async (apiEndpoint, config, isAuthenticated) => {
     try {
       setLoading(true);
+      const headers = {}; 
+      if (isAuthenticated) {
+        const token = localStorage.getItem('token');
+        headers['Authorization'] = `Bearer ${token}`;
+      }
       const response = await fetch(apiEndpoint, {
         method: config.httpVerb,
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
+          ...headers,
         },
         body: JSON.stringify(config.data),
       });
@@ -30,8 +35,8 @@ export const useApi = () => {
     }
   }, []);
 
-  const request = useCallback((apiEndpoint, config) => {
-    return fetchData(apiEndpoint, config);
+  const request = useCallback((apiEndpoint, config, isAuthenticated) => {
+    return fetchData(apiEndpoint, config, isAuthenticated);
   }, [fetchData]);
 
   return {

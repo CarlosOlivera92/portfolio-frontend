@@ -1,17 +1,17 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import App from './App.jsx'
-import {AuthProvider} from './utils/context/authProvider';
-
 import 'bootstrap/dist/css/bootstrap.css';
 import './index.css'
 
-const root = ReactDOM.createRoot(document.getElementById('root'));
 
-root.render(
+ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
-    <AuthProvider>
-      <App />
-    </AuthProvider>
+    <App />
   </React.StrictMode>
-);
+
+/**
+ * Debo desactivar/eliminar el React Strict Mode para evitar que los useEffect se ejecuten multiples veces
+ * 
+ */
+)

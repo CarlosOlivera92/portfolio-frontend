@@ -1,25 +1,44 @@
-import React, { createContext, useState } from 'react';
-
+import React, { createContext, useState, useEffect } from 'react';
+import { useApi } from '../api/useApi';
 // Creamos el contexto
 const AuthContext = createContext();
 
 // Provider que proporcionará el contexto y funciones relacionadas con la autenticación
 const AuthProvider = ({ children }) => {
     const [isAuthenticated, setIsAuthenticated] = useState(!!localStorage.getItem('token'));
-
-    const login = (token, userId) => {
+    const config = {
+        httpVerb: "POST",
+    };
+    const endpoint = "http://localhost:8080/api/auth/logout"
+    const { loading, error, request, data } = useApi();
+    const login = (token, username) => {
         localStorage.setItem('token', token);
-        localStorage.setItem('userId', userId);
+        localStorage.setItem('username', username);
 
         setIsAuthenticated(true);
     };
 
-    const logout = () => {
-        localStorage.removeItem('token');
-        localStorage.removeItem('userId');
-        setIsAuthenticated(false);
+    const logout = async() => {
+        console.log(isAuthenticated)
+        try {
+            const response = await request(endpoint, config, isAuthenticated);
+            if (!response.ok) {
+                throw response;
+            }
+            try {
+                const responseBody = await response.json();
+                localStorage.removeItem('token');
+                localStorage.removeItem('username');
+            } catch (error) {
+                console.error("Error al parsear la respuesta JSON:", error);
+            }
+            setIsAuthenticated(false);
+        } catch (error) {
+            if (error.status === 500) {
+                return error.status;
+            } 
+        }
     };
-
     return (
         <AuthContext.Provider value={{ isAuthenticated, login, logout }}>
             {children}
