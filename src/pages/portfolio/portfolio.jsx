@@ -1,8 +1,14 @@
-import { useParams } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Link, useParams } from 'react-router-dom';
+import {useUser} from '../../utils/context/userContext';
 import { useApi } from '../../utils/api/useApi';
 import { useEffect, useState } from 'react';
 import { useAuth } from '../../utils/hooks/useAuth';
+import PersonalArea from './personal/personal';
+import Home from './home/home';
+import Settings from './settings/settings';
+import './styles.css';
 const Portfolio = () => {
+    const {setUser} = useUser();
     const { isAuthenticated } = useAuth;
     const {username} = useParams();
     const [userData, setUserData] = useState([]);
@@ -11,7 +17,7 @@ const Portfolio = () => {
     };
     const { loading, error, request, data } = useApi();
 
-    const signIn = async (endpoint) => {
+    const getUser = async (endpoint) => {
         try {
             const response = await request(endpoint, config, isAuthenticated);
             if (!response.ok) {
@@ -20,7 +26,7 @@ const Portfolio = () => {
             try {
                 const responseBody = await response.json();
                 setUserData(responseBody);
-                console.log(responseBody)
+                setUser(responseBody);
             } catch (error) {
                 console.error("Error al parsear la respuesta JSON:", error);
             }
@@ -34,16 +40,16 @@ const Portfolio = () => {
     };
 
     useEffect(() => {
-        signIn(`http://localhost:8080/api/users/user/${username}`);
+        getUser(`http://localhost:8080/api/users/user/${username}`);
     
     }, []);
     return (
-        <div className="container-fluid p-4">
-            {loading ? (
-                <p>Cargando...</p>
-            ) : (
-                <p>Bienvenido, {userData.firstName} {userData.lastName}!</p>
-            )}
+        <div className="container-fluid">
+            <Routes>
+                <Route path="/" element={<Home/>} />
+                <Route path="/personal" element={<PersonalArea />} />
+                <Route path='/settings' element={<Settings/>} />
+            </Routes>
         </div>
     )
 }

@@ -1,0 +1,67 @@
+.user-info {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    height: fit-content;
+    border-radius: 1rem;
+    background-color: #fff;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+}
+.user-info .banner img {
+    width: 100%;
+    height: 18rem;
+    border-radius: 1rem;
+    background-position: 100%;
+}
+
+.user-info .profile-pic  {
+    margin-top: -8rem; /* Ajusta este valor según tu diseño */
+    margin-left: 1rem; /* Ajusta este valor según tu diseño */
+    padding: .5rem;
+    width: fit-content;
+    background-color: #ffeff6 ;
+    border-radius: 100%;
+}
+.user-info .profile-pic img {
+    width: 12rem;
+    height: 12rem;
+    border-radius: 100%;
+    background-position: 100%;
+    object-fit: cover;
+}
+.user-info .personal-data {
+    padding: 2rem;
+}
+.professional-info, .educational-info, .courses-info, .certificates-info, .proyects-info {
+    display: flex;
+    flex-direction: column;
+    background-color: #fff;
+    border-radius: 1rem;
+    margin: 1rem 0;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+}
+.section-title {
+    cursor: pointer;
+}
+.professional-info .actions {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+.action-dropdown {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2rem;
+    height: 2rem;
+    padding: 1rem;
+    border-radius: 100%;
+    transition: background-color .3s ease-in-out;
+}
+.action-dropdown:hover {
+    background-color: #b3b3b3;
+}
+.action-dropdown .fas {
+    position: absolute;
+}

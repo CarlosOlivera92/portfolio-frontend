@@ -1,13 +1,26 @@
 import { NavLink } from 'react-router-dom';
-
-const Navbar = ({isAuthenticated}) => {
+import { useLocation } from 'react-router-dom';
+const Navbar = ({isAuthenticated, username}) => {
+    const location = useLocation();
+    const path = location.pathname;
     return (
         <nav className="navbar">
             <ul className='nav-items list-unstyled list-inline'>
-                <li><NavLink to="/">Inicio</NavLink></li>
+                {username ? (
+                    <>
+                        <li>
+                            <NavLink className={`${path === `/portfolio/${username}/personal` ? "active" : ""}`} to={`portfolio/${username}/personal`}>Personal</NavLink>
+                        </li>
+                    </>
+                ) : (
+                    <li><NavLink to={`/`}>Personal</NavLink></li>
+
+                )}
                 {isAuthenticated ? (
                     <>
-                        <li><NavLink to="#">Configuraciones</NavLink></li>
+                        <li>
+                            <NavLink className={`${path === `/portfolio/${username}/settings` ? "active" : ""}`} to={`portfolio/${username}/settings`}>Configuraciones</NavLink>
+                        </li>
                         <li><NavLink className={"btn-logout"} to="/logout">Cerrar Sesión</NavLink></li>
                     </>
                 ) : (
