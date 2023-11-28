@@ -1,0 +1,31 @@
+.backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5); /* Fondo oscuro semi-transparente */
+    z-index: 50; /* Debe estar por debajo del modal pero por encima del resto de contenido */
+}
+
+.form-modal {
+    display: flex;
+    justify-content: center;
+    align-items: center; 
+    width: 20rem !important;
+    height: fit-content;
+    position: fixed; 
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%); 
+    padding: 1rem;
+    font-weight: bolder;
+    background-color: #f4f8f9;
+    border-radius: .5rem;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+    transition: box-shadow .2s ease-in-out;
+    z-index: 100;
+}
+.form-modal:hover, .form-modal:active, .form-modal:focus {
+    box-shadow: 0 2px 6px rgba(0,0,0,.5);
+}

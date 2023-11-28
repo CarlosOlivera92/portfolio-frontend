@@ -33,7 +33,7 @@ const Signin = () => {
             setMessage("¡Inicio de sesión exitoso!");
             try {
                 const responseBody = await response.json();
-                login(responseBody.token, responseBody.username)
+                login(responseBody.token, responseBody.username, responseBody.refreshToken)
                 setTimeout(() => {
                     history.push(`/portfolio/${responseBody.username}`);
                     navigate(`/portfolio/${responseBody.username}`);

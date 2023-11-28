@@ -11,10 +11,10 @@ const AuthProvider = ({ children }) => {
     };
     const endpoint = "http://localhost:8080/api/auth/logout"
     const { loading, error, request, data } = useApi();
-    const login = (token, username) => {
+    const login = (token, username, refreshToken) => {
         localStorage.setItem('token', token);
         localStorage.setItem('username', username);
-
+        localStorage.setItem('refreshToken', refreshToken)
         setIsAuthenticated(true);
     };
 

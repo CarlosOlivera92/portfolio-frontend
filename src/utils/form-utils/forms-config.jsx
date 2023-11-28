@@ -86,6 +86,223 @@ export const emailForm = {
     }
   ],
 };
+
+export const bannerForm = {
+  title: "Editar Banner",
+  fields: [
+    {
+      name: "bannerPicUrl",
+      label: "URL del banner",
+      type: "text",
+      validation: Yup.string()
+        .url("Formato de URL inválido")
+        .required("El campo es requerido"),
+    }
+  ]
+}
+
+export const experienceForm = {
+  title: 'Editar Experiencia Laboral',
+  fields: [
+    {
+      name: 'jobTitle',
+      label: 'Nombre del Cargo',
+      type: 'text',
+      validation: Yup.string().required('El campo es requerido'),
+    },
+    {
+      name: 'company',
+      label: 'Empresa',
+      type: 'text',
+      validation: Yup.string().required('El campo es requerido'),
+    },
+    {
+      name: 'fromDate',
+      label: 'Desde',
+      type: 'date',
+      validation: Yup.date().required('El campo es requerido'),
+    },
+    {
+      name: 'toDate',
+      label: 'Hasta',
+      type: 'date',
+      validation: Yup.date()
+        .nullable()
+        .when('fromDate', (fromDate, schema) =>
+          schema.min(fromDate, 'Debe ser mayor que la fecha de inicio')
+        ),
+    },
+    {
+      name: 'description',
+      label: 'Descripción',
+      type: 'textarea',
+      validation: Yup.string().required('El campo es requerido'),
+    },
+  ],
+};
+export const educationForm = {
+  title: 'Editar Educación',
+  fields: [
+    {
+      name: 'institution',
+      label: 'Nombre de la Institución',
+      type: 'text',
+      validation: Yup.string().required('El campo es requerido'),
+    },
+    {
+      name: 'degree',
+      label: 'Titulación',
+      type: 'text',
+      validation: Yup.string().required('El campo es requerido'),
+    },
+    {
+      name: 'fromDate',
+      label: 'Desde',
+      type: 'date',
+      validation: Yup.date().required('El campo es requerido'),
+    },
+    {
+      name: 'toDate',
+      label: 'Hasta',
+      type: 'date',
+      validation: Yup.date()
+        .nullable()
+        .when('fromDate', (fromDate, schema) =>
+          schema.min(fromDate, 'Debe ser mayor que la fecha de inicio')
+        ),
+    },
+    {
+      name: 'description',
+      label: 'Descripción',
+      type: 'textarea',
+      validation: Yup.string().required('El campo es requerido'),
+    },
+  ],
+};
+export const coursesForm = {
+  title: 'Editar Cursos',
+  fields: [
+    {
+      name: 'courseName',
+      label: 'Nombre del Curso',
+      type: 'text',
+      validation: Yup.string().required('El campo es requerido'),
+    },
+    {
+      name: 'institution',
+      label: 'Institución',
+      type: 'text',
+      validation: Yup.string().required('El campo es requerido'),
+    },
+    {
+      name: 'certificateLink',
+      label: 'Vínculo al Certificado',
+      type: 'text',
+      validation: Yup.string()
+        .url('Formato de URL inválido')
+        .required('El campo es requerido'),
+    },
+  ],
+};
+export const certificatesForm = {
+  title: 'Editar Certificados',
+  fields: [
+    {
+      name: 'academy',
+      label: 'Academia',
+      type: 'text',
+      validation: Yup.string().required('El campo es requerido'),
+    },
+    {
+      name: 'degree',
+      label: 'Titulación',
+      type: 'text',
+      validation: Yup.string().required('El campo es requerido'),
+    },
+    {
+      name: 'certificateLink',
+      label: 'Vínculo al Certificado',
+      type: 'text',
+      validation: Yup.string()
+        .url('Formato de URL inválido')
+        .required('El campo es requerido'),
+    },
+  ],
+};
+export const personalDataForm = {
+  title: "Editar Datos Personales",
+  fields: [
+    {
+      name: "currentPosition",
+      label: "Puesto o Grado Actual",
+      type: "text",
+      validation: Yup.string().required("El campo es requerido"),
+    },
+    {
+      name: "location",
+      label: "Ubicación",
+      type: "group", // Podrías definir este tipo "group" para agrupar estado y país
+      fields: [
+        {
+          name: "state",
+          label: "Estado",
+          type: "text",
+          validation: Yup.string().required("El campo es requerido"),
+        },
+        {
+          name: "country",
+          label: "País",
+          type: "text",
+          validation: Yup.string().required("El campo es requerido"),
+        },
+      ],
+    },
+    {
+      name: "aboutMe",
+      label: "Acerca de Mí",
+      type: "textarea",
+      validation: Yup.string().required("El campo es requerido"),
+    },
+  ],
+};
+export const projectsForm = {
+  title: 'Editar Proyectos',
+  fields: [
+    {
+      name: 'projectName',
+      label: 'Nombre del Proyecto',
+      type: 'text',
+      validation: Yup.string().required('El campo es requerido'),
+    },
+    {
+      name: 'company',
+      label: 'Empresa',
+      type: 'text',
+      validation: Yup.string().required('El campo es requerido'),
+    },
+    {
+      name: 'projectLink',
+      label: 'Vínculo al Proyecto',
+      type: 'text',
+      validation: Yup.string()
+        .url('Formato de URL inválido')
+        .required('El campo es requerido'),
+    },
+  ],
+};
+export const profilePicUrl = {
+  title: "Editar foto de perfil",
+  fields: [
+    {
+      name: "profilePicUrl",
+      label: "URL de la foto de perfil",
+      type: "text",
+      validation: Yup.string()
+        .url("Formato de URL inválido")
+        .required("El campo es requerido"),
+    }
+  ]
+}
 export const resetPasswordForm = {
   title: "Reset Password",
   fields: [

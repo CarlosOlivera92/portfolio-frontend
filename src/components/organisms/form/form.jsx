@@ -6,7 +6,7 @@ import ActionButton from "../../atoms/action-button/action-button";
 import { useEffect, useState, useRef } from "react";
 import Logo from "../../atoms/logo/logo";
 
-const Form = ({ title, fields, onSubmit, currentStep, steps, isSignUp, isUsernameInUse, isUsernameChecked, message, isUserRegistered }) => {
+const Form = ({ title, fields, onSubmit, currentStep, steps, isSignUp, isUsernameInUse, isUsernameChecked, message, isUserRegistered, toggleModal }) => {
   const currentFields = isSignUp ? steps[currentStep] : fields.fields.map(field => field.name);
   const [stepTransition, setStepTransition] = useState("form-step-entering");
 
@@ -48,10 +48,17 @@ const Form = ({ title, fields, onSubmit, currentStep, steps, isSignUp, isUsernam
   
   return (
     <form onSubmit={formik.handleSubmit} className={`form ${stepTransition}`}>
-      <div className="form-header d-flex flex-column">
-        <Logo />
-        <h2>{title}</h2>
-      </div>
+      {fields.title === 'Sign In' || fields.title === 'Sign Up' ? (
+        <div className="form-header d-flex flex-column">
+          <Logo />
+          <h2>{title}</h2>
+        </div>
+      ) : (
+        <div className="form-header d-flex flex-column">
+          <h2>{title}</h2>
+        </div>
+      )}
+
       <FormSection
         title={fields.title}
         fields={fields.title === "Sign In" || fields.title === "Email" || fields.title === " " ? fields.fields  : fields.fields.filter((field) => currentFields.includes(field.name))}
@@ -63,14 +70,28 @@ const Form = ({ title, fields, onSubmit, currentStep, steps, isSignUp, isUsernam
         message={message}
         isUserRegistered={isUserRegistered}
       />
-      <div className="buttons">
-        <ActionButton
-          type={"submit"}
-          name={isSignUp ? (currentStep < Object.keys(steps).length ? "Siguiente" : "Enviar") : fields.title === "Email" ? "Confirmar" : "Iniciar sesión"}
-          classname="mt-3 form-button"
-          disabled={!formik.isValid}
-        />
-      </div>
+      {fields.title === 'Sign In' || fields.title === 'Sign Up' ? (
+        <div className="buttons">
+          <ActionButton
+            type={"submit"}
+            name={isSignUp ? (currentStep < Object.keys(steps).length ? "Siguiente" : "Enviar") : fields.title === "Email" ? "Confirmar" : "Iniciar sesión"}
+            classname="mt-3 form-button"
+            disabled={!formik.isValid}
+          />
+        </div>
+      ) : (
+        <div className="buttons">
+          <ActionButton
+            type={"button"}
+            onClick={toggleModal}
+            name={"Cerrar Modal"}
+            classname="mt-3 form-button"
+            disabled={!formik.isValid}
+          />
+        </div>
+      )}
+
+
     </form>
   );
 };

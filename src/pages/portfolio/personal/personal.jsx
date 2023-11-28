@@ -3,16 +3,60 @@ import { useLocation } from "react-router-dom";
 import { useApi } from "../../../utils/api/useApi";
 import { useAuth } from "../../../utils/hooks/useAuth";
 import { useEffect } from "react";
+import { bannerForm, profilePicUrl, experienceForm, educationForm, coursesForm, certificatesForm, projectsForm, personalDataForm } from "../../../utils/form-utils/forms-config";
+import FormModal from "../../../components/organisms/form-modal/form-modal";
 const PersonalArea = () => {
     const location = useLocation();
     const [hasPermissionToEdit, setHasPermissionToEdit] = useState(false);
     const { isAuthenticated } = useAuth();
+    const [openModal, setOpenModal] = useState(false);
     const config = {
         httpVerb: "POST",
         data: location.pathname
     };
     const { loading, error, request, data } = useApi();
+    const [currentForm, setCurrentForm] = useState(null);
 
+    const openFormModal = (section) => {
+        setOpenModal(true);
+        switch (section) {
+            case 'banner':
+
+                setCurrentForm(bannerForm);
+                break;
+            case 'profilePic':
+                setCurrentForm(profilePicUrl);
+                break;
+            case 'experience':
+                setCurrentForm(experienceForm);
+                break;
+            case 'education':
+                setCurrentForm(educationForm);
+                break;
+            case 'certificates':
+                setCurrentForm(certificatesForm);
+                break;
+            case 'courses':
+                setCurrentForm(coursesForm);
+                break;
+            case 'projects':
+                setCurrentForm(projectsForm);
+                break;
+            case 'personalData':
+                setCurrentForm(personalDataForm);
+                break;
+            default:
+                setCurrentForm(null);
+                break;
+        }
+
+    };
+
+    const handleSubmit = (formData) => {
+        // Lógica para manejar el envío del formulario
+        console.log('Datos del formulario enviado:', formData);
+        setOpenModal(false);
+    };
     const hasEditPermission = async (endpoint) => {
         try {
             const response = await request(endpoint, config, isAuthenticated);
@@ -41,24 +85,33 @@ const PersonalArea = () => {
         projects: false
     });
 
+    const handleClose = (isModalOpened) => {
+        setOpenModal(isModalOpened);
+    };
     const toggleDropdown = (section) => {
         setIsOpen(prevState => ({
             ...prevState,
             [section]: !prevState[section]
         }));
     };
+
     useEffect(() => {
-        hasEditPermission(`http://localhost:8080/api/check-permission/edit-profile`);
-    }, []);
+        if (isAuthenticated) {
+            hasEditPermission(`http://localhost:8080/api/check-permission/edit-profile`);
+        }
+    }, [openModal]);
     return (
         <div className="container">
+            {currentForm && (
+                <FormModal title={currentForm.title} form={currentForm} onSubmit={handleSubmit} onClose={handleClose} isOppened={openModal}/>
+            )}
             <section className="user-info">
                 <div className="row">
                     <div className="col-12">
                         <div className="banner">
                             <img src="https://t4.ftcdn.net/jpg/04/95/28/65/360_F_495286577_rpsT2Shmr6g81hOhGXALhxWOfx1vOQBa.jpg" alt="" />
                             {hasPermissionToEdit && (
-                                <div className="edit-icon">
+                                <div className="edit-icon" onClick={ () => {openFormModal('banner')} }>
                                     <i className={`fas fa-pencil-alt`} />
                                 </div>
                             )}
@@ -70,7 +123,7 @@ const PersonalArea = () => {
                         <div className="profile-pic">
                             <img src="https://thumbs.dreamstime.com/b/profile-portrait-half-turned-orange-hair-girl-look-camera-wear-basic-outfit-isolated-blue-color-background-profile-portrait-236036535.jpg" alt="" />
                             {hasPermissionToEdit && (
-                                <div className="edit-icon">
+                                <div className="edit-icon" onClick={ () => openFormModal('profilePic') }>
                                     <i className={`fas fa-pencil-alt`} />
                                 </div>
                             )}
@@ -84,7 +137,7 @@ const PersonalArea = () => {
                             <div className={`name ${hasPermissionToEdit ? 'd-flex flex-row justify-content-between' : '' }`}>
                                 <h1>Melina Elizabeth Herrera</h1>
                                 {hasPermissionToEdit && (
-                                    <div className="edit-icon">
+                                    <div className="edit-icon"  onClick={ () => {openFormModal('personalData')} }>
                                         <i className={`fas fa-pencil-alt`} />
                                     </div>
                                 )}
@@ -125,7 +178,7 @@ const PersonalArea = () => {
                                     <p className="h5">Manager de Comunicación</p>
                                     {hasPermissionToEdit && (
                                         <div className="icons d-flex flex-row">
-                                            <div className="edit-icon">
+                                            <div className="edit-icon" onClick={ () => openFormModal('experience') }>
                                                 <i className={`fas fa-pencil-alt`} />
                                             </div>
                                             <div className="edit-icon">
@@ -172,7 +225,7 @@ const PersonalArea = () => {
                                     <p className="h5">Analista de Datos</p>
                                     {hasPermissionToEdit && (
                                         <div className="icons d-flex flex-row">
-                                            <div className="edit-icon">
+                                            <div className="edit-icon" onClick={ () => openFormModal('experience') }>
                                                 <i className={`fas fa-pencil-alt`} />
                                             </div>
                                             <div className="edit-icon">
@@ -220,7 +273,7 @@ const PersonalArea = () => {
                                         <p className="h5">Universidad Complutense de Madrid</p>
                                         {hasPermissionToEdit && (
                                             <div className="icons d-flex flex-row">
-                                                <div className="edit-icon">
+                                                <div className="edit-icon" onClick={ () => openFormModal('education')}>
                                                     <i className={`fas fa-pencil-alt`} />
                                                 </div>
                                                 <div className="edit-icon">
@@ -243,7 +296,7 @@ const PersonalArea = () => {
                                         <p className="h5">IE Business School</p>
                                         {hasPermissionToEdit && (
                                             <div className="icons d-flex flex-row">
-                                                <div className="edit-icon">
+                                                <div className="edit-icon"  onClick={ () => openFormModal('education')}>
                                                     <i className={`fas fa-pencil-alt`} />
                                                 </div>
                                                 <div className="edit-icon">
@@ -290,7 +343,7 @@ const PersonalArea = () => {
                                         <p className="h5">Coursera</p>
                                         {hasPermissionToEdit && (
                                             <div className="icons d-flex flex-row">
-                                                <div className="edit-icon">
+                                                <div className="edit-icon" onClick={ () => openFormModal('courses')}>
                                                     <i className={`fas fa-pencil-alt`} />
                                                 </div>
                                                 <div className="edit-icon">
@@ -313,7 +366,7 @@ const PersonalArea = () => {
                                         <p className="h5">Udemy</p>
                                         {hasPermissionToEdit && (
                                             <div className="icons d-flex flex-row">
-                                                <div className="edit-icon">
+                                                <div className="edit-icon" onClick={ () => openFormModal('courses')}>
                                                     <i className={`fas fa-pencil-alt`} />
                                                 </div>
                                                 <div className="edit-icon">
@@ -336,7 +389,7 @@ const PersonalArea = () => {
                                         <p className="h5">LinkedIn Learning</p>
                                         {hasPermissionToEdit && (
                                             <div className="icons d-flex flex-row">
-                                                <div className="edit-icon">
+                                                <div className="edit-icon"  onClick={ () => openFormModal('courses')}>
                                                     <i className={`fas fa-pencil-alt`} />
                                                 </div>
                                                 <div className="edit-icon">
@@ -359,7 +412,7 @@ const PersonalArea = () => {
                                         <p className="h5">Google Academy for Ads</p>
                                         {hasPermissionToEdit && (
                                             <div className="icons d-flex flex-row">
-                                                <div className="edit-icon">
+                                                <div className="edit-icon"  onClick={ () => openFormModal('courses')}>
                                                     <i className={`fas fa-pencil-alt`} />
                                                 </div>
                                                 <div className="edit-icon">
@@ -406,7 +459,7 @@ const PersonalArea = () => {
                                         <p className="h5">Google Academy for Ads</p>
                                         {hasPermissionToEdit && (
                                             <div className="icons d-flex flex-row">
-                                                <div className="edit-icon">
+                                                <div className="edit-icon" onClick={ () => openFormModal('certificates')}>
                                                     <i className={`fas fa-pencil-alt`} />
                                                 </div>
                                                 <div className="edit-icon">
@@ -428,7 +481,7 @@ const PersonalArea = () => {
                                         <p className="h5">Coursera</p>
                                         {hasPermissionToEdit && (
                                             <div className="icons d-flex flex-row">
-                                                <div className="edit-icon">
+                                                <div className="edit-icon" onClick={ () => openFormModal('certificates')}>
                                                     <i className={`fas fa-pencil-alt`} />
                                                 </div>
                                                 <div className="edit-icon">
@@ -450,7 +503,7 @@ const PersonalArea = () => {
                                         <p className="h5">Udemy</p>
                                         {hasPermissionToEdit && (
                                             <div className="icons d-flex flex-row">
-                                                <div className="edit-icon">
+                                                <div className="edit-icon" onClick={ () => openFormModal('certificates')}>
                                                     <i className={`fas fa-pencil-alt`} />
                                                 </div>
                                                 <div className="edit-icon">
@@ -472,7 +525,7 @@ const PersonalArea = () => {
                                         <p className="h5">LinkedIn Learning</p>
                                         {hasPermissionToEdit && (
                                             <div className="icons d-flex flex-row">
-                                                <div className="edit-icon">
+                                                <div className="edit-icon" onClick={ () => openFormModal('certificates')}>
                                                     <i className={`fas fa-pencil-alt`} />
                                                 </div>
                                                 <div className="edit-icon">
@@ -516,7 +569,7 @@ const PersonalArea = () => {
                                         <p className="h5">Nombre del proyecto</p>
                                         {hasPermissionToEdit && (
                                             <div className="icons d-flex flex-row">
-                                                <div className="edit-icon">
+                                                <div className="edit-icon" onClick={ () => openFormModal('projects')}>
                                                     <i className={`fas fa-pencil-alt`} />
                                                 </div>
                                                 <div className="edit-icon">
