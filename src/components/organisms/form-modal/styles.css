@@ -1,0 +1,63 @@
+.backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5); /* Fondo oscuro semi-transparente */
+    z-index: 50; /* Debe estar por debajo del modal pero por encima del resto de contenido */
+}
+
+.form-modal {
+    width: 100%;
+    display: flex;
+    width: 40rem !important;
+    position: fixed; 
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%); 
+    padding: 2rem !important;
+    font-weight: bolder;
+    background-color: #f4f8f9;
+    border-radius: .5rem;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+    transition: box-shadow .2s ease-in-out;
+    z-index: 100;
+}
+.form-modal:hover, .form-modal:active, .form-modal:focus {
+    box-shadow: 0 2px 6px rgba(0,0,0,.5);
+}
+.form-modal .form {
+    width: 100% !important;
+}
+.form-modal .form .form-section input {
+    width: 100% ;
+}
+.form .buttons {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    align-items: center;
+}
+.form .close-button {
+    border: none;
+    color: #D9546A;
+    transition: all .2s ease-in-out;
+}
+.form .close-button:hover {
+    font-weight: bold;
+}
+.form .button {
+    cursor: pointer;
+}
+.form .modal-button {
+    font-weight: bold;
+    padding: .4rem .5rem;
+    color: #28a745;
+    transition: all .2s ease-in-out;
+}
+.form .modal-button:hover {
+    border-radius: .5rem;
+    color: #fff;
+    background-color: #28a745;
+}

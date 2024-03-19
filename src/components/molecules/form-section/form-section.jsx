@@ -3,9 +3,8 @@
 import { NavLink } from "react-router-dom";
 import FormItem from "../form-item/form-item"; // Asegúrate de importar FormItem desde la ubicación correcta
 
-const FormSection = ({ title, fields, values, errors, handleChange }) => {
+const FormSection = ({ title, fields, values, errors, handleChange, isUsernameInUse, isUsernameChecked, message, isUserRegistered }) => {
   let numberOfColumns = fields.length > 1 ? 2 : 1; // Determina el número de columnas (1 o 2)
-
   return (
     <div className="row">
       {fields.map((field, index) => (
@@ -20,13 +19,24 @@ const FormSection = ({ title, fields, values, errors, handleChange }) => {
             error={errors[field.name]}
             required={false}
           />
+        {
+          (field.name === "username" || title === "Email") && (
+            <div className={`availability-message ${ isUsernameInUse || isUserRegistered ?  "success" : "error"}`}>
+              {isUsernameInUse || !isUserRegistered ? (
+                <p>{message}</p>
+              ) : (
+                <p>{message}</p>
+              )}
+            </div>
+          )
+        }
         </div>
       ))}
         {title === "Sign In" && (
             <div className="row">
                 <div className={`form-section links d-flex flex-column`}>
                     <NavLink to="/signup">No tienes una cuenta? Regístrate</NavLink>
-                    <NavLink to="/forgetpassword">¿Olvidaste tu contraseña?</NavLink>
+                    <NavLink to="/forgotpassword">¿Olvidaste tu contraseña?</NavLink>
                 </div>
             </div>
         )}

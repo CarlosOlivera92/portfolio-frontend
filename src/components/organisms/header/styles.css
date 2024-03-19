@@ -44,6 +44,19 @@
     width: fit-content;
     margin: .3rem;
 }
+.header .navbar .nav-items .btn-logout {
+    border: none;
+    border-radius: .5rem;
+    padding: .4rem;
+    background-color: #fad6dc;
+    color: #D9546A;
+    font-weight: bold;
+    transition: all .3s ease-in-out;
+}
+.header .navbar .nav-items .btn-logout:hover {
+    background-color: #D9546A;
+    color: #fad6dc;
+}
 .header .navbar .nav-items .btn:active,
 .header .navbar .nav-items .btn:focus {
     border-color: #D9546A !important;
@@ -57,4 +70,20 @@
     border-color: #D9546A;
     background-color: #D9546A;
     color: #fff;
+}
+
+
+
+/*PORTFOLIO HEADER*/
+.portfolio-header {
+    padding: 1rem;
+    background-color: #f8f9fa;
+    border-radius: 1rem;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+    position: relative;
+}
+
+.portfolio-header .navbar .nav-items li a.active {
+    color: #D9546A ;
+    font-weight: bold ;
 }

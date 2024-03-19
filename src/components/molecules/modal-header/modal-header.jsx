@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 import TitleAtom from "../../atoms/title-atom/title-atom";
 
 const ModalHeader = ({title}) => {

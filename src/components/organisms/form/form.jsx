@@ -3,23 +3,12 @@ import { useFormik } from "formik";
 import * as Yup from "yup";
 import FormSection from "../../molecules/form-section/form-section";
 import ActionButton from "../../atoms/action-button/action-button";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import Logo from "../../atoms/logo/logo";
 
-const Form = ({ title, fields, onSubmit }) => {
-  const isSignUp = fields.title === "Sign Up";
-
-  const [currentStep, setCurrentStep] = useState(1);
-
-  const steps = isSignUp
-    ? {
-        1: ["username"],
-        2: ["password", "repeatPassword"],
-        3: ["firstName", "lastName", "email", "phoneNumber", "birthday", "role"],
-      }
-    : null;
-
-  const currentFields = isSignUp ? steps[currentStep] : fields.fields;
+const Form = ({ title, fields, onSubmit, currentStep, steps, isSignUp, isUsernameInUse, isUsernameChecked, message, isUserRegistered, toggleModal }) => {
+  const currentFields = isSignUp ? steps[currentStep] : fields.fields.map(field => field.name);
+  const [stepTransition, setStepTransition] = useState("form-step-entering");
 
   const initialValues = currentFields.reduce((acc, fieldName) => {
     const field = fields.fields.find((f) => f.name === fieldName);
@@ -38,42 +27,79 @@ const Form = ({ title, fields, onSubmit }) => {
       return acc;
     }, {})
   );
-
   const formik = useFormik({
     initialValues,
     validationSchema,
     onSubmit: (values) => {
-      if (isSignUp && currentStep < Object.keys(steps).length) {
-        // Si no es el último paso y es el formulario "Sign Up", avanza al siguiente
-        setCurrentStep(currentStep + 1);
-      } else {
-        // Es el último paso o es el formulario "Sign In", envía el formulario
-        onSubmit(values);
-      }
-    },
+      onSubmit(values, currentStep);
+    }
   });
 
+  useEffect(() => {
+    setStepTransition("form-step-entering");
+    if (currentStep > 1) {
+      setStepTransition("form-step-leaving");
+      const timeout = setTimeout(() => {
+        setStepTransition("form-step-entering");
+      }, 0); // Tiempo de transición, ajusta según tus necesidades
+      return () => clearTimeout(timeout);
+    }
+  }, [currentStep]);
+  
   return (
-    <form onSubmit={formik.handleSubmit} className="form">
-      <div className="form-header d-flex flex-column">
-        <Logo />
-        <h2>{title}</h2>
-      </div>
+    <form onSubmit={formik.handleSubmit} className={`form ${stepTransition}`}>
+      {fields.title === 'Sign In' || fields.title === 'Sign Up' ? (
+        <div className="form-header d-flex flex-column">
+          <Logo />
+          <h2>{title}</h2>
+        </div>
+      ) : (
+        <div className="form-header d-flex flex-column">
+          <h2>{title}</h2>
+        </div>
+      )}
+
       <FormSection
         title={fields.title}
-        fields={fields.title === "Sign In" ? fields.fields : fields.fields.filter((field) => currentFields.includes(field.name))}
+        fields={fields.title === "Sign In" || fields.title === "Email" || fields.title === " " ? fields.fields  : fields.fields.filter((field) => currentFields.includes(field.name))}
         values={formik.values}
         errors={formik.errors}
         handleChange={formik.handleChange}
+        isUsernameInUse={isUsernameInUse}
+        isUsernameChecked={isUsernameChecked}
+        message={message}
+        isUserRegistered={isUserRegistered}
       />
-      <div className="buttons">
-        <ActionButton
-          type={"submit"}
-          name={isSignUp ? (currentStep < Object.keys(steps).length ? "Siguiente" : "Enviar") : "Iniciar sesión"}
-          classname="mt-3 form-button"
-          disabled={!formik.isValid}
-        />
-      </div>
+      {fields.title === 'Sign In' || fields.title === 'Sign Up'  || fields.title === "Email" ? (
+        <div className="buttons">
+          <ActionButton
+            type={"submit"}
+            name={isSignUp ? (currentStep < Object.keys(steps).length ? "Siguiente" : "Enviar") : fields.title === "Email" ? "Confirmar" : "Iniciar sesión"}
+            classname="mt-3 form-button"
+            disabled={!formik.isValid}
+          />
+        </div>
+      ) : (
+        <div className="buttons">
+
+          <ActionButton
+            type={"button"}
+            onClick={toggleModal}
+            name={"Cerrar"}
+            classname="mt-3 button close-button"
+            disabled={!formik.isValid}
+          />
+          <ActionButton
+            type={"submit"}
+            onClick={onSubmit}
+            name={"Editar"}
+            classname="mt-3 button modal-button"
+            disabled={!formik.isValid}
+          />
+        </div>
+      )}
+
+
     </form>
   );
 };

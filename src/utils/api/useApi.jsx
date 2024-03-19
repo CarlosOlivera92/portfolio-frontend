@@ -1,30 +1,29 @@
-import { useState, useEffect, useCallback } from "react";
-
-export const useApi = (config) => {
-  const { apiEndpoint, httpVerb, data: requestData } = config;
+import { useState, useCallback } from "react";
+export const useApi = () => {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  const fetchData = useCallback(async () => {
-    const result = {
-      data: null,
-      error: null,
-    };
+  const fetchData = useCallback(async (apiEndpoint, config, isAuthenticated) => {
     try {
       setLoading(true);
+      const headers = {}; 
+      if (isAuthenticated) {
+        const token = localStorage.getItem('token');
+        headers['Authorization'] = `Bearer ${token}`;
+      }
       const response = await fetch(apiEndpoint, {
-        method: httpVerb,
+        method: config.httpVerb,
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
+          ...headers,
         },
-        body: JSON.stringify(requestData),
+        body: JSON.stringify(config.data),
       });
       if (!response.ok) {
-        throw new Error(`HTTP Error: ${response.status}`);
+        throw response;
       } else {
-        const responseData = await response.json();
-        setData(responseData);
+        setData(response);
         setError(null);
         return response;
       }
@@ -34,11 +33,10 @@ export const useApi = (config) => {
     } finally {
       setLoading(false);
     }
+  }, []);
 
-  }, [apiEndpoint, httpVerb, requestData]);
-
-  const request = useCallback(() => {
-    return fetchData();
+  const request = useCallback((apiEndpoint, config, isAuthenticated) => {
+    return fetchData(apiEndpoint, config, isAuthenticated);
   }, [fetchData]);
 
   return {
