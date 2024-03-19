@@ -241,7 +241,7 @@ export const personalDataForm = {
     {
       name: "location",
       label: "Ubicación",
-      type: "group", // Podrías definir este tipo "group" para agrupar estado y país
+      type: "group", 
       fields: [
         {
           name: "state",

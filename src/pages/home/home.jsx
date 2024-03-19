@@ -3,7 +3,7 @@ import './styles.css';
 const Home = () => {
     return (
         <main className='home'>
-            <section className='hero container-fluid'>
+            <section className='hero container-fluid '>
                 <div className="title">
                     <h1>Profilo - Solo Resume</h1>
                 </div>

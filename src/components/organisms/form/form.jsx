@@ -70,7 +70,7 @@ const Form = ({ title, fields, onSubmit, currentStep, steps, isSignUp, isUsernam
         message={message}
         isUserRegistered={isUserRegistered}
       />
-      {fields.title === 'Sign In' || fields.title === 'Sign Up' ? (
+      {fields.title === 'Sign In' || fields.title === 'Sign Up'  || fields.title === "Email" ? (
         <div className="buttons">
           <ActionButton
             type={"submit"}
@@ -81,11 +81,19 @@ const Form = ({ title, fields, onSubmit, currentStep, steps, isSignUp, isUsernam
         </div>
       ) : (
         <div className="buttons">
+
           <ActionButton
             type={"button"}
             onClick={toggleModal}
-            name={"Cerrar Modal"}
-            classname="mt-3 form-button"
+            name={"Cerrar"}
+            classname="mt-3 button close-button"
+            disabled={!formik.isValid}
+          />
+          <ActionButton
+            type={"submit"}
+            onClick={onSubmit}
+            name={"Editar"}
+            classname="mt-3 button modal-button"
             disabled={!formik.isValid}
           />
         </div>

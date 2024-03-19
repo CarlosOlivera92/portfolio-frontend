@@ -10,7 +10,7 @@ import './styles.css';
 const Portfolio = () => {
     const [token, setToken] = useState();
     const [currentRefreshToken, setCurrentRefreshToken] = useState();
-    const {setUser} = useUser();
+    const {user, setUser} = useUser();
     const { isAuthenticated } = useAuth;
     const {username} = useParams();
     const [userData, setUserData] = useState([]);
@@ -72,6 +72,7 @@ const Portfolio = () => {
                 localStorage.setItem('refreshToken', data.refreshToken)
                 // O actualiza el estado con el nuevo token
                 setToken(newToken);
+                setCurrentRefreshToken(data.refreshToken)
                 console.log('Token actualizado');
                 console.log(data);
 
@@ -84,12 +85,11 @@ const Portfolio = () => {
       };
     const setupTokenRefresh = (expirationTime) => {
         const currentTime = Math.floor(Date.now() / 1000); // Tiempo actual en segundos UNIX
-        const timeUntilRefresh = expirationTime - currentTime - 300; 
-      
+        const timeUntilRefresh = expirationTime - currentTime - 500; 
+        console.log(timeUntilRefresh )
         if (timeUntilRefresh > 0) {
           // Configura el temporizador para refrescar el token justo antes de que expire
           setTimeout( () => refreshToken( "http://localhost:8080/api/auth/refreshtoken" , currentRefreshToken) , timeUntilRefresh * 1000); // Multiplica por 1000 para convertir a milisegundos
-          console.log(`Temporizador configurado para refrescar el token en ${timeUntilRefresh} segundos`);
         } else {
           console.error('El tiempo para refrescar el token ya ha pasado');
         }
@@ -102,13 +102,15 @@ const Portfolio = () => {
             setToken(storedToken);
             setCurrentRefreshToken(storedRefreshToken);
         }
-        if(storedToken) {
+        if(token) {
             
             // Decodificar el token para obtener los claims (payload)
             const decodedToken = decodeToken(storedToken);
             setupTokenRefresh(decodedToken.exp);
         }
+      
         getUser(`http://localhost:8080/api/users/user/${username}`);
+
 
     }, [token]);
     return (

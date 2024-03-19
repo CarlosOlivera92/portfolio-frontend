@@ -582,7 +582,7 @@ const PersonalArea = () => {
                                     <a href="#">Link al proyecto</a>
                                 </div>
                             </div>
-                            {/* Agrega más información de trabajo aquí */}
+                            {/* Agregar más información de trabajo aquí */}
                         </div>
                     </div>
                 )}

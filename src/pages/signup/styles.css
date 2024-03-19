@@ -76,10 +76,10 @@
     width: fit-content;
     margin: .3rem 0;
 }
-.signup-form form .form-item {
+.form .form-item {
     width: 100%;
 }
-.signup-form form input {
+.form input {
     border: none;
     width: 100%;
     border-radius: 0.5rem;
@@ -92,17 +92,12 @@
     transition: background-color 0.3s, box-shadow 0.3s;
 }
 
-.signup-form form input:focus {
+.form input:focus {
     background-color: #fff; /* Cambiar el fondo al enfocar el campo */
     box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.4); /* Cambiar la sombra al enfocar el campo */
 }
-.signup-form form  .error {
-    color: #e81123;
-}
-.signup-form form  .success {
-    color: #333;
-}
-.signup-form form .form-button {
+
+.form .form-button {
     width: 10rem;
     padding: .5rem;
     color: #005da6; 
@@ -114,24 +109,25 @@
     cursor: pointer;
     box-shadow: 0px 0px 5px #005da6;
     transition: background-color 0.3s; /* Efecto de transición de color */
-  }
+}
   
-  .signup-form form .form-button:hover {
+.form .form-button:hover {
     background-color: #005da6;
     color: #fff;
-  }
-  
+}
+
+
   /* Estilo de etiquetas y texto */
-  .signup-form form label {
+  .form label {
     font-size: 16px;
     font-weight: bold;
   }
   
-  .signup-form form .error {
+  .form .error {
     color: #ff0000;
     font-size: 14px;
   }
-  .signup-form form .success {
+  .form .success {
     color: #28a745;
     font-size: 14px;
   }

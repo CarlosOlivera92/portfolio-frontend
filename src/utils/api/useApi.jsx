@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useCallback } from "react";
 export const useApi = () => {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);

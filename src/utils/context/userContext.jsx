@@ -4,5 +4,5 @@ import { createContext, useContext, useState } from 'react';
 const UserContext = createContext();
 const useUser = () => {
     return useContext(UserContext);
-  };
-export {UserContext,useUser};
+};
+export {UserContext, useUser};
