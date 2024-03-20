@@ -28,10 +28,11 @@ const PersonalData = ({ user, userInfo, hasPermissionToEdit }) => {
             {/* Renderizar el modal de información de contacto si isContactInfoModalOpen es true */}
             <Modal
                 title="Información de contacto"
-                text={<ContactInfo user={user} userInfo={userInfo} />}
                 showModal={isContactInfoModalOpen}
                 closeModal={toggleContactInfoModal}
-            />
+            >
+                <ContactInfo user={user} userInfo={userInfo} />
+            </Modal>
         </div>
     );
 };

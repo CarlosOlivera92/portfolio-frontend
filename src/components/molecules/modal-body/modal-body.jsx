@@ -1,10 +1,12 @@
 import TextContent from "../../atoms/text-content/text-content";
 
-const ModalBody = ({text}) => {
-    return(
+const ModalBody = ({ text, children }) => {
+    return (
         <div className="modal-body">
-            <TextContent text={text} />
+            {text && <TextContent text={text} />}
+            {children}
         </div>
-    )
-}
+    );
+};
+
 export default ModalBody;
