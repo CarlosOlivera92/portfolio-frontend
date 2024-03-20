@@ -1,4 +1,3 @@
-/* eslint-disable react/prop-types */
 import { useEffect } from "react";
 import Divider from "../../atoms/divider/divider";
 import ModalBody from "../../molecules/modal-body/modal-body";
@@ -8,8 +7,7 @@ import './styles.css';
 
 const Modal = ( {title, text, closeModal, showModal} ) => {
     useEffect(() => {
-        console.log("valor del showModal" + showModal)
-      }, [showModal]);
+    }, [showModal]);
     return(
         <div className={`modal-container ${showModal ? 'show' : 'hide'}`}>
             <div className={`customModal  ${showModal ? 'show' : 'hide'}`}>

@@ -13,9 +13,8 @@ const Portfolio = () => {
     const {user, setUser} = useUser();
     const { isAuthenticated } = useAuth;
     const {username} = useParams();
-    const [userData, setUserData] = useState([]);
-
     const { loading, error, request, data } = useApi();
+    const [userData, setUserData] = useState({})
     const decodeToken = (token) => {
         const tokenParts = token.split('.'); // Separar el token en sus partes
       
@@ -41,7 +40,6 @@ const Portfolio = () => {
             }
             try {
                 const responseBody = await response.json();
-                setUserData(responseBody);
                 setUser(responseBody);
             } catch (error) {
                 console.error("Error al parsear la respuesta JSON:", error);
@@ -54,8 +52,8 @@ const Portfolio = () => {
             }
         }
     };
+
     const refreshToken = async (endpoint, refreshToken) => {
-        // Lógica para solicitar un nuevo token al backend
         try {
             const config = {
                 httpVerb: "POST",
@@ -73,8 +71,6 @@ const Portfolio = () => {
                 // O actualiza el estado con el nuevo token
                 setToken(newToken);
                 setCurrentRefreshToken(data.refreshToken)
-                console.log('Token actualizado');
-                console.log(data);
 
             } else {
                 console.error('Error al obtener el nuevo token');
@@ -82,18 +78,17 @@ const Portfolio = () => {
             } catch (error) {
             console.error('Error al procesar la solicitud de refresh token:', error);
         }
-      };
+    };
     const setupTokenRefresh = (expirationTime) => {
         const currentTime = Math.floor(Date.now() / 1000); // Tiempo actual en segundos UNIX
         const timeUntilRefresh = expirationTime - currentTime - 500; 
-        console.log(timeUntilRefresh )
         if (timeUntilRefresh > 0) {
           // Configura el temporizador para refrescar el token justo antes de que expire
           setTimeout( () => refreshToken( "http://localhost:8080/api/auth/refreshtoken" , currentRefreshToken) , timeUntilRefresh * 1000); // Multiplica por 1000 para convertir a milisegundos
         } else {
           console.error('El tiempo para refrescar el token ya ha pasado');
         }
-      };
+    };
     useEffect(() => {
         const storedToken = localStorage.getItem('token');
         const storedRefreshToken = localStorage.getItem('refreshToken');
@@ -111,16 +106,39 @@ const Portfolio = () => {
       
         getUser(`http://localhost:8080/api/users/user/${username}`);
 
-
     }, [token]);
-    return (
-        <div className="container-fluid">
-            <Routes>
-                <Route path="/" element={<Home/>} />
-                <Route path="/personal" element={<PersonalArea />} />
-                <Route path='/settings' element={<Settings/>} />
-            </Routes>
-        </div>
-    )
+    useEffect(() => {
+        if (user) {
+            setUserData(user);
+        }
+    }, [user]);
+    if (loading) {
+        return (
+            <div>
+                Cargando...
+            </div>
+        )
+    }
+    if (error) {
+        return (
+            <div>
+                Error al cargar los datos
+            </div>
+        )
+    }
+    if (user) {
+        return (
+            <div className="container-fluid">
+                <Routes>
+                    <Route path="/" element={<Home/>} />
+                    {user && (
+                        <Route path="/personal" element={<PersonalArea user={user} loadingData={loading} />} />
+                    )}
+                    <Route path='/settings' element={<Settings/>} />
+                </Routes>
+            </div>
+        )
+    }
+    
 }
 export default Portfolio;
