@@ -14,7 +14,7 @@ const InfoItem = ( {imgSrc, title, subtitle, startDate, endDate, description, ha
     const endYear = extractYearFromDate(endDate);
     return(
         <div className={`${styles.infoItem} col row`}>
-            <div className={`${styles.imageWrapper} col-md-4 col-12`} col row>
+            <div className={`${styles.imageWrapper} col-md-4 col-12`}>
                 <Image src={imgSrc} alt="Profession image" classList={styles.img}/>
             </div>
             <div className={`${styles.contentWrapper} col-md-8 col-12`}>

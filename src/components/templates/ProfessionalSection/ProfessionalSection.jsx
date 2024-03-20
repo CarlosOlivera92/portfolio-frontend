@@ -10,7 +10,7 @@ const ProfessionalSection = ({hasPermissionToEdit, professions}) => {
             <div className={styles.actionsContainer}>
                 <h2 className={styles.title}>Experiencia laboral</h2>
                 <div className={styles.buttonsWrapper}>
-                    <div className={styles.actionsWrapper}>
+                    <div className={styles.dropdownIconWrapper}>
                         <ActionIcon classList={"fa-chevron-up"}/>
                         <ActionIcon classList={"fa-chevron-down"}/>
                     </div>
