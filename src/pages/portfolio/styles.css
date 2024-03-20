@@ -1,35 +1,4 @@
 
-.professional-info, .educational-info, .courses-info, .certificates-info, .projects-info {
-    display: flex;
-    flex-direction: column;
-    background-color: #fff;
-    border-radius: 1rem;
-    margin: 1rem 0;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.2);
-}
-
-.professional-info .profession .profession-item, .educational-info .education .education-item, .courses-info .courses .courses-item, .certificates-info .certificates .certificates-item {
-    display: flex;
-    flex-direction: row;
-    padding: 1rem 0;
-    border-bottom: 1px solid #8C8C8C33;
-}
-
-.professional-info .profession .profession-item .img,  .educational-info .education .education-item .img, .courses-info .courses .courses-item .img, .certificates-info .certificates .certificates-item .img {
-    width: fit-content;
-}
-.professional-info .profession .profession-item .img img,  .educational-info .education .education-item img, .courses-info .courses .courses-item img, .certificates-info .certificates .certificates-item img {
-    width: 6rem;
-}
-.content {
-    width: 100%;
-}
-.content .title {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: space-between;
-}
 
 
 
@@ -87,19 +56,3 @@ a:active, a:hover {
 }
 
 
-@keyframes expand {
-    from {
-        max-height: 0;
-        opacity: 0;
-    }
-    to {
-        max-height: 1400px; 
-        opacity: 1;
-    }
-}
-
-.expanding-section {
-    overflow: hidden;
-    transition: max-height 0.3s ease-in-out, opacity 0.3s ease-in-out;
-    animation: expand 0.3s ease-in-out forwards; /* Aplica la animación */
-}

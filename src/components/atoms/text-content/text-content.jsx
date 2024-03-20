@@ -1,8 +1,6 @@
-const TextContent = ( {text} ) => {
+const TextContent = ( {text, classList} ) => {
     return (
-        <div>
-            <p>{text}</p>
-        </div>
+        <p className={classList}>{text}</p>
     )
 }
 export default TextContent;
