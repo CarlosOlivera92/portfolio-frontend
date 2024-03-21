@@ -1,49 +1,40 @@
-const EducationSection = ({hasPermissionToEdit, educationalBackground}) => {
-    return ( 
-        <section className="educational-info p-4">
-                <div className="actions">
-                    <h2 className="section-title">Experiencia educativa</h2>
-                    <div className="buttons">
-                        <div className="action-dropdown" style={{ cursor: 'pointer' }}>
-                            <i className={`fas`} />
-                        </div>
-                        {hasPermissionToEdit && (
-                            <div className="edit-icon">
-                                <i className={`fas fa-plus`} />
-                            </div>
-                        )}
-                    </div>
+import defaultEducationPic from '../../../assets/img/defaultInstitutionPic.png'; 
+import ActionIcon from '../../atoms/action-icon/ActionIcon';
+import InfoItem from '../../molecules/info-item/InfoItem';
+import styles from './EducationalSection.module.css';
 
-                </div>
+const EducationSection = ({ hasPermissionToEdit, educationalBackground }) => {
+    const institutionPicture = educationalBackground.institutionPicture;
 
-                <div>
-                    <div className={`education p-3 `}>
-                        <div className="education-item col row">
-                            <div className="img col-md-4 col-12">
-                                <img src="https://www.kaiciid.org/sites/default/files/styles/person_263_268/public/logoucm_big1.jpg.webp?itok=NWGQtav9" alt="" />
-                            </div>
-                            <div className="content col-md-8 col-12">
-                                <div className="title">
-                                    <p className="h5">Universidad Complutense de Madrid</p>
-                                    {hasPermissionToEdit && (
-                                        <div className="icons d-flex flex-row">
-                                            <div className="edit-icon">
-                                                <i className={`fas fa-pencil-alt`} />
-                                            </div>
-                                            <div className="edit-icon">
-                                                <i className={`fas fa-trash-alt`} />
-                                            </div>
-                                        </div>
-                                    )}    
-                                </div>
-                                <p className="h6">Licenciatura en Comunicación Audiovisual</p>
-                                <p>Desde 2015 | Hasta 2019</p>
-                                <p>Estudios enfocados en la producción audiovisual, narrativa visual y teoría de la comunicación.</p>
-                            </div>
-                        </div>
+    return (
+        <section className={styles.educationalInfo}>
+            <div className={styles.actionsContainer}>
+                <h2 className={styles.title}>Experiencia Educativa</h2>
+                <div className={styles.buttonsWrapper}>
+                    <div className={styles.dropdownIconWrapper}>
+                        <ActionIcon classList={"fa-chevron-up"}/>
+                        <ActionIcon classList={"fa-chevron-down"}/>
                     </div>
+                    {hasPermissionToEdit && (
+                        <ActionIcon classList={"fa-plus"}/>
+                    )}
                 </div>
-            </section>
+            </div>
+
+            {educationalBackground.map((education, index) => (
+                <InfoItem
+                    key={index}
+                    imgSrc={institutionPicture ? institutionPicture : defaultEducationPic}
+                    title={education.degree}
+                    subtitle={education.institution}
+                    startDate={education.startDate}
+                    endDate={education.endDate}
+                    description={education.focusOfStudies}
+                    hasPermissionToEdit={hasPermissionToEdit}
+                />
+            ))}
+        </section>
     );
-} 
+}
+
 export default EducationSection;

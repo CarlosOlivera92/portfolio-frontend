@@ -54,7 +54,7 @@ const PersonalArea = ({user, loadingData}) => {
         <div className="container">
             <UserInfo hasPermissionToEdit={hasPermissionToEdit} user={user} userInfo={userInfo}  />
             <ProfessionalSection hasPermissionToEdit={hasPermissionToEdit} professions={professions} />
-            <EducationSection hasEditPermission={hasPermissionToEdit} educationalBackground={educationalBackground} />
+            <EducationSection hasPermissionToEdit={hasPermissionToEdit} educationalBackground={educationalBackground} />
             <CoursesSection hasPermissionToEdit={hasPermissionToEdit} courses={courses} />
             <CertificationsSection hasPermissionToEdit={hasPermissionToEdit} certifications={certifications} />
             <ProjectsSection hasPermissionToEdit={hasPermissionToEdit} projects={projects} />
