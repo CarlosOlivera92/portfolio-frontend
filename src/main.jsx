@@ -6,9 +6,7 @@ import './index.css'
 
 
 ReactDOM.createRoot(document.getElementById('root')).render(
-  <React.StrictMode>
     <App />
-  </React.StrictMode>
 
 /**
  * Debo desactivar/eliminar el React Strict Mode para evitar que los useEffect se ejecuten multiples veces

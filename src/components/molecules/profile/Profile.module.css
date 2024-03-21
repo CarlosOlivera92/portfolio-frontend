@@ -1,0 +1,25 @@
+.profilePic {
+    margin-top: -8rem; 
+    margin-left: 1rem; 
+    padding: .5rem;
+    width: fit-content;
+    height: auto;
+    position: relative;
+    background-color: #ffeff6 ;
+    border-radius: 100%;
+}
+.profilePic img {
+    width: 12rem;
+    height: 12rem;
+    border-radius: 100%;
+    background-position: 100%;
+    object-fit: cover;
+}
+.profilePic .editIcon {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+}
+.profilePic .editIcon:hover {
+    color: #fff;
+}

@@ -1,0 +1,19 @@
+.personalData {
+    padding: 2rem;
+}
+.editIcon {
+    color: #000;
+}
+editIcon:hover {
+    color: #fff;
+}
+.actionButton {
+    width: fit-content;
+    font-weight: bold;
+    color: #0d6efd;
+    cursor: pointer;
+}
+.actionButton:hover {
+    color: #0a58ca;
+    text-decoration: underline;
+}
