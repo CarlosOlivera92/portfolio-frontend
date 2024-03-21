@@ -2,9 +2,9 @@ import EditIcon from "../../atoms/edit-icon/EditIcon";
 import Image from "../../atoms/image/Image";
 import styles from './Profile.module.css';
 
-const Profile = ({ imageUrl, hasPermissionToEdit }) => (
-    <div className={styles.profilePic}>
-      <Image src={imageUrl} alt="" />
+const Profile = ({ imageUrl, hasPermissionToEdit, classList, className }) => (
+    <div className={className}>
+      <Image src={imageUrl} alt="" classList={classList} />
       {hasPermissionToEdit && <EditIcon classList={styles.editIcon}/>}
     </div>
 );

@@ -16,7 +16,7 @@ const UserInfo = ({ user, userInfo, hasPermissionToEdit }) => {
             </div>
             <div className="row">
                 <div className="col-4">
-                    <Profile imageUrl={profilePic ? profilePic : defaultProfilePic} hasPermissionToEdit={hasPermissionToEdit} />
+                    <Profile imageUrl={profilePic ? profilePic : defaultProfilePic} hasPermissionToEdit={hasPermissionToEdit} className={styles.profilePic}/>
                 </div>
             </div>
             <div className="row">

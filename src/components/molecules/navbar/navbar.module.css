@@ -1,0 +1,39 @@
+.navbar .navItems {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    margin: 0;
+}
+.listItem {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+}
+.listItem:hover a {
+    display: inline;
+    background-color: #fad6dc;
+    border-radius: .6rem;
+    color: #a63f50;
+    font-weight: bold;
+}
+.listItem a {
+    padding: 0.4rem;
+    text-decoration: none;
+    margin: 0 .5rem;
+    color:#484644;
+    font-weight: 400;
+}
+.active:hover a {
+    display: inline;
+    border-radius: .6rem;
+    font-weight: bold;
+}
+.active {
+    border-radius: .5rem;
+    background-color: #fad6dc;
+    color: #a63f50 !important;
+    font-weight: bolder !important;
+}

@@ -1,0 +1,78 @@
+.dropdownUserMenu {
+    position: relative;
+}
+.profilePic {
+    display: flex;
+    width: 100%;
+}
+.profilePic img {
+    width: 3rem;
+    height: 3rem;
+    border-radius: 100%;
+    background-position: 100%;
+    object-fit: cover;
+}
+.dropdownMenu {
+    position: absolute;
+    top: 100%;
+    right: -.5rem;
+    background-color: white;
+    border-radius: .7rem;
+    padding: 10px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    z-index: 1;
+    display: none;
+}
+
+.dropdownUserMenu:hover .dropdownMenu {
+    display: flex !important;
+    flex-direction: column;
+    align-items: end;
+    justify-content: end;
+}
+.navItems {
+    width: 100%;
+    display: flex !important;
+    flex-direction: column;
+    align-items: end;
+    justify-content: end ;
+}
+.navItem {
+    width: fit-content;
+}
+.navItem a {
+    padding: 0.4rem;
+    text-decoration: none;
+    margin: 0 .5rem;
+    color:#484644;
+    font-weight: 400;
+    transition: all .2s ease-in-out;
+
+}
+.navItem:hover a {
+    color: #a63f50;
+    font-weight: bold;
+}
+.btnLogout a {
+    border: none;
+    border-radius: .5rem;
+    padding: .4rem;
+    color: #D9546A ;
+    font-weight: bold ;
+    transition: all .3s ease-in-out;
+}
+.btnLogout a:hover, .active:hover {
+    background-color: #D9546A ;
+    color: #fad6dc !important;
+}
+.active:hover a {
+    display: inline;
+    border-radius: .6rem;
+    font-weight: bold;
+}
+.active {
+    border-radius: .5rem;
+    background-color: #fad6dc;
+    color: #a63f50 !important;
+    font-weight: bolder !important;
+}

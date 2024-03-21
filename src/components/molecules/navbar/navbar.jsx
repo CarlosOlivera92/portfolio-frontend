@@ -1,32 +1,36 @@
 import { NavLink } from 'react-router-dom';
 import { useLocation } from 'react-router-dom';
+import Profile from '../profile/Profile';
+import { useUser } from '../../../utils/context/userContext';
+import styles from './navbar.module.css';
+import DropdownUserMenu from '../../organisms/DropdownUserMenu/DropdownUserMenu';
 const Navbar = ({isAuthenticated, username}) => {
+    const {user} = useUser();
     const location = useLocation();
     const path = location.pathname;
+
     return (
-        <nav className="navbar">
-            <ul className='nav-items list-unstyled list-inline'>
+        <nav className={styles.navbar}>
+            <ul className={styles.navItems}>
                 {username ? (
                     <>
-                        <li>
-                            <NavLink className={`${path === `/portfolio/${username}/personal` ? "active" : ""}`} to={`portfolio/${username}/personal`}>Personal</NavLink>
+                        <li className={styles.listItem}>
+                            <NavLink className={`${path === `/portfolio/${username}/personal` ? styles.active : ""}`} to={`portfolio/${username}/personal`}>Personal</NavLink>
                         </li>
                     </>
                 ) : (
-                    <li><NavLink to={`/`}>Personal</NavLink></li>
-
+                        <li className={styles.listItem}>
+                            <NavLink className={`${path === `/` ? styles.active : ""}`} to={`/`}>Inicio</NavLink>
+                        </li>
                 )}
-                {isAuthenticated ? (
+                {isAuthenticated && user ? (
                     <>
-                        <li>
-                            <NavLink className={`${path === `/portfolio/${username}/settings` ? "active" : ""}`} to={`portfolio/${username}/settings`}>Configuraciones</NavLink>
-                        </li>
-                        <li><NavLink className={"btn-logout"} to="/logout">Cerrar Sesión</NavLink></li>
+                        <DropdownUserMenu user={user} username={username} path={path} />
                     </>
                 ) : (
                     <>
-                        <li><NavLink to="/signup">Registrarse</NavLink></li>
-                        <li><NavLink to="/signin">Iniciar Sesión</NavLink></li>
+                        <li className={styles.listItem}><NavLink to="/signup">Registrarse</NavLink></li>
+                        <li className={styles.listItem}><NavLink to="/signin">Iniciar Sesión</NavLink></li>
                     </>
                 )}
             </ul>
