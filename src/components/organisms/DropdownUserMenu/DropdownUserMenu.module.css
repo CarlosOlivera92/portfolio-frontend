@@ -47,10 +47,11 @@
     color:#484644;
     font-weight: 400;
     transition: all .2s ease-in-out;
-
 }
 .navItem:hover a {
-    color: #a63f50;
+    background-color: #D9546A;
+    border-radius: .5rem;
+    color: #fad6dc;
     font-weight: bold;
 }
 .btnLogout a {

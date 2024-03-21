@@ -4,7 +4,7 @@ import InfoItem from '../../molecules/info-item/InfoItem';
 import styles from './EducationalSection.module.css';
 
 const EducationSection = ({ hasPermissionToEdit, educationalBackground }) => {
-    const institutionPicture = educationalBackground.institutionPicture;
+    const institutionPicture = educationalBackground ? educationalBackground.institutionPicture : defaultEducationPic;
 
     return (
         <section className={styles.educationalInfo}>
@@ -21,10 +21,10 @@ const EducationSection = ({ hasPermissionToEdit, educationalBackground }) => {
                 </div>
             </div>
 
-            {educationalBackground.map((education, index) => (
+            {educationalBackground && educationalBackground.map((education, index) => (
                 <InfoItem
                     key={index}
-                    imgSrc={institutionPicture ? institutionPicture : defaultEducationPic}
+                    imgSrc={institutionPicture}
                     title={education.degree}
                     subtitle={education.institution}
                     startDate={education.startDate}

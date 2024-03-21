@@ -18,21 +18,23 @@ const PersonalData = ({ user, userInfo, hasPermissionToEdit }) => {
                 <h1>{user.firstName} {user.lastName}</h1>
                 {hasPermissionToEdit && <EditIcon classList={styles.editIcon} />}
             </div>
-            <h2>{userInfo.jobPosition}</h2>
-            <TextContent text={userInfo.address} />
+            <h2>{ userInfo ? userInfo.jobPosition : ""}</h2>
+            <TextContent text={ userInfo ? userInfo.address : ""} />
             <div className="about-me">
-                <TextContent text={userInfo.aboutMe} />
+                <TextContent text={ userInfo ? userInfo.aboutMe : ""} />
                 {/* Abrir el modal al hacer clic en el enlace */}
                 <p className={styles.actionButton} onClick={toggleContactInfoModal}>Información de contacto</p>
             </div>
-            {/* Renderizar el modal de información de contacto si isContactInfoModalOpen es true */}
-            <Modal
+            {userInfo && (
+                <Modal
                 title="Información de contacto"
                 showModal={isContactInfoModalOpen}
                 closeModal={toggleContactInfoModal}
-            >
-                <ContactInfo user={user} userInfo={userInfo} />
-            </Modal>
+                >
+                    <ContactInfo user={user} userInfo={userInfo} />
+                </Modal>
+            )}
+
         </div>
     );
 };

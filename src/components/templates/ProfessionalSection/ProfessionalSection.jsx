@@ -3,8 +3,7 @@ import defaultProfessionsPic from '../../../assets/img/defaultProfessionPic.jpg'
 import styles from './ProfessionalSection.module.css';
 import ActionIcon from "../../atoms/action-icon/ActionIcon";
 const ProfessionalSection = ({hasPermissionToEdit, professions}) => {
-    const companyPicture = professions.companyPicture;
-
+    const companyPicture = professions ? professions.companyPicture : defaultProfessionsPic;
     return(
         <section className={styles.professionalInfo}>
             <div className={styles.actionsContainer}>
@@ -19,9 +18,8 @@ const ProfessionalSection = ({hasPermissionToEdit, professions}) => {
                     )}
                 </div>
             </div>
-
-            {professions.map( (profession, index) => (
-                <InfoItem key={index} imgSrc={companyPicture ? companyPicture : defaultProfessionsPic} title={profession.jobTitle} subtitle={profession.companyName} startDate={profession.startDate} endDate={profession.endDate} description={profession.summary} hasPermissionToEdit={hasPermissionToEdit}/>
+            {professions && professions.map( (profession, index) => (
+                <InfoItem key={index} imgSrc={companyPicture} title={profession.jobTitle} subtitle={profession.companyName} startDate={profession.startDate} endDate={profession.endDate} description={profession.summary} hasPermissionToEdit={hasPermissionToEdit}/>
             ))}
         </section>
     );

@@ -4,7 +4,7 @@ import styles from './CoursesSection.module.css';
 import ActionIcon from "../../atoms/action-icon/ActionIcon";
 
 const CoursesSection = ({ hasPermissionToEdit, courses }) => {
-    const coursePictura = courses.coursePictura;
+    const coursePicture = courses ? courses.coursePicture :  defaultCourssPic;
     return (
         <section className={styles.coursesInfo}>
             <div className={styles.actionsContainer}>
@@ -20,10 +20,10 @@ const CoursesSection = ({ hasPermissionToEdit, courses }) => {
                 </div>
             </div>
 
-            {courses.map((course, index) => (
+            {courses && courses.map((course, index) => (
                 <InfoItem
                     key={index}
-                    imgSrc={coursePictura ? coursePictura : defaultCourssPic}
+                    imgSrc={coursePicture}
                     title={course.courseName}
                     subtitle={course.institution}
                     startDate={course.startDate}

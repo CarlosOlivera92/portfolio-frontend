@@ -4,7 +4,7 @@ import styles from './ProjectsSection.module.css';
 import ActionIcon from "../../atoms/action-icon/ActionIcon";
 
 const ProjectsSection = ({ hasPermissionToEdit, projects }) => {
-    const projectPicture = projects.projectPicture;
+    const projectPicture = projects ? projects.projectPicture : defaultProjectPic;
     
     return (
         <section className={styles.projectsInfo}>
@@ -21,7 +21,7 @@ const ProjectsSection = ({ hasPermissionToEdit, projects }) => {
                 </div>
             </div>
 
-            {projects.map((project, index) => {
+            {projects && projects.map((project, index) => {
                 const projectLinks = [
                     {
                         pageName: "github",
@@ -36,7 +36,7 @@ const ProjectsSection = ({ hasPermissionToEdit, projects }) => {
                 return (
                     <InfoItem
                         key={index}
-                        imgSrc={projectPicture ? projectPicture : defaultProjectPic}
+                        imgSrc={projectPicture}
                         title={project.projectName}
                         links={projectLinks}
                         description={project.summary}

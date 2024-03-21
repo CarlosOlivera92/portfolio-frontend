@@ -4,7 +4,7 @@ import styles from './CertificationsSection.module.css';
 import ActionIcon from "../../atoms/action-icon/ActionIcon";
 
 const CertificationsSection = ({ hasPermissionToEdit, certifications }) => {
-    const certificationPicture = certifications.certificationPic;
+    const certificationPicture = certifications ? certifications.certificationPic : defaultCertificationPic;
     return (
         <section className={styles.certificationsInfo}>
             <div className={styles.actionsContainer}>
@@ -20,7 +20,7 @@ const CertificationsSection = ({ hasPermissionToEdit, certifications }) => {
                 </div>
             </div>
 
-            {certifications.map((certification, index) => {
+            {certifications && certifications.map((certification, index) => {
                 const certificationLinks = [
                     {
                         pageName: "certification",
@@ -31,7 +31,7 @@ const CertificationsSection = ({ hasPermissionToEdit, certifications }) => {
                 return (
                     <InfoItem
                         key={index}
-                        imgSrc={certificationPicture ? certificationPicture : defaultCertificationPic}
+                        imgSrc={certificationPicture}
                         title={certification.degree}
                         links={certificationLinks}
                         hasPermissionToEdit={hasPermissionToEdit}
