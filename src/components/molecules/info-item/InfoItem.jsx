@@ -3,7 +3,7 @@ import EditIcon from "../../atoms/edit-icon/EditIcon";
 import Image from "../../atoms/image/Image";
 import TextContent from "../../atoms/text-content/text-content";
 import styles from './InfoItem.module.css';
-const InfoItem = ( {imgSrc, title, subtitle, startDate, endDate, description, hasPermissionToEdit} ) => {
+const InfoItem = ( {imgSrc, title, subtitle, startDate, endDate, description, hasPermissionToEdit, itemHref} ) => {
     const extractYearFromDate = (dateString) => {
         const date = new Date(dateString);
         return date.getFullYear();
@@ -27,8 +27,13 @@ const InfoItem = ( {imgSrc, title, subtitle, startDate, endDate, description, ha
                         </div>
                     )}   
                 </div>
+                {itemHref && (
+                    <a href={itemHref} target="_blank">Abrir en nueva pestaña</a>
+                )}
                 <TextContent text={subtitle} classList={styles.subtitle}/>
-                <TextContent text={`Desde ${startYear} | Hasta ${endYear}`} />
+                {startDate && endDate && (
+                    <TextContent text={`Desde ${startYear} | Hasta ${endYear}`} />
+                )}
                 <TextContent text={description} />
             </div>
         </div>
