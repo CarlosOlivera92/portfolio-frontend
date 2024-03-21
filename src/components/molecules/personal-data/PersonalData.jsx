@@ -34,7 +34,6 @@ const PersonalData = ({ user, userInfo, hasPermissionToEdit }) => {
                     <ContactInfo user={user} userInfo={userInfo} />
                 </Modal>
             )}
-
         </div>
     );
 };

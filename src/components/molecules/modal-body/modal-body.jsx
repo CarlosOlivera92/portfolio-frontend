@@ -1,8 +1,9 @@
 import TextContent from "../../atoms/text-content/text-content";
+import styles from './ModalBody.module.css'
 
 const ModalBody = ({ text, children }) => {
     return (
-        <div className="modal-body">
+        <div className={styles.modalBody}>
             {text && <TextContent text={text} />}
             {children}
         </div>
