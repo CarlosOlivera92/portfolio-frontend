@@ -31,7 +31,7 @@ const CertificationsSection = ({ hasPermissionToEdit, certifications }) => {
                 return (
                     <InfoItem
                         key={index}
-                        imgSrc={certificationPicture}
+                        imgSrc={certificationPicture ? certificationPicture : defaultCertificationPic}
                         title={certification.degree}
                         links={certificationLinks}
                         hasPermissionToEdit={hasPermissionToEdit}

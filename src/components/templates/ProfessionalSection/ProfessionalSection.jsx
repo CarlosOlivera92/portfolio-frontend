@@ -19,7 +19,7 @@ const ProfessionalSection = ({hasPermissionToEdit, professions}) => {
                 </div>
             </div>
             {professions && professions.map( (profession, index) => (
-                <InfoItem key={index} imgSrc={companyPicture} title={profession.jobTitle} subtitle={profession.companyName} startDate={profession.startDate} endDate={profession.endDate} description={profession.summary} hasPermissionToEdit={hasPermissionToEdit}/>
+                <InfoItem key={index} imgSrc={companyPicture ? companyPicture : defaultProfessionsPic} title={profession.jobTitle} subtitle={profession.companyName} startDate={profession.startDate} endDate={profession.endDate} description={profession.summary} hasPermissionToEdit={hasPermissionToEdit}/>
             ))}
         </section>
     );

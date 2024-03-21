@@ -23,7 +23,7 @@ const CoursesSection = ({ hasPermissionToEdit, courses }) => {
             {courses && courses.map((course, index) => (
                 <InfoItem
                     key={index}
-                    imgSrc={coursePicture}
+                    imgSrc={coursePicture ? coursePicture : defaultCourssPic}
                     title={course.courseName}
                     subtitle={course.institution}
                     startDate={course.startDate}

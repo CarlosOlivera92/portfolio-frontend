@@ -24,7 +24,7 @@ const EducationSection = ({ hasPermissionToEdit, educationalBackground }) => {
             {educationalBackground && educationalBackground.map((education, index) => (
                 <InfoItem
                     key={index}
-                    imgSrc={institutionPicture}
+                    imgSrc={institutionPicture ? institutionPicture : defaultEducationPic}
                     title={education.degree}
                     subtitle={education.institution}
                     startDate={education.startDate}

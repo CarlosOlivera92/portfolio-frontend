@@ -36,7 +36,7 @@ const ProjectsSection = ({ hasPermissionToEdit, projects }) => {
                 return (
                     <InfoItem
                         key={index}
-                        imgSrc={projectPicture}
+                        imgSrc={projectPicture ? projectPicture : defaultProjectPic}
                         title={project.projectName}
                         links={projectLinks}
                         description={project.summary}
