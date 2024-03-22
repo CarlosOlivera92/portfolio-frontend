@@ -195,24 +195,39 @@ export const coursesForm = {
       validation: Yup.string().required('El campo es requerido'),
     },
     {
-      name: 'certificateLink',
-      label: 'Vínculo al Certificado',
-      type: 'text',
-      validation: Yup.string()
-        .url('Formato de URL inválido')
-        .required('El campo es requerido'),
+      name: 'fromDate',
+      label: 'Desde',
+      type: 'date',
+      validation: Yup.date().required('El campo es requerido'),
+    },
+    {
+      name: 'toDate',
+      label: 'Hasta',
+      type: 'date',
+      validation: Yup.date()
+        .nullable()
+        .when('fromDate', (fromDate, schema) =>
+          schema.min(fromDate, 'Debe ser mayor que la fecha de inicio')
+        ),
+    },
+    {
+      name: 'description',
+      label: 'Descripción',
+      type: 'textarea',
+      validation: Yup.string().required('El campo es requerido'),
     },
   ],
 };
 export const certificatesForm = {
   title: 'Editar Certificados',
   fields: [
+    /*
     {
       name: 'academy',
       label: 'Academia',
       type: 'text',
       validation: Yup.string().required('El campo es requerido'),
-    },
+    },*/
     {
       name: 'degree',
       label: 'Titulación',
@@ -281,8 +296,16 @@ export const projectsForm = {
       validation: Yup.string().required('El campo es requerido'),
     },
     {
-      name: 'projectLink',
+      name: 'projectUrl',
       label: 'Vínculo al Proyecto',
+      type: 'text',
+      validation: Yup.string()
+        .url('Formato de URL inválido')
+        .required('El campo es requerido'),
+    },
+    {
+      name: 'projectRepoUrl',
+      label: 'Vínculo al repositorio',
       type: 'text',
       validation: Yup.string()
         .url('Formato de URL inválido')

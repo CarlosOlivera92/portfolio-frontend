@@ -34,7 +34,7 @@ const ProfessionalSection = ({ hasPermissionToEdit, professions }) => {
             reverseTl.play();
         }
     
-    }, [isOpen, professions, selectedItem]);
+    }, [isOpen, professions]);
 
     const toggleSection = () => {
         setIsOpen(prev => !prev);

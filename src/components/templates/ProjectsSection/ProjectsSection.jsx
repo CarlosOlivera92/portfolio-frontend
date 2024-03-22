@@ -6,9 +6,16 @@ import styles from './ProjectsSection.module.css';
 import InfoItem from "../../molecules/info-item/InfoItem";
 import defaultProjectPic from '../../../assets/img/defaultProjectsPicture.jpg';
 import ActionIcon from "../../atoms/action-icon/ActionIcon";
+import Modal from '../../organisms/modal/modal';
+import ModalFooter from '../../molecules/modal-footer/modal-footer';
+import ActionButton from '../../atoms/action-button/action-button';
+import Form from '../../organisms/form/form';
+import { projectsForm } from '../../../utils/form-utils/forms-config';
 
 const ProjectsSection = ({ hasPermissionToEdit, projects }) => {
     const [isOpen, setIsOpen] = useState(false);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [selectedItem, setSelectedItem] = useState(null);
     const infoItemsContainerRef = useRef(null);
     const sectionRef = useRef(null);
 
@@ -33,6 +40,15 @@ const ProjectsSection = ({ hasPermissionToEdit, projects }) => {
 
     const toggleSection = () => {
         setIsOpen(prev => !prev);
+    };
+
+    const toggleModal = () => {
+        setIsModalOpen(prev => !prev);
+    };    
+
+    const handleEditItem = (item) => {
+        setSelectedItem(item);
+        setIsModalOpen(true);
     };
 
     return (
@@ -60,10 +76,40 @@ const ProjectsSection = ({ hasPermissionToEdit, projects }) => {
                             ]}
                             description={project.summary} 
                             hasPermissionToEdit={hasPermissionToEdit}
+                            onEdit={handleEditItem}
                         />
                     </div>
                 ))}
             </div>
+            <Modal showModal={isModalOpen} title={"Editar información del proyecto"} closeModal={toggleModal} isForm={true}>
+                {selectedItem && (
+                    <>
+                        <InfoItem 
+                            title={selectedItem.title} 
+                            subtitle={selectedItem.subtitle}
+                            startDate={selectedItem.startDate}
+                            endDate={selectedItem.endDate} 
+                            classList={styles.modalInfoItem}
+                        />
+                        <Form fields={projectsForm} />
+                        <ModalFooter >
+                            <ActionButton 
+                                name={"Cancelar"}
+                                type={"submit"}
+                                onClick={toggleModal}
+                                classname={styles.modalBtn}
+                            />
+                            <ActionButton 
+                                name={"Editar"}
+                                type={"submit"}
+                                onClick={null}
+                                classname={styles.modalBtn}
+                                disabled={true}
+                            />
+                        </ModalFooter>
+                    </>
+                )}
+            </Modal>
         </section>
     );
 };
