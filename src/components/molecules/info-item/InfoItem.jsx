@@ -43,7 +43,7 @@ const InfoItem = ( {imgSrc, title, subtitle, startDate, endDate, description, ha
         }
     };
     return(
-        <div className={`${styles.infoItem} col row`}>
+        <div className={`${styles.infoItem} infoItem col row`}>
             <div className={`${styles.imageWrapper} col-md-4 col-12`}>
                 <Image src={imgSrc} alt="Profession image" classList={styles.img}/>
             </div>

@@ -18,6 +18,9 @@
     justify-content: space-between;
     cursor: pointer;
 }
+.title {
+    user-select: none;
+}
 .buttonsWrapper {
     display: flex;
     flex-direction: row-reverse;
@@ -31,4 +34,7 @@
     width: fit-content;
     height: 2rem;
     padding: 1rem;
+}
+.infoItem {
+    display: flex;
 }

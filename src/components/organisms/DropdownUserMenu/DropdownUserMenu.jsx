@@ -15,7 +15,7 @@ const DropdownUserMenu = ({ user, username, path }) => {
     const menuAnimationRef = useRef(null);
 
     useEffect(() => {
-        const menuUp = "polygon(0% 0%, 100% 0%, 100% 0%, 0% 0%)"; // Corregido: 0% en la última coordenada Y
+        const menuUp = "polygon(0% 0%, 100% 0%, 100% 0%, 0% 0%)";
         const menuDown = "polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%)";
         const menuItems = dropdownMenuRef.current.querySelectorAll("li");
 
