@@ -5,11 +5,10 @@ import ModalHeader from "../../molecules/modal-header/modal-header";
 import gsap from 'gsap';
 import styles from './modal.module.css';
 
-const Modal = ({ title, children, closeModal, showModal }) => {
+const Modal = ({ title, children, closeModal, showModal, expired, isForm }) => {
     const modalRef = useRef(null);
     const modalContainerRef = useRef(null);
     const [isOpen, setIsOpen] = useState(false);
-
     useEffect(() => {
         const fadeInDuration = 0.5;
         const fadeOutDuration = 0.3;
@@ -23,14 +22,16 @@ const Modal = ({ title, children, closeModal, showModal }) => {
                 .then(() => setIsOpen(false));
             gsap.to(modalContainerRef.current, { backdropFilter: "blur(0px)", duration: fadeOutDuration, ease: "power2.inOut" });
         }
-    }, [showModal]);
-
+    }, [showModal, expired]);
+    
     return (
         <div ref={modalContainerRef} className={`${styles.modalContainer} ${isOpen ? styles.show : styles.hide}`}>
             <div ref={modalRef} className={`${styles.customModal}`}>
                 <ModalHeader title={title} />
                 <ModalBody>{children}</ModalBody>
-                <ModalFooter closeModal={closeModal} />
+                {!isForm && (
+                    <ModalFooter closeModal={closeModal} redirect={expired}/>
+                )}
             </div>
         </div>
     );

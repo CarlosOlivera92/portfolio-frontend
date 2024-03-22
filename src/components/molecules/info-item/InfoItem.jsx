@@ -3,12 +3,24 @@ import EditIcon from "../../atoms/edit-icon/EditIcon";
 import Image from "../../atoms/image/Image";
 import TextContent from "../../atoms/text-content/text-content";
 import styles from './InfoItem.module.css';
-const InfoItem = ( {imgSrc, title, subtitle, startDate, endDate, description, hasPermissionToEdit, itemHref, ...links} ) => {
+import { useState } from "react";
+const InfoItem = ( {imgSrc, title, subtitle, startDate, endDate, description, hasPermissionToEdit, itemHref, onEdit, classList , ...links} ) => {
     const extractYearFromDate = (dateString) => {
         const date = new Date(dateString);
         return date.getFullYear();
     };
     const pageLinks = links.links;
+    const [isOpen, setIsOpen] = useState(false);
+    const handleEditClick = () => {
+        onEdit({
+            imgSrc,
+            title,
+            subtitle,
+            startDate,
+            endDate,
+            description
+        });
+    };
     // Extraer solo el año de las fechas de inicio y fin
     const startYear = extractYearFromDate(startDate);
     const endYear = extractYearFromDate(endDate);
@@ -42,17 +54,22 @@ const InfoItem = ( {imgSrc, title, subtitle, startDate, endDate, description, ha
             return null; // Retorna null si links es undefined
         }
     };
+    const toggleModal = () => {
+        setIsOpen(prev => !prev);
+    };
     return(
-        <div className={`${styles.infoItem} infoItem col row`}>
-            <div className={`${styles.imageWrapper} col-md-4 col-12`}>
-                <Image src={imgSrc} alt="Profession image" classList={styles.img}/>
-            </div>
+        <div className={`${styles.infoItem} ${classList} infoItem col row`}>
+            {imgSrc && (
+                <div className={`${styles.imageWrapper} col-md-4 col-12`}>
+                    <Image src={imgSrc} alt="Profession image" classList={styles.img}/>
+                </div>
+            )}
             <div className={`${styles.contentWrapper} col-md-8 col-12`}>
                 <div className={styles.titleWrapper}>
                     <TextContent text={title} classList={styles.title}/>
                     {hasPermissionToEdit && (
                         <div className={`d-flex flex-row`}>
-                            <EditIcon/>
+                            <EditIcon onclick={handleEditClick}/>
                             <ActionIcon classList={"fa-trash-alt"} />
                         </div>
                     )}   

@@ -5,11 +5,17 @@ import styles from './ProfessionalSection.module.css';
 import InfoItem from "../../molecules/info-item/InfoItem";
 import defaultProfessionsPic from '../../../assets/img/defaultProfessionPic.jpg';
 import ActionIcon from "../../atoms/action-icon/ActionIcon";
-
+import { experienceForm } from '../../../utils/form-utils/forms-config';
+import Modal from '../../organisms/modal/modal';
+import Form from '../../organisms/form/form';
+import ModalFooter from '../../molecules/modal-footer/modal-footer';
+import ActionButton from '../../atoms/action-button/action-button';
 const ProfessionalSection = ({ hasPermissionToEdit, professions }) => {
     const [isOpen, setIsOpen] = useState(false);
+    const [isModalOpen, setIsModalOpen] = useState(false);
     const infoItemsContainerRef = useRef(null);
     const sectionRef = useRef(null);
+    const [selectedItem, setSelectedItem] = useState(null);
 
     useEffect(() => {
         const section = sectionRef.current;
@@ -28,12 +34,18 @@ const ProfessionalSection = ({ hasPermissionToEdit, professions }) => {
             reverseTl.play();
         }
     
-    }, [isOpen, professions]);
+    }, [isOpen, professions, selectedItem]);
 
     const toggleSection = () => {
         setIsOpen(prev => !prev);
     };
-
+    const toggleModal = () => {
+        setIsModalOpen(prev => !prev);
+    };    
+    const handleEditItem = (item) => {
+        setSelectedItem(item);
+        setIsModalOpen(true);
+    };
     return (
         <section className={styles.professionalInfo} ref={sectionRef}>
             <div className={styles.actionsContainer} >
@@ -58,10 +70,40 @@ const ProfessionalSection = ({ hasPermissionToEdit, professions }) => {
                             endDate={profession.endDate} 
                             description={profession.summary} 
                             hasPermissionToEdit={hasPermissionToEdit}
+                            onEdit={handleEditItem}
                         />
                     </div>
                 ))}
             </div>
+            <Modal showModal={isModalOpen} title={"Editar información profesional"} closeModal={toggleModal} isForm={true}>
+                {selectedItem && (
+                    <>
+                        <InfoItem 
+                            title={selectedItem.title} 
+                            subtitle={selectedItem.subtitle}
+                            startDate={selectedItem.startDate}
+                            endDate={selectedItem.endDate} 
+                            classList={styles.modalInfoItem}
+                        />
+                        <Form fields={experienceForm} />
+                        <ModalFooter >
+                            <ActionButton 
+                                name={"Cancelar"}
+                                type={"submit"}
+                                onClick={toggleModal}
+                                classname={styles.modalBtn}
+                            />
+                            <ActionButton 
+                                name={"Editar"}
+                                type={"submit"}
+                                onClick={null}
+                                classname={styles.modalBtn}
+                                disabled={true}
+                            />
+                        </ModalFooter>
+                    </>
+                )}
+            </Modal>
         </section>
     );
 };

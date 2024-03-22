@@ -80,26 +80,8 @@ const Form = ({ title, fields, onSubmit, currentStep, steps, isSignUp, isUsernam
           />
         </div>
       ) : (
-        <div className="buttons">
-
-          <ActionButton
-            type={"button"}
-            onClick={toggleModal}
-            name={"Cerrar"}
-            classname="mt-3 button close-button"
-            disabled={!formik.isValid}
-          />
-          <ActionButton
-            type={"submit"}
-            onClick={onSubmit}
-            name={"Editar"}
-            classname="mt-3 button modal-button"
-            disabled={!formik.isValid}
-          />
-        </div>
+        null
       )}
-
-
     </form>
   );
 };

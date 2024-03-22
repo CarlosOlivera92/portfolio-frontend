@@ -1,7 +1,7 @@
 import styles from './EditIcon.module.css';
-const EditIcon = ({classList}) => {
+const EditIcon = ({classList, onclick}) => {
     return(
-        <div className={`${styles.editIcon} ${classList}`}>
+        <div className={`${styles.editIcon} ${classList}`} onClick={onclick}>
             <i className="fas fa-pencil-alt" />
         </div>
     )
