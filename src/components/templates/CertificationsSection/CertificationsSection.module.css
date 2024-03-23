@@ -1,5 +1,6 @@
 .certificationsInfo {
     display: flex;
+    height: 7.5rem;
     flex-direction: column;
     background-color: #fff;
     border-radius: 1rem;

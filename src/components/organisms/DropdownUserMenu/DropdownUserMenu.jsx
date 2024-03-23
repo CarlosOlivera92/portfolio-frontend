@@ -21,7 +21,7 @@ const DropdownUserMenu = ({ user, username, path }) => {
 
         menuAnimationRef.current = gsap.timeline({
           paused: true,
-          defaults: { duration: 0.3, ease: "power1.inOut" }
+          defaults: { duration: 0.2, ease: "power2.inOut" }
         })
           .to(dropdownMenuRef.current, { clipPath: menuUp, visibility: "hidden" }, 0) 
           .to(dropdownMenuRef.current, { clipPath: menuDown, visibility: "visible" });

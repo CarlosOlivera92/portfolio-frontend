@@ -9,6 +9,7 @@ import Settings from './settings/settings';
 import './styles.css';
 import Modal from '../../components/organisms/modal/modal';
 import TextContent from '../../components/atoms/text-content/text-content';
+import { useTheme } from '../../utils/context/themeContext';
 const Portfolio = () => {
     const [token, setToken] = useState();
     const [currentRefreshToken, setCurrentRefreshToken] = useState();
@@ -18,6 +19,7 @@ const Portfolio = () => {
     const { loading, error, request, data } = useApi();
     const [userData, setUserData] = useState({})
     const [expired, setExpired] = useState(null);
+    const { darkTheme, toggleTheme } = useTheme();
     const decodeToken = (token) => {
         const tokenParts = token.split('.'); // Separar el token en sus partes
       
@@ -139,7 +141,7 @@ const Portfolio = () => {
     }
     if (user) {
         return (
-            <div className="container-fluid">
+            <div className={`container-fluid ${darkTheme ? "darkBody" : ""}`}>
                 <Routes>
                     <Route path="/" element={<Home/>} />
                     {user && (

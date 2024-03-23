@@ -1,13 +1,18 @@
 import { NavLink } from 'react-router-dom';
 import { useLocation } from 'react-router-dom';
-import Profile from '../profile/Profile';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faMoon, faSun } from '@fortawesome/free-solid-svg-icons';
+
 import { useUser } from '../../../utils/context/userContext';
 import styles from './navbar.module.css';
 import DropdownUserMenu from '../../organisms/DropdownUserMenu/DropdownUserMenu';
+import { useTheme } from '../../../utils/context/themeContext';
+import { useState } from 'react';
 const Navbar = ({isAuthenticated, username}) => {
     const {user} = useUser();
     const location = useLocation();
     const path = location.pathname;
+    const { darkTheme, toggleTheme } = useTheme();
 
     return (
         <nav className={styles.navbar}>

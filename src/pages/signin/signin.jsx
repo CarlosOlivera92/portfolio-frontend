@@ -36,7 +36,7 @@ const Signin = () => {
                 login(responseBody.token, responseBody.username, responseBody.refreshToken)
                 setTimeout(() => {
                     history.push(`/portfolio/${responseBody.username}`);
-                    navigate(`/portfolio/${responseBody.username}`);
+                    navigate(`/portfolio/${responseBody.username}/personal`);
                 }, 3000);
             } catch (error) {
                 console.error("Error al parsear la respuesta JSON:", error);

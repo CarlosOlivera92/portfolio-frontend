@@ -18,25 +18,35 @@ const CoursesSection = ({ hasPermissionToEdit, courses }) => {
     const [selectedItem, setSelectedItem] = useState(null);
     const infoItemsContainerRef = useRef(null);
     const sectionRef = useRef(null);
+    const menuAnimationRef = useRef(null);
+    useEffect(() => {
+        const section = sectionRef.current.querySelectorAll(".infoItems");
+
+        menuAnimationRef.current = gsap.timeline({
+          paused: true,
+          defaults: { duration: .3, ease: "power4.inOut" }
+        })
+          .to(sectionRef.current, {  height:"auto"  }, 0) 
+          .to(sectionRef.current, { height:"auto" },0.4);
+          
+          menuAnimationRef.current.fromTo(
+            section,
+            { opacity: 0, y: "0.5em" }, // Configuración inicial
+            { opacity: 1, y: "1em", stagger: 0.1 } // Configuración final
+        ,0.4);
+    }, []);
 
     useEffect(() => {
-        const section = sectionRef.current;
-        const infoItemsContainer = infoItemsContainerRef.current;
-
-        const tl = gsap.timeline({ paused: true })
-            .set(infoItemsContainer, { opacity: 0, scaleY: 0, transformOrigin: "top" })
-            .to(infoItemsContainer, { opacity: 1, scaleY: 1, duration: 0.5 })
-            .to(section, { height: "auto", duration: 0.5 }, "-=0.5");
-
-        const reverseTl = tl.reverse();
-
         if (isOpen) {
-            tl.play();
-        } else {
-            reverseTl.play();
-        }
+            menuAnimationRef.current.play();
+            sectionRef.current.scrollIntoView({ behavior: 'smooth' });
 
-    }, [isOpen, courses]);
+        } else {
+            menuAnimationRef.current.reverse();
+            sectionRef.current.scrollIntoView({ behavior: 'smooth' });
+
+        }
+    }, [isOpen]);
 
     const toggleSection = () => {
         setIsOpen(prev => !prev);
@@ -52,8 +62,8 @@ const CoursesSection = ({ hasPermissionToEdit, courses }) => {
     };
 
     return (
-        <section className={styles.coursesInfo} ref={sectionRef}>
-            <div className={styles.actionsContainer} >
+        <section className={`${styles.coursesInfo} coursesInfo`} ref={sectionRef}>
+            <div className={`${styles.actionsContainer}`}>
                 <h2 className={styles.title}>Cursos</h2>
                 <div className={styles.buttonsWrapper}>
                     <div className={styles.dropdownIconWrapper} onClick={toggleSection}>
@@ -64,11 +74,11 @@ const CoursesSection = ({ hasPermissionToEdit, courses }) => {
                     )}
                 </div>
             </div>
-            <div className={styles.infoItems} ref={infoItemsContainerRef}>
+            <div className={`${styles.infoItems} infoItems`} ref={infoItemsContainerRef}>
                 {isOpen && courses && courses.map((course, index) => (
-                    <div key={index} className={styles.infoItem}>
+                    <div key={index} className={`${styles.infoItem} infoItem`}>
                         <InfoItem 
-                            imgSrc={course.coursePicture ? course.coursePicture : defaultCoursePic} 
+                            imgSrc={course.institutionPicture ? course.institutionPicture : defaultCoursePic} 
                             title={course.courseName} 
                             subtitle={course.institution} 
                             startDate={course.startDate} 

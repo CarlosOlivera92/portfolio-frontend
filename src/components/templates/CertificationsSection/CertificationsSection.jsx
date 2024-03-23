@@ -19,24 +19,34 @@ const CertificationsSection = ({ hasPermissionToEdit, certifications }) => {
     const infoItemsContainerRef = useRef(null);
     const sectionRef = useRef(null);
 
+    const menuAnimationRef = useRef(null);
     useEffect(() => {
-        const section = sectionRef.current;
-        const infoItemsContainer = infoItemsContainerRef.current;
+        const section = sectionRef.current.querySelectorAll(".infoItems");
 
-        const tl = gsap.timeline({ paused: true })
-            .set(infoItemsContainer, { opacity: 0, scaleY: 0, transformOrigin: "top" })
-            .to(infoItemsContainer, { opacity: 1, scaleY: 1, duration: 0.5 })
-            .to(section, { height: "auto", duration: 0.5 }, "-=0.5");
+        menuAnimationRef.current = gsap.timeline({
+          paused: true,
+          defaults: { duration: .3, ease: "power4.inOut" }
+        })
+          .to(sectionRef.current, {  height:"auto"  }, 0) 
+          .to(sectionRef.current, { height:"auto" },0.4);
+          
+          menuAnimationRef.current.fromTo(
+            section,
+            { opacity: 0, y: "0.5em" }, // Configuración inicial
+            { opacity: 1, y: "1em", stagger: 0.1 } // Configuración final
+        ,0.4);
+    }, []);
 
-        const reverseTl = tl.reverse();
-
+    useEffect(() => {
         if (isOpen) {
-            tl.play();
+            menuAnimationRef.current.play();
+            sectionRef.current.scrollIntoView({ behavior: 'smooth' });
         } else {
-            reverseTl.play();
-        }
+            menuAnimationRef.current.reverse();
+            sectionRef.current.scrollIntoView({ behavior: 'smooth' });
 
-    }, [isOpen, certifications]);
+        }
+    }, [isOpen]);
 
     const toggleSection = () => {
         setIsOpen(prev => !prev);
@@ -50,9 +60,8 @@ const CertificationsSection = ({ hasPermissionToEdit, certifications }) => {
         setSelectedItem(item);
         setIsModalOpen(true);
     };
-
     return (
-        <section className={styles.certificationsInfo} ref={sectionRef}>
+        <section className={`${styles.certificationsInfo} certificationsInfo`} ref={sectionRef}>
             <div className={styles.actionsContainer} >
                 <h2 className={styles.title}>Certificados</h2>
                 <div className={styles.buttonsWrapper}>
@@ -64,9 +73,9 @@ const CertificationsSection = ({ hasPermissionToEdit, certifications }) => {
                     )}
                 </div>
             </div>
-            <div className={styles.infoItems} ref={infoItemsContainerRef}>
+            <div className={`${styles.infoItems} infoItems`} ref={infoItemsContainerRef}>
                 {isOpen && certifications && certifications.map((certification, index) => (
-                    <div key={index} className={styles.infoItem}>
+                    <div key={index} className={`${styles.infoItem} infoItem`}>
                         <InfoItem 
                             imgSrc={certification.certificationPic ? certification.certificationPic : defaultCertificationPic} 
                             title={certification.degree} 
