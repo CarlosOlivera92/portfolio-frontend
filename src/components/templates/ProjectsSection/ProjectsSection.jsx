@@ -1,5 +1,5 @@
 // ProjectsSection.js
-import { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import gsap from 'gsap';
 
 import styles from './ProjectsSection.module.css'; 
@@ -11,14 +11,17 @@ import ModalFooter from '../../molecules/modal-footer/modal-footer';
 import ActionButton from '../../atoms/action-button/action-button';
 import Form from '../../organisms/form/form';
 import { projectsForm } from '../../../utils/form-utils/forms-config';
+import TextContent from '../../atoms/text-content/text-content';
 
 const ProjectsSection = ({ hasPermissionToEdit, projects }) => {
     const [isOpen, setIsOpen] = useState(false);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedItem, setSelectedItem] = useState(null);
+    const [selectedItemToDelete, setSelectedItemToDelete] = useState(null);
     const infoItemsContainerRef = useRef(null);
     const sectionRef = useRef(null);
     const menuAnimationRef = useRef(null);
+
     useEffect(() => {
         const section = sectionRef.current.querySelectorAll(".infoItems");
 
@@ -55,10 +58,21 @@ const ProjectsSection = ({ hasPermissionToEdit, projects }) => {
         setIsModalOpen(prev => !prev);
     };    
 
-    const handleEditItem = (item) => {
-        setSelectedItem(item);
+    const handleEditItem = (item, isDelete = false) => {
+        if (isDelete) {
+            setSelectedItemToDelete(item);
+        } else {
+            setSelectedItem(item);
+        }
         setIsModalOpen(true);
     };
+
+    const handleDeleteItem = () => {
+        // Aquí puedes implementar la lógica para eliminar el elemento seleccionado
+        console.log("Elemento eliminado:", selectedItemToDelete);
+        setIsModalOpen(false);
+    };
+
     return (
         <section className={`${styles.projectsInfo} projectsInfo`} ref={sectionRef}>
             <div className={styles.actionsContainer} >
@@ -84,23 +98,31 @@ const ProjectsSection = ({ hasPermissionToEdit, projects }) => {
                             ]}
                             description={project.summary} 
                             hasPermissionToEdit={hasPermissionToEdit}
-                            onEdit={handleEditItem}
+                            onEdit={(item) => handleEditItem(item)} 
+                            onDelete={(item) => handleEditItem(item, true)}
                         />
                     </div>
                 ))}
             </div>
             <Modal showModal={isModalOpen} title={"Editar información del proyecto"} closeModal={toggleModal} isForm={true}>
-                {selectedItem && (
+                {(selectedItem || selectedItemToDelete) && (
                     <>
-                        <InfoItem 
-                            title={selectedItem.title} 
-                            subtitle={selectedItem.subtitle}
-                            startDate={selectedItem.startDate}
-                            endDate={selectedItem.endDate} 
-                            classList={styles.modalInfoItem}
-                        />
-                        <Form fields={projectsForm} />
-                        <ModalFooter >
+                        {selectedItem && (
+                            <InfoItem 
+                                title={selectedItem.title} 
+                                subtitle={selectedItem.subtitle}
+                                startDate={selectedItem.startDate}
+                                endDate={selectedItem.endDate} 
+                                classList={styles.modalInfoItem}
+                            />
+                        )}
+                        {selectedItemToDelete && (
+                            <TextContent text={"¿Está seguro que desea eliminar este elemento?"}/>
+                        )}
+                        {!selectedItemToDelete && (
+                            <Form fields={projectsForm} />
+                        )}
+                        <ModalFooter classList={styles.modalFooter}>
                             <ActionButton 
                                 name={"Cancelar"}
                                 type={"submit"}
@@ -108,10 +130,10 @@ const ProjectsSection = ({ hasPermissionToEdit, projects }) => {
                                 classList={styles.modalBtn}
                             />
                             <ActionButton 
-                                name={"Editar"}
+                                name={selectedItemToDelete ? "Confirmar" : "Editar"}
                                 type={"submit"}
-                                onClick={null}
-                                classList={styles.modalBtn}
+                                onClick={ selectedItemToDelete ? handleDeleteItem : null }
+                                classList={selectedItemToDelete ? `${styles.modalBtn} ${styles.modalBtnDanger}` : styles.modalBtn}
                                 disabled={true}
                             />
                         </ModalFooter>

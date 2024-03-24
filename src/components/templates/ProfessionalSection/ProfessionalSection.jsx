@@ -65,10 +65,7 @@ const ProfessionalSection = ({ hasPermissionToEdit, professions }) => {
         console.log("Elemento eliminado:", selectedItemToDelete);
         setIsModalOpen(false);
     };
-    const handleEditItem = (item, isDelete = false) => {
-
-        console.log(isDelete)
-        
+    const handleEditItem = (item, isDelete = false) => {        
         if (isDelete) {
             setSelectedItem(null);
             setSelectedItemToDelete(item);

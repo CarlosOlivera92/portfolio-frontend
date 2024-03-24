@@ -103,7 +103,6 @@ const Portfolio = () => {
     useEffect(() => {
         const storedToken = localStorage.getItem('token');
         const storedRefreshToken = localStorage.getItem('refreshToken');
-        console.log(storedToken)
         if (storedToken && storedRefreshToken) {
             setToken(storedToken);
             setCurrentRefreshToken(storedRefreshToken);

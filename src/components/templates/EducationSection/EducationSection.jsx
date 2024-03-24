@@ -1,7 +1,8 @@
+// EducationSection.js
 import React, { useState, useRef, useEffect } from 'react';
 import gsap from 'gsap';
 
-import styles from './EducationalSection.module.css'; 
+import styles from './EducationALSection.module.css'; 
 import InfoItem from "../../molecules/info-item/InfoItem";
 import defaultEducationPic from '../../../assets/img/defaultInstitutionPic.png';
 import ActionIcon from "../../atoms/action-icon/ActionIcon";
@@ -10,14 +11,16 @@ import ModalFooter from '../../molecules/modal-footer/modal-footer';
 import ActionButton from '../../atoms/action-button/action-button';
 import Form from '../../organisms/form/form';
 import { educationForm } from '../../../utils/form-utils/forms-config';
+import TextContent from '../../atoms/text-content/text-content';
 
 const EducationSection = ({ hasPermissionToEdit, educationalBackground }) => {
     const [isOpen, setIsOpen] = useState(false);
     const [isModalOpen, setIsModalOpen] = useState(false);
-    const [selectedItem, setSelectedItem] = useState(null);
     const infoItemsContainerRef = useRef(null);
     const sectionRef = useRef(null);
     const menuAnimationRef = useRef(null);
+    const [selectedItem, setSelectedItem] = useState(null);
+    const [selectedItemToDelete, setSelectedItemToDelete] = useState(null);
 
     useEffect(() => {
         const section = sectionRef.current.querySelectorAll(".infoItems");
@@ -43,7 +46,6 @@ const EducationSection = ({ hasPermissionToEdit, educationalBackground }) => {
         } else {
             menuAnimationRef.current.reverse();
             sectionRef.current.scrollIntoView({ behavior: 'smooth' });
-
         }
     }, [isOpen]);
 
@@ -55,9 +57,21 @@ const EducationSection = ({ hasPermissionToEdit, educationalBackground }) => {
         setIsModalOpen(prev => !prev);
     };    
 
-    const handleEditItem = (item) => {
-        setSelectedItem(item);
-        setIsModalOpen(true);
+    const handleDeleteItem = () => {
+        console.log("Elemento eliminado:", selectedItemToDelete);
+        setIsModalOpen(false);
+    };
+
+    const handleEditItem = (item, isDelete = false) => {        
+        if (isDelete) {
+            setSelectedItem(null);
+            setSelectedItemToDelete(item);
+            setIsModalOpen(true);
+        } else {
+            setSelectedItemToDelete(null);
+            setSelectedItem(item);
+            setIsModalOpen(true);
+        }
     };
 
     return (
@@ -84,23 +98,31 @@ const EducationSection = ({ hasPermissionToEdit, educationalBackground }) => {
                             endDate={education.endDate} 
                             description={education.focusOfStudies} 
                             hasPermissionToEdit={hasPermissionToEdit}
-                            onEdit={handleEditItem}
+                            onEdit={(item) => handleEditItem(item)} 
+                            onDelete={(item) => handleEditItem(item, true)}
                         />
                     </div>
                 ))}
             </div>
             <Modal showModal={isModalOpen} title={"Editar información educativa"} closeModal={toggleModal} isForm={true}>
-                {selectedItem && (
+                {(selectedItem || selectedItemToDelete) && (
                     <>
-                        <InfoItem 
-                            title={selectedItem.title} 
-                            subtitle={selectedItem.subtitle}
-                            startDate={selectedItem.startDate}
-                            endDate={selectedItem.endDate} 
-                            classList={styles.modalInfoItem}
-                        />
-                        <Form fields={educationForm} />
-                        <ModalFooter >
+                        {selectedItem && !selectedItemToDelete && (
+                            <InfoItem 
+                                title={selectedItem.title} 
+                                subtitle={selectedItem.subtitle}
+                                startDate={selectedItem.startDate}
+                                endDate={selectedItem.endDate} 
+                                classList={styles.modalInfoItem}
+                            />
+                        )}
+                        {(selectedItemToDelete && !selectedItem) && (
+                            <TextContent text={"¿Está seguro que desea eliminar este elemento?"}/>
+                        )}
+                        {(selectedItem && !selectedItemToDelete) && (
+                            <Form fields={educationForm} />
+                        )}
+                        <ModalFooter classList={styles.modalFooter}>
                             <ActionButton 
                                 name={"Cancelar"}
                                 type={"submit"}
@@ -108,10 +130,10 @@ const EducationSection = ({ hasPermissionToEdit, educationalBackground }) => {
                                 classList={styles.modalBtn}
                             />
                             <ActionButton 
-                                name={"Editar"}
+                                name={selectedItemToDelete ? "Confirmar" : "Editar"}
                                 type={"submit"}
-                                onClick={null}
-                                classList={styles.modalBtn}
+                                onClick={ selectedItemToDelete ? handleDeleteItem : null }
+                                classList={selectedItemToDelete ? `${styles.modalBtn} ${styles.modalBtnDanger}` : styles.modalBtn}
                                 disabled={true}
                             />
                         </ModalFooter>
