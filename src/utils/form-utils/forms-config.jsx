@@ -254,23 +254,22 @@ export const personalDataForm = {
       validation: Yup.string().required("El campo es requerido"),
     },
     {
-      name: "location",
-      label: "Ubicación",
-      type: "group", 
-      fields: [
-        {
-          name: "state",
-          label: "Estado",
-          type: "text",
-          validation: Yup.string().required("El campo es requerido"),
-        },
-        {
-          name: "country",
-          label: "País",
-          type: "text",
-          validation: Yup.string().required("El campo es requerido"),
-        },
-      ],
+      name: "address",
+      label: "Dirección",
+      type: "text",
+      validation: Yup.string().required("El campo es requerido"),
+    },
+    {
+      name: "githubProfileUrl",
+      label: "Perfil de GitHub",
+      type: "text",
+      validation: Yup.string().url("Debe ser una URL válida"),
+    },
+    {
+      name: "linkedinProfileUrl",
+      label: "Perfil de LinkedIn",
+      type: "text",
+      validation: Yup.string().url("Debe ser una URL válida"),
     },
     {
       name: "aboutMe",

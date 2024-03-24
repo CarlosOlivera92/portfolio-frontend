@@ -102,13 +102,13 @@ const CertificationsSection = ({ hasPermissionToEdit, certifications }) => {
                                 name={"Cancelar"}
                                 type={"submit"}
                                 onClick={toggleModal}
-                                classname={styles.modalBtn}
+                                classList={styles.modalBtn}
                             />
                             <ActionButton 
                                 name={"Editar"}
                                 type={"submit"}
                                 onClick={null}
-                                classname={styles.modalBtn}
+                                classList={styles.modalBtn}
                                 disabled={true}
                             />
                         </ModalFooter>

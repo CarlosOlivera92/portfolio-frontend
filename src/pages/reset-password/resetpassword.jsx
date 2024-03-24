@@ -4,6 +4,7 @@ import Form from '../../components/organisms/form/form';
 import { useState, useEffect } from "react";
 import { useLocation } from 'react-router-dom';
 import { useApi } from "../../utils/api/useApi";
+import Spinner from "../../components/atoms/spinner/spinner";
 const ResetPassword = () => {
     const [errorApi, setErrorApi] = useState();
     const [formData, setFormData] = useState({});
@@ -64,6 +65,9 @@ const ResetPassword = () => {
                         <Toast text={message} error={errorApi} showToasty={showToast} onToastClose={handleToastVisibility}/>
                     </div>
                 </div>
+                {loading && (
+                    <Spinner isOpen={loading}/>
+                )}
             </div>
         </main>
     )

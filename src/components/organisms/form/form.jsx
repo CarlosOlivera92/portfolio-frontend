@@ -70,12 +70,12 @@ const Form = ({ title, fields, onSubmit, currentStep, steps, isSignUp, isUsernam
         message={message}
         isUserRegistered={isUserRegistered}
       />
-      {fields.title === 'Sign In' || fields.title === 'Sign Up'  || fields.title === "Email" ? (
+      {fields.title === 'Sign In' || fields.title === 'Sign Up'  || fields.title === "Email" || fields.title === "Reset Password"? (
         <div className="buttons">
           <ActionButton
             type={"submit"}
-            name={isSignUp ? (currentStep < Object.keys(steps).length ? "Siguiente" : "Enviar") : fields.title === "Email" ? "Confirmar" : "Iniciar sesión"}
-            classname="mt-3 form-button"
+            name={isSignUp ? (currentStep < Object.keys(steps).length ? "Siguiente" : "Enviar") : fields.title === "Email" || fields.title === "Reset Password" ? "Confirmar" : "Iniciar sesión"}
+            classList="mt-3 form-button"
             disabled={!formik.isValid}
           />
         </div>

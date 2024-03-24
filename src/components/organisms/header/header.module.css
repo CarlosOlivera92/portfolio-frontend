@@ -22,4 +22,8 @@
         max-width: 23.6rem ;
         height: fit-content;
     }
+    .headerContainer {
+        display: flex;
+        flex-direction: column;
+    }
 }

@@ -10,6 +10,7 @@ import Modal from '../../organisms/modal/modal';
 import Form from '../../organisms/form/form';
 import ModalFooter from '../../molecules/modal-footer/modal-footer';
 import ActionButton from '../../atoms/action-button/action-button';
+import TextContent from '../../atoms/text-content/text-content';
 
 const ProfessionalSection = ({ hasPermissionToEdit, professions }) => {
     const [isOpen, setIsOpen] = useState(false);
@@ -18,12 +19,12 @@ const ProfessionalSection = ({ hasPermissionToEdit, professions }) => {
     const sectionRef = useRef(null);
     const menuAnimationRef = useRef(null);
     const [selectedItem, setSelectedItem] = useState(null);
+    const [selectedItemToDelete, setSelectedItemToDelete] = useState(null);
 
     useEffect(() => {
         const section = sectionRef.current.querySelectorAll(".infoItems");
         const menuItem = sectionRef.current.querySelectorAll(".infoItem");
 
-        console.log(menuItem)
         menuAnimationRef.current = gsap.timeline({
           paused: true,
           defaults: { duration: .3, ease: "power4.inOut" }
@@ -59,10 +60,24 @@ const ProfessionalSection = ({ hasPermissionToEdit, professions }) => {
     const toggleModal = () => {
         setIsModalOpen(prev => !prev);
     };    
-    
-    const handleEditItem = (item) => {
-        setSelectedItem(item);
-        setIsModalOpen(true);
+    const handleDeleteItem = () => {
+
+        console.log("Elemento eliminado:", selectedItemToDelete);
+        setIsModalOpen(false);
+    };
+    const handleEditItem = (item, isDelete = false) => {
+
+        console.log(isDelete)
+        
+        if (isDelete) {
+            setSelectedItem(null);
+            setSelectedItemToDelete(item);
+            setIsModalOpen(true);
+        } else {
+            setSelectedItemToDelete(null);
+            setSelectedItem(item);
+            setIsModalOpen(true);
+        }
     };
 
     return (
@@ -82,6 +97,7 @@ const ProfessionalSection = ({ hasPermissionToEdit, professions }) => {
                 {isOpen && professions && professions.map((profession, index) => (
                     <div key={index} className={`${styles.infoItem} infoItem`}>
                         <InfoItem 
+                            itemId={profession.id}
                             imgSrc={profession.companyPicture ? profession.companyPicture : defaultProfessionsPic} 
                             title={profession.jobTitle} 
                             subtitle={profession.companyName} 
@@ -89,34 +105,42 @@ const ProfessionalSection = ({ hasPermissionToEdit, professions }) => {
                             endDate={profession.endDate} 
                             description={profession.summary} 
                             hasPermissionToEdit={hasPermissionToEdit}
-                            onEdit={handleEditItem}
+                            onEdit={(item) => handleEditItem(item)} 
+                            onDelete={(item) => handleEditItem(item, true)}
                         />
                     </div>
                 ))}
             </div>
             <Modal showModal={isModalOpen} title={"Editar información profesional"} closeModal={toggleModal} isForm={true}>
-                {selectedItem && (
+                {(selectedItem || selectedItemToDelete) && (
                     <>
-                        <InfoItem 
-                            title={selectedItem.title} 
-                            subtitle={selectedItem.subtitle}
-                            startDate={selectedItem.startDate}
-                            endDate={selectedItem.endDate} 
-                            classList={styles.modalInfoItem}
-                        />
-                        <Form fields={experienceForm} />
-                        <ModalFooter >
+                        {selectedItem && !selectedItemToDelete && (
+                            <InfoItem 
+                                title={selectedItem.title} 
+                                subtitle={selectedItem.subtitle}
+                                startDate={selectedItem.startDate}
+                                endDate={selectedItem.endDate} 
+                                classList={styles.modalInfoItem}
+                            />
+                        )}
+                        {(selectedItemToDelete && !selectedItem) && (
+                            <TextContent text={"¿Está seguro que desea eliminar este elemento?"}/>
+                        )}
+                        {(selectedItem && !selectedItemToDelete) && (
+                            <Form fields={experienceForm} />
+                        )}
+                        <ModalFooter classList={styles.modalFooter}>
                             <ActionButton 
                                 name={"Cancelar"}
                                 type={"submit"}
                                 onClick={toggleModal}
-                                classname={styles.modalBtn}
+                                classList={styles.modalBtn}
                             />
                             <ActionButton 
-                                name={"Editar"}
+                                name={selectedItemToDelete ? "Confirmar" : "Editar"}
                                 type={"submit"}
-                                onClick={null}
-                                classname={styles.modalBtn}
+                                onClick={ selectedItemToDelete ? handleDeleteItem : null }
+                                classList={selectedItemToDelete ? `${styles.modalBtn} ${styles.modalBtnDanger}` : styles.modalBtn}
                                 disabled={true}
                             />
                         </ModalFooter>

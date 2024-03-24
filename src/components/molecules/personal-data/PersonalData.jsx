@@ -5,18 +5,24 @@ import ContactInfo from "../contact-info/ContactInfo";
 import styles from './PersonalData.module.css';
 import Modal from '../../organisms/modal/modal';
 
-const PersonalData = ({ user, userInfo, hasPermissionToEdit }) => {
+const PersonalData = ({ user, userInfo, hasPermissionToEdit, onEdit }) => {
     const [isContactInfoModalOpen, setIsContactInfoModalOpen] = useState(false);
 
     const toggleContactInfoModal = () => {
         setIsContactInfoModalOpen(!isContactInfoModalOpen);
     };
-
+    const handleEditClick = () => {
+        onEdit({
+          type: 'personalData',
+          user,
+          userInfo
+        });
+      };
     return (
         <div className={styles.personalData}>
             <div className={`name ${hasPermissionToEdit ? 'd-flex flex-row justify-content-between' : ''}`}>
                 <h1>{user.firstName} {user.lastName}</h1>
-                {hasPermissionToEdit && <EditIcon classList={styles.editIcon} />}
+                {hasPermissionToEdit && <EditIcon classList={styles.editIcon} onclick={handleEditClick}/>}
             </div>
             <h2>{ userInfo ? userInfo.jobPosition : ""}</h2>
             <TextContent text={ userInfo ? userInfo.address : ""} />
@@ -27,9 +33,9 @@ const PersonalData = ({ user, userInfo, hasPermissionToEdit }) => {
             </div>
             {userInfo && (
                 <Modal
-                title="Información de contacto"
-                showModal={isContactInfoModalOpen}
-                closeModal={toggleContactInfoModal}
+                    title="Información de contacto"
+                    showModal={isContactInfoModalOpen}
+                    closeModal={toggleContactInfoModal}
                 >
                     <ContactInfo user={user} userInfo={userInfo} />
                 </Modal>

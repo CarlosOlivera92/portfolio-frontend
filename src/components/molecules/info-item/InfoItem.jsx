@@ -3,14 +3,12 @@ import EditIcon from "../../atoms/edit-icon/EditIcon";
 import Image from "../../atoms/image/Image";
 import TextContent from "../../atoms/text-content/text-content";
 import styles from './InfoItem.module.css';
-import { useState } from "react";
-const InfoItem = ( {imgSrc, title, subtitle, startDate, endDate, description, hasPermissionToEdit, itemHref, onEdit, classList , ...links} ) => {
+const InfoItem = ( {itemId, imgSrc, title, subtitle, startDate, endDate, description, hasPermissionToEdit, itemHref, onEdit, classList, onDelete , ...links} ) => {
     const extractYearFromDate = (dateString) => {
         const date = new Date(dateString);
         return date.getFullYear();
     };
     const pageLinks = links.links;
-    const [isOpen, setIsOpen] = useState(false);
     const handleEditClick = () => {
         onEdit({
             imgSrc,
@@ -21,14 +19,17 @@ const InfoItem = ( {imgSrc, title, subtitle, startDate, endDate, description, ha
             description
         });
     };
-    // Extraer solo el año de las fechas de inicio y fin
+    const handleDeleteClick = () => {
+        onDelete({itemId});
+    };
+
     const startYear = extractYearFromDate(startDate);
     const endYear = extractYearFromDate(endDate);
+
     const renderLinkText = () => {
         if (pageLinks) {
             return pageLinks.map((link, index) => {
                 let linkText = "";
-                // Determinar el texto y la etiqueta del enlace según el pageName
                 switch (link.pageName) {
                     case "github":
                         linkText = "Link al repositorio";
@@ -54,9 +55,7 @@ const InfoItem = ( {imgSrc, title, subtitle, startDate, endDate, description, ha
             return null; // Retorna null si links es undefined
         }
     };
-    const toggleModal = () => {
-        setIsOpen(prev => !prev);
-    };
+
     return(
         <div className={`${styles.infoItem} ${classList} infoItem col row`}>
             {imgSrc && (
@@ -70,7 +69,7 @@ const InfoItem = ( {imgSrc, title, subtitle, startDate, endDate, description, ha
                     {hasPermissionToEdit && (
                         <div className={`d-flex flex-row`}>
                             <EditIcon onclick={handleEditClick}/>
-                            <ActionIcon classList={"fa-trash-alt"} />
+                            <ActionIcon classList={`fa-trash-alt`} classname={styles.trash} onClick={handleDeleteClick}/>
                         </div>
                     )}   
                 </div>
