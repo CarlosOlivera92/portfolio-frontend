@@ -136,7 +136,7 @@ const CoursesSection = ({ hasPermissionToEdit, courses }) => {
                                 type={"submit"}
                                 onClick={handleDeleteItem }
                                 classList={selectedItemToDelete ? `${styles.modalBtn} ${styles.modalBtnDanger}` : styles.modalBtn}
-                                disabled={true}
+                                disabled={false}
                             />
                         </ModalFooter>
                     </>

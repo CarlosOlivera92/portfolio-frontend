@@ -134,7 +134,7 @@ const EducationSection = ({ hasPermissionToEdit, educationalBackground }) => {
                                 type={"submit"}
                                 onClick={ selectedItemToDelete ? handleDeleteItem : null }
                                 classList={selectedItemToDelete ? `${styles.modalBtn} ${styles.modalBtnDanger}` : styles.modalBtn}
-                                disabled={true}
+                                disabled={false}
                             />
                         </ModalFooter>
                     </>

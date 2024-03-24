@@ -61,8 +61,7 @@ const ProfessionalSection = ({ hasPermissionToEdit, professions }) => {
         setIsModalOpen(prev => !prev);
     };    
     const handleDeleteItem = () => {
-
-        console.log("Elemento eliminado:", selectedItemToDelete);
+        console.log("Elemento eliminado: ", selectedItemToDelete);
         setIsModalOpen(false);
     };
     const handleEditItem = (item, isDelete = false) => {        
@@ -136,9 +135,9 @@ const ProfessionalSection = ({ hasPermissionToEdit, professions }) => {
                             <ActionButton 
                                 name={selectedItemToDelete ? "Confirmar" : "Editar"}
                                 type={"submit"}
-                                onClick={ selectedItemToDelete ? handleDeleteItem : null }
+                                onClick={ selectedItemToDelete ? handleDeleteItem : handleDeleteItem }
                                 classList={selectedItemToDelete ? `${styles.modalBtn} ${styles.modalBtnDanger}` : styles.modalBtn}
-                                disabled={true}
+                                disabled={false}
                             />
                         </ModalFooter>
                     </>
