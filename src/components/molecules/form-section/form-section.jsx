@@ -8,7 +8,7 @@ const FormSection = ({ title, fields, values, errors, handleChange, isUsernameIn
   return (
     <div className="row">
       {fields.map((field, index) => (
-        <div className={`form-section col-md-${12 / numberOfColumns} col-12`} key={field.name}>
+        <div className={`form-section ${field.type === 'textarea' ? 'col-12' : `col-md-${12 / numberOfColumns}`} col-12`} key={field.name}>
           <FormItem
             props={field}
             type={field.type}

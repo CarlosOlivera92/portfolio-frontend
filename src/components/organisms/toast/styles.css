@@ -1,5 +1,5 @@
 .toasty {
-    display: flex;
+    display: none;
     width: 20rem;
     height: fit-content;
     position: absolute;

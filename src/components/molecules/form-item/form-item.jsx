@@ -2,9 +2,8 @@ import InputItem from "../../atoms/input-item/input-item";
 
 const FormItem = ({ props, type, name, label, required, value, onChange, error }) => {
   const isValid = !error && value !== "";
-
   return (
-    <div className="form-item">
+    <div className={`form-item ${type === "textarea" ? "col-12" : "col-md-6"}`}>
       {type === "checkbox" ? (
         <>
           <InputItem id={props.id} props={props} type={type} name={name} value={value} onChange={onChange} required={false}/>

@@ -7,6 +7,10 @@ import PersonalArea from './personal/personal';
 import Home from './home/home';
 import Settings from './settings/settings';
 import './styles.css';
+import Modal from '../../components/organisms/modal/modal';
+import TextContent from '../../components/atoms/text-content/text-content';
+import { useTheme } from '../../utils/context/themeContext';
+import Spinner from '../../components/atoms/spinner/spinner';
 const Portfolio = () => {
     const [token, setToken] = useState();
     const [currentRefreshToken, setCurrentRefreshToken] = useState();
@@ -15,6 +19,8 @@ const Portfolio = () => {
     const {username} = useParams();
     const { loading, error, request, data } = useApi();
     const [userData, setUserData] = useState({})
+    const [expired, setExpired] = useState(null);
+    const { darkTheme, toggleTheme } = useTheme();
     const decodeToken = (token) => {
         const tokenParts = token.split('.'); // Separar el token en sus partes
       
@@ -87,12 +93,16 @@ const Portfolio = () => {
           setTimeout( () => refreshToken( "http://localhost:8080/api/auth/refreshtoken" , currentRefreshToken) , timeUntilRefresh * 1000); // Multiplica por 1000 para convertir a milisegundos
         } else {
           console.error('El tiempo para refrescar el token ya ha pasado');
+          localStorage.removeItem('token');
+          localStorage.removeItem('refreshToken')
+          localStorage.removeItem('username')
+
+          setExpired(true);
         }
     };
     useEffect(() => {
         const storedToken = localStorage.getItem('token');
         const storedRefreshToken = localStorage.getItem('refreshToken');
-        
         if (storedToken && storedRefreshToken) {
             setToken(storedToken);
             setCurrentRefreshToken(storedRefreshToken);
@@ -106,7 +116,7 @@ const Portfolio = () => {
       
         getUser(`http://localhost:8080/api/users/user/${username}`);
 
-    }, [token]);
+    }, [token, expired]);
     useEffect(() => {
         if (user) {
             setUserData(user);
@@ -114,9 +124,7 @@ const Portfolio = () => {
     }, [user]);
     if (loading) {
         return (
-            <div>
-                Cargando...
-            </div>
+            <Spinner isOpen={loading}/>
         )
     }
     if (error) {
@@ -126,9 +134,16 @@ const Portfolio = () => {
             </div>
         )
     }
+    if (expired) {
+        return (
+            <Modal title={"Su sesión ha expirado"} showModal={expired} expired={expired}>
+                <TextContent text={"No se pudo refrescar su sesión y se ha cerrado automáticamente."}/>
+            </Modal>
+        );
+    }
     if (user) {
         return (
-            <div className="container-fluid">
+            <div className={`container-fluid ${darkTheme ? "darkBody" : ""}`}>
                 <Routes>
                     <Route path="/" element={<Home/>} />
                     {user && (

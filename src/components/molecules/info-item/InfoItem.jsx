@@ -3,20 +3,33 @@ import EditIcon from "../../atoms/edit-icon/EditIcon";
 import Image from "../../atoms/image/Image";
 import TextContent from "../../atoms/text-content/text-content";
 import styles from './InfoItem.module.css';
-const InfoItem = ( {imgSrc, title, subtitle, startDate, endDate, description, hasPermissionToEdit, itemHref, ...links} ) => {
+const InfoItem = ( {itemId, imgSrc, title, subtitle, startDate, endDate, description, hasPermissionToEdit, itemHref, onEdit, classList, onDelete , ...links} ) => {
     const extractYearFromDate = (dateString) => {
         const date = new Date(dateString);
         return date.getFullYear();
     };
     const pageLinks = links.links;
-    // Extraer solo el año de las fechas de inicio y fin
+    const handleEditClick = () => {
+        onEdit({
+            imgSrc,
+            title,
+            subtitle,
+            startDate,
+            endDate,
+            description
+        });
+    };
+    const handleDeleteClick = () => {
+        onDelete({itemId});
+    };
+
     const startYear = extractYearFromDate(startDate);
     const endYear = extractYearFromDate(endDate);
+
     const renderLinkText = () => {
         if (pageLinks) {
             return pageLinks.map((link, index) => {
                 let linkText = "";
-                // Determinar el texto y la etiqueta del enlace según el pageName
                 switch (link.pageName) {
                     case "github":
                         linkText = "Link al repositorio";
@@ -42,18 +55,21 @@ const InfoItem = ( {imgSrc, title, subtitle, startDate, endDate, description, ha
             return null; // Retorna null si links es undefined
         }
     };
+
     return(
-        <div className={`${styles.infoItem} col row`}>
-            <div className={`${styles.imageWrapper} col-md-4 col-12`}>
-                <Image src={imgSrc} alt="Profession image" classList={styles.img}/>
-            </div>
+        <div className={`${styles.infoItem} ${classList} infoItem col row`}>
+            {imgSrc && (
+                <div className={`${styles.imageWrapper} col-md-4 col-12`}>
+                    <Image src={imgSrc} alt="Profession image" classList={styles.img}/>
+                </div>
+            )}
             <div className={`${styles.contentWrapper} col-md-8 col-12`}>
                 <div className={styles.titleWrapper}>
                     <TextContent text={title} classList={styles.title}/>
                     {hasPermissionToEdit && (
                         <div className={`d-flex flex-row`}>
-                            <EditIcon/>
-                            <ActionIcon classList={"fa-trash-alt"} />
+                            <EditIcon onclick={handleEditClick}/>
+                            <ActionIcon classList={`fa-trash-alt`} classname={styles.trash} onClick={handleDeleteClick}/>
                         </div>
                     )}   
                 </div>

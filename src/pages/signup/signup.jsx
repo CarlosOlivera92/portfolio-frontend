@@ -5,6 +5,7 @@ import './styles.css';
 import { useApi } from '../../utils/api/useApi';
 import { NavLink } from 'react-router-dom';
 import Toast from '../../components/organisms/toast/toast';
+import Spinner from '../../components/atoms/spinner/spinner';
 
 const Signup = () => {
     const [formData, setFormData] = useState({});
@@ -98,8 +99,8 @@ const Signup = () => {
                     <div className="signup-form container p-4">
                         {formCompleted ? (
                             loading ? (
-                                <p>Cargando...</p>
-                            ) : isRegisterSuccess ? (
+                                <Spinner isOpen={loading}/>
+                                ) : isRegisterSuccess ? (
                                 <div>
                                     <p>¡Registro exitoso! Se ha enviado un correo a tu casilla.</p>
                                     <p className='m-0'>¿Ya tienes una cuenta? <NavLink to={'/signin'}>Iniciar Sesión</NavLink></p>
@@ -124,6 +125,9 @@ const Signup = () => {
                         )}
                     </div>
                 </div>
+                {loading && (
+                    <Spinner isOpen={loading}/>
+                )}
             </div>
         </main>
     );      

@@ -1,0 +1,11 @@
+.modalBody {
+    border: none;
+    padding: 1rem 0;
+}
+.modalBody {
+    height: fit-content;
+}
+.modalBody p {
+    padding: 0;
+    margin: 0;
+}

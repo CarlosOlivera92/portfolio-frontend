@@ -1,3 +1,17 @@
+.contactItem {
+    display: flex;
+    margin-block: 1rem;
+    align-items: center;
+    gap: .2rem;
+}
+.subtitle {
+    font-size: 16px;
+    font-weight: bold;
+}
+.buttonsContainer {
+    display: flex;
+    width: 100%;
+}
 .buttonIcon {
     display: flex !important;
     flex-direction: row;
@@ -9,7 +23,6 @@
     box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1); 
     transition: box-shadow 0.3s, border-color 0.3s; 
 }
-
 .buttonIcon:hover,
 .buttonIcon:focus {
     box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.2); /* Ajusta la sombra para hover y focus */

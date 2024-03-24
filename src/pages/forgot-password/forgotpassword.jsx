@@ -3,6 +3,7 @@ import Toast from '../../components/organisms/toast/toast';
 import Form from '../../components/organisms/form/form';
 import { useState, useEffect } from "react";
 import { useApi } from "../../utils/api/useApi";
+import Spinner from "../../components/atoms/spinner/spinner";
 const ForgotPassword = () => {
     const [errorApi, setErrorApi] = useState();
     const [formData, setFormData] = useState({});
@@ -64,6 +65,9 @@ const ForgotPassword = () => {
                     </div>
                 </div>
             </div>
+            {loading && (
+                <Spinner isOpen={loading}/>
+            )}
         </main>
     )
 }

@@ -19,11 +19,19 @@ const PersonalArea = ({user, loadingData}) => {
     };
     const { loading, error, request, data } = useApi();
     const userInfo = user.userInfo;
-    const educationalBackground = userInfo.educationalBackgrounds;
-    const courses = userInfo.courses;
-    const professions = userInfo.professionalBackgrounds;
-    const certifications = userInfo.certifications;
-    const projects = userInfo.projects;
+    let educationalBackground;
+    let courses;
+    let professions;
+    let certifications;
+    let projects;
+    if (userInfo) {
+        educationalBackground = userInfo.educationalBackgrounds;
+        courses = userInfo.courses;
+        professions = userInfo.professionalBackgrounds;
+        certifications = userInfo.certifications;
+        projects = userInfo.projects;
+    }
+
 
     const hasEditPermission = async (endpoint) => {
         try {

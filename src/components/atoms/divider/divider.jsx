@@ -1,6 +1,8 @@
+import styles from './divider.module.css'
+
 const Divider = () => {
     return(
-        <div className="divider"></div>
+        <div className={styles.divider}></div>
     )
 }
 export default Divider;

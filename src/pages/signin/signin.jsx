@@ -7,6 +7,7 @@ import Form from '../../components/organisms/form/form';
 import history from '../../utils/context/history';
 import { useAuth } from '../../utils/hooks/useAuth';
 import { useNavigate } from "react-router-dom";
+import Spinner from '../../components/atoms/spinner/spinner';
 
 
 const Signin = () => {
@@ -36,7 +37,7 @@ const Signin = () => {
                 login(responseBody.token, responseBody.username, responseBody.refreshToken)
                 setTimeout(() => {
                     history.push(`/portfolio/${responseBody.username}`);
-                    navigate(`/portfolio/${responseBody.username}`);
+                    navigate(`/portfolio/${responseBody.username}/personal`);
                 }, 3000);
             } catch (error) {
                 console.error("Error al parsear la respuesta JSON:", error);
@@ -70,12 +71,15 @@ const Signin = () => {
         <main className='signup' id='signup'>
             <div className="background container-fluid">
                 <div className="form container-fluid">
-                        <div className={`signup-form container ${isAuthenticated ? "dissappear" : ""}`}>
-                            <Form title={"Iniciar Sesión"} fields={signInForm} onSubmit={handleFormSubmit}/>
-                        </div>
+                    <div className={`signup-form container ${isAuthenticated ? "dissappear" : ""}`}>
+                        <Form title={"Iniciar Sesión"} fields={signInForm} onSubmit={handleFormSubmit}/>
+                    </div>
                     <Toast text={message} error={errorApi} showToasty={showToast} onToastClose={handleToastVisibility}/>
                 </div>
             </div>
+            {loading && (
+                <Spinner isOpen={loading}/>
+            )}
         </main>
     )
 }
