@@ -1,23 +1,30 @@
-/* eslint-disable react/prop-types */
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import FormSection from "../../molecules/form-section/form-section";
 import ActionButton from "../../atoms/action-button/action-button";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
+import { useFormikContext } from "formik";
+
 import Logo from "../../atoms/logo/logo";
 
-const Form = ({ title, fields, onSubmit, currentStep, steps, isSignUp, isUsernameInUse, isUsernameChecked, message, isUserRegistered, toggleModal }) => {
+const Form = ({ title, fields, onSubmit, currentStep, steps, isSignUp, isUsernameInUse, isUsernameChecked, message, isUserRegistered, onFormComplete, toggleModal }) => {
   const currentFields = isSignUp ? steps[currentStep] : fields.fields.map(field => field.name);
   const [stepTransition, setStepTransition] = useState("form-step-entering");
 
-  const initialValues = currentFields.reduce((acc, fieldName) => {
-    const field = fields.fields.find((f) => f.name === fieldName);
+  const initialValues = {};
+  const today = new Date(); // Obtener la fecha de hoy
+  for (const fieldName of currentFields) {
+    const field = fields.fields.find((f) => {
+      return f.name === fieldName;
+    });
     if (field) {
-      acc[field.name] = "";
+      if (field.type === "date") { // Verificar si el campo es de tipo fecha
+        initialValues[field.name] = today.toISOString().split('T')[0]; // Establecer la fecha de hoy como valor predeterminado
+      } else {
+        initialValues[field.name] = ""; // De lo contrario, establecer un valor vacío
+      }
     }
-    return acc;
-  }, {});
-
+  }
   const validationSchema = Yup.object().shape(
     currentFields.reduce((acc, fieldName) => {
       const field = fields.fields.find((f) => f.name === fieldName);
@@ -27,14 +34,21 @@ const Form = ({ title, fields, onSubmit, currentStep, steps, isSignUp, isUsernam
       return acc;
     }, {})
   );
+
   const formik = useFormik({
     initialValues,
     validationSchema,
-    onSubmit: (values) => {
-      onSubmit(values, currentStep);
+    onSubmit: async (values, { setSubmitting }) => {
+      await onSubmit(values, currentStep);
+      setSubmitting(false); 
+      formik.resetForm() 
     }
   });
 
+  const handleFieldChange = (fieldName, value) => {
+    formik.setFieldTouched(fieldName, true, false);
+    formik.setFieldValue(fieldName, value);
+  };
   useEffect(() => {
     setStepTransition("form-step-entering");
     if (currentStep > 1) {
@@ -45,7 +59,15 @@ const Form = ({ title, fields, onSubmit, currentStep, steps, isSignUp, isUsernam
       return () => clearTimeout(timeout);
     }
   }, [currentStep]);
-  
+
+  useEffect(() => {
+    if (onFormComplete) {
+      if (formik.isValid && formik.dirty) {
+        onFormComplete(formik);
+      }
+    }
+  }, [formik.values, onFormComplete]);
+
   return (
     <form onSubmit={formik.handleSubmit} className={`form ${stepTransition}`}>
       {fields.title === 'Sign In' || fields.title === 'Sign Up' ? (
@@ -64,7 +86,7 @@ const Form = ({ title, fields, onSubmit, currentStep, steps, isSignUp, isUsernam
         fields={fields.title === "Sign In" || fields.title === "Email" || fields.title === " " ? fields.fields  : fields.fields.filter((field) => currentFields.includes(field.name))}
         values={formik.values}
         errors={formik.errors}
-        handleChange={formik.handleChange}
+        handleChange={handleFieldChange}
         isUsernameInUse={isUsernameInUse}
         isUsernameChecked={isUsernameChecked}
         message={message}
@@ -80,7 +102,20 @@ const Form = ({ title, fields, onSubmit, currentStep, steps, isSignUp, isUsernam
           />
         </div>
       ) : (
-        null
+        <div className="buttons">
+          <ActionButton 
+            name={"Cancelar"}
+            type={"button"}
+            onClick={toggleModal}
+            classList="mt-3 form-button"
+          />
+          <ActionButton
+            type={"submit"}
+            name={"Confirmar"}
+            classList="mt-3 form-button"
+            disabled={!formik.isValid}
+          />
+        </div>
       )}
     </form>
   );

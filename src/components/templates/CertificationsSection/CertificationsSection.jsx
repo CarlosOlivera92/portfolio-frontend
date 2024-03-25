@@ -132,7 +132,7 @@ const CertificationsSection = ({ hasPermissionToEdit, certifications }) => {
                     </div>
                 ))}
             </div>
-            <Modal showModal={isModalOpen} title={"Editar información educativa"} closeModal={toggleModal} isForm={true}>
+            <Modal showModal={isModalOpen} title={"Editar certificados"} closeModal={toggleModal} isForm={true}>
                 {(selectedItem || selectedItemToDelete) && (
                     <>
                         {selectedItem && !selectedItemToDelete && (

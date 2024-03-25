@@ -10,12 +10,11 @@ const FormSection = ({ title, fields, values, errors, handleChange, isUsernameIn
       {fields.map((field, index) => (
         <div className={`form-section ${field.type === 'textarea' ? 'col-12' : `col-md-${12 / numberOfColumns}`} col-12`} key={field.name}>
           <FormItem
-            props={field}
             type={field.type}
             name={field.name}
             label={field.label}
             value={values[field.name] || ""}
-            onChange={handleChange}
+            onChange={(e) => handleChange(field.name, e.target.value)} // Utiliza handleChange y pásale el nombre del campo y el valor
             error={errors[field.name]}
             required={false}
           />

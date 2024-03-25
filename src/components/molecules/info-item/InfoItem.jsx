@@ -11,6 +11,7 @@ const InfoItem = ( {itemId, imgSrc, title, subtitle, startDate, endDate, descrip
     const pageLinks = links.links;
     const handleEditClick = () => {
         onEdit({
+            itemId,
             imgSrc,
             title,
             subtitle,
