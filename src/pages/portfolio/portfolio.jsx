@@ -15,7 +15,7 @@ const Portfolio = () => {
     const [token, setToken] = useState();
     const [currentRefreshToken, setCurrentRefreshToken] = useState();
     const {user, setUser} = useUser();
-    const { isAuthenticated } = useAuth;
+    const { isAuthenticated } = useAuth();
     const {username} = useParams();
     const { loading, error, request, data } = useApi();
     const [userData, setUserData] = useState({})

@@ -11,6 +11,9 @@ import Form from '../../organisms/form/form';
 import ModalFooter from '../../molecules/modal-footer/modal-footer';
 import ActionButton from '../../atoms/action-button/action-button';
 import TextContent from '../../atoms/text-content/text-content';
+import { useApi } from '../../../utils/api/useApi';
+import { useUser } from '../../../utils/context/userContext';
+import { useAuth } from '../../../utils/hooks/useAuth';
 
 const ProfessionalSection = ({ hasPermissionToEdit, professions }) => {
     const [isOpen, setIsOpen] = useState(false);
@@ -20,10 +23,13 @@ const ProfessionalSection = ({ hasPermissionToEdit, professions }) => {
     const menuAnimationRef = useRef(null);
     const [selectedItem, setSelectedItem] = useState(null);
     const [selectedItemToDelete, setSelectedItemToDelete] = useState(null);
+    const { isAuthenticated } = useAuth();
+    const [professionsData, setProfessionsData] = useState(professions); 
 
+    const { loading, error, request, data } = useApi(); 
+    const { user } = useUser();
     useEffect(() => {
         const section = sectionRef.current.querySelectorAll(".infoItems");
-        const menuItem = sectionRef.current.querySelectorAll(".infoItem");
 
         menuAnimationRef.current = gsap.timeline({
           paused: true,
@@ -51,7 +57,7 @@ const ProfessionalSection = ({ hasPermissionToEdit, professions }) => {
             sectionRef.current.scrollIntoView({ behavior: 'smooth' });
 
         }
-    }, [isOpen]);
+    }, [isOpen, user]);
 
     const toggleSection = () => {
         setIsOpen(prev => !prev);
@@ -60,9 +66,35 @@ const ProfessionalSection = ({ hasPermissionToEdit, professions }) => {
     const toggleModal = () => {
         setIsModalOpen(prev => !prev);
     };    
-    const handleDeleteItem = () => {
-        console.log("Elemento eliminado: ", selectedItemToDelete);
-        setIsModalOpen(false);
+    const handleDeleteItem = async () => {
+        try {
+            if (!selectedItemToDelete) {
+                console.error("No se ha seleccionado ningún elemento para eliminar.");
+                return;
+            }
+            const apiEndpoint = `http://localhost:8080/api/professional/${user.username}/item/${selectedItemToDelete.itemId}`;
+            const config = {
+                httpVerb: 'DELETE',
+                data: null, 
+            };
+            
+            const response = await request(apiEndpoint, config, isAuthenticated);
+            console.log("Respuesta de la API:", response);
+            console.log(response.ok)
+            if (response.ok) {
+                // Eliminar el elemento eliminado de los datos de proyectos
+                const updatedProfessions = professionsData.filter(item => item.id !== selectedItemToDelete.itemId);
+                setProfessionsData(updatedProfessions);
+
+                setIsModalOpen(false);
+            } else {
+                throw new Error();
+            }
+
+        } catch (error) {
+            console.error("Error al eliminar el elemento:", error);
+            // Maneja el error de acuerdo a tus necesidades
+        }
     };
     const handleEditItem = (item, isDelete = false) => {        
         if (isDelete) {
@@ -90,7 +122,7 @@ const ProfessionalSection = ({ hasPermissionToEdit, professions }) => {
                 </div>
             </div>
             <div className={`${styles.infoItems} infoItems`}>
-                {isOpen && professions && professions.map((profession, index) => (
+                {isOpen && professions && professionsData.map((profession, index) => (
                     <div key={index} className={`${styles.infoItem} infoItem`}>
                         <InfoItem 
                             itemId={profession.id}

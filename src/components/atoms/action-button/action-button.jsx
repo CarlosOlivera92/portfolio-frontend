@@ -1,4 +1,5 @@
-/* eslint-disable react/prop-types */
+import styles from './action-button.module.css';
+
 const ActionButton = ( {name, onClick, type, classList, disabled, href} ) => {
     const handleClick = () => {
         onClick();

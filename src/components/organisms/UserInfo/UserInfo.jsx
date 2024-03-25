@@ -82,7 +82,7 @@ const UserInfo = ({ user, userInfo, hasPermissionToEdit }) => {
                                 type={"submit"}
                                 onClick={null}
                                 classList={styles.modalBtn}
-                                disabled={true}
+                                disabled={false}
                             />
                         </ModalFooter>
                     </>

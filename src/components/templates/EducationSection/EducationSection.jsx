@@ -1,4 +1,3 @@
-// EducationSection.js
 import React, { useState, useRef, useEffect } from 'react';
 import gsap from 'gsap';
 
@@ -12,6 +11,9 @@ import ActionButton from '../../atoms/action-button/action-button';
 import Form from '../../organisms/form/form';
 import { educationForm } from '../../../utils/form-utils/forms-config';
 import TextContent from '../../atoms/text-content/text-content';
+import { useApi } from '../../../utils/api/useApi';
+import { useUser } from '../../../utils/context/userContext';
+import { useAuth } from '../../../utils/hooks/useAuth';
 
 const EducationSection = ({ hasPermissionToEdit, educationalBackground }) => {
     const [isOpen, setIsOpen] = useState(false);
@@ -21,9 +23,14 @@ const EducationSection = ({ hasPermissionToEdit, educationalBackground }) => {
     const menuAnimationRef = useRef(null);
     const [selectedItem, setSelectedItem] = useState(null);
     const [selectedItemToDelete, setSelectedItemToDelete] = useState(null);
+    const { isAuthenticated } = useAuth();
+    const { loading, error, request, data } = useApi(); 
+    const { user } = useUser();
+    const [educationData, setEducationData] = useState(educationalBackground); // Nuevo estado para almacenar los datos de educación
 
     useEffect(() => {
         const section = sectionRef.current.querySelectorAll(".infoItems");
+        const menuItem = sectionRef.current.querySelectorAll(".infoItem");
 
         menuAnimationRef.current = gsap.timeline({
           paused: true,
@@ -32,22 +39,26 @@ const EducationSection = ({ hasPermissionToEdit, educationalBackground }) => {
           .to(sectionRef.current, {  height:"auto"  }, 0) 
           .to(sectionRef.current, { height:"auto" },0.4);
 
-          menuAnimationRef.current.fromTo(
+        // Animación de los elementos del menú
+        menuAnimationRef.current.fromTo(
             section,
             { opacity: 0, y: "0.5em" }, // Configuración inicial
             { opacity: 1, y: "1em", stagger: 0.1 } // Configuración final
         ,0.4);
+
     }, []);
 
     useEffect(() => {
         if (isOpen) {
             menuAnimationRef.current.play();
             sectionRef.current.scrollIntoView({ behavior: 'smooth' });
+
         } else {
             menuAnimationRef.current.reverse();
             sectionRef.current.scrollIntoView({ behavior: 'smooth' });
+
         }
-    }, [isOpen]);
+    }, [isOpen, user]);
 
     const toggleSection = () => {
         setIsOpen(prev => !prev);
@@ -56,10 +67,31 @@ const EducationSection = ({ hasPermissionToEdit, educationalBackground }) => {
     const toggleModal = () => {
         setIsModalOpen(prev => !prev);
     };    
+    const handleDeleteItem = async () => {
+        try {
+            if (!selectedItemToDelete) {
+                console.error("No se ha seleccionado ningún elemento para eliminar.");
+                return;
+            }
+            const apiEndpoint = `http://localhost:8080/api/educational/${user.username}/item/${selectedItemToDelete.itemId}`;
+            const config = {
+                httpVerb: 'DELETE',
+                data: null, 
+            };
+            
+            const response = await request(apiEndpoint, config, isAuthenticated);
+            console.log("Respuesta de la API:", response);
+            if (response.ok) {
+                const updatedEducationalBackground = educationData.filter(item => item.id !== selectedItemToDelete.itemId);
+                setEducationData(updatedEducationalBackground);
+    
+                setIsModalOpen(false);
+            }
 
-    const handleDeleteItem = () => {
-        console.log("Elemento eliminado:", selectedItemToDelete);
-        setIsModalOpen(false);
+        } catch (error) {
+            console.error("Error al eliminar el elemento:", error);
+            // Maneja el error de acuerdo a tus necesidades
+        }
     };
 
     const handleEditItem = (item, isDelete = false) => {        
@@ -76,7 +108,7 @@ const EducationSection = ({ hasPermissionToEdit, educationalBackground }) => {
 
     return (
         <section className={`${styles.educationalInfo} educationalInfo`} ref={sectionRef}>
-            <div className={`${styles.actionsContainer}`}>
+            <div className={styles.actionsContainer}>
                 <h2 className={styles.title}>Experiencia Educativa</h2>
                 <div className={styles.buttonsWrapper}>
                     <div className={styles.dropdownIconWrapper} onClick={toggleSection}>
@@ -88,9 +120,10 @@ const EducationSection = ({ hasPermissionToEdit, educationalBackground }) => {
                 </div>
             </div>
             <div className={`${styles.infoItems} infoItems`} ref={infoItemsContainerRef}>
-                {isOpen && educationalBackground && educationalBackground.map((education, index) => (
+                {isOpen && educationData && educationData.map((education, index) => (
                     <div key={index} className={`${styles.infoItem} infoItem`}>
                         <InfoItem 
+                            itemId={education.id}
                             imgSrc={education.institutionPicture ? education.institutionPicture : defaultEducationPic} 
                             title={education.degree} 
                             subtitle={education.institution} 
@@ -132,7 +165,7 @@ const EducationSection = ({ hasPermissionToEdit, educationalBackground }) => {
                             <ActionButton 
                                 name={selectedItemToDelete ? "Confirmar" : "Editar"}
                                 type={"submit"}
-                                onClick={ selectedItemToDelete ? handleDeleteItem : null }
+                                onClick={selectedItemToDelete ? handleDeleteItem : handleDeleteItem }
                                 classList={selectedItemToDelete ? `${styles.modalBtn} ${styles.modalBtnDanger}` : styles.modalBtn}
                                 disabled={false}
                             />
@@ -142,6 +175,6 @@ const EducationSection = ({ hasPermissionToEdit, educationalBackground }) => {
             </Modal>
         </section>
     );
-}
+};
 
 export default EducationSection;

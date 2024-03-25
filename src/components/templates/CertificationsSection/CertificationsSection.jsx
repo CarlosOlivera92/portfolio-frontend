@@ -1,4 +1,3 @@
-// CertificationsSection.js
 import { useState, useRef, useEffect } from 'react';
 import gsap from 'gsap';
 
@@ -12,18 +11,26 @@ import ActionButton from '../../atoms/action-button/action-button';
 import Form from '../../organisms/form/form';
 import { certificatesForm } from '../../../utils/form-utils/forms-config';
 import TextContent from '../../atoms/text-content/text-content';
+import { useApi } from '../../../utils/api/useApi';
+import { useUser } from '../../../utils/context/userContext';
+import { useAuth } from '../../../utils/hooks/useAuth';
 
 const CertificationsSection = ({ hasPermissionToEdit, certifications }) => {
     const [isOpen, setIsOpen] = useState(false);
     const [isModalOpen, setIsModalOpen] = useState(false);
-    const [selectedItem, setSelectedItem] = useState(null);
     const infoItemsContainerRef = useRef(null);
     const sectionRef = useRef(null);
-    const [selectedItemToDelete, setSelectedItemToDelete] = useState(null);
-
     const menuAnimationRef = useRef(null);
+    const [selectedItem, setSelectedItem] = useState(null);
+    const [selectedItemToDelete, setSelectedItemToDelete] = useState(null);
+    const { isAuthenticated } = useAuth();
+    const { loading, error, request, data } = useApi(); 
+    const { user } = useUser();
+    const [certificationsData, setCertificationsData] = useState(certifications); // Nuevo estado para almacenar los datos de certificaciones
+
     useEffect(() => {
         const section = sectionRef.current.querySelectorAll(".infoItems");
+        const menuItem = sectionRef.current.querySelectorAll(".infoItem");
 
         menuAnimationRef.current = gsap.timeline({
           paused: true,
@@ -31,24 +38,27 @@ const CertificationsSection = ({ hasPermissionToEdit, certifications }) => {
         })
           .to(sectionRef.current, {  height:"auto"  }, 0) 
           .to(sectionRef.current, { height:"auto" },0.4);
-          
-          menuAnimationRef.current.fromTo(
+
+        // Animación de los elementos del menú
+        menuAnimationRef.current.fromTo(
             section,
             { opacity: 0, y: "0.5em" }, // Configuración inicial
             { opacity: 1, y: "1em", stagger: 0.1 } // Configuración final
         ,0.4);
+
     }, []);
 
     useEffect(() => {
         if (isOpen) {
             menuAnimationRef.current.play();
             sectionRef.current.scrollIntoView({ behavior: 'smooth' });
+
         } else {
             menuAnimationRef.current.reverse();
             sectionRef.current.scrollIntoView({ behavior: 'smooth' });
 
         }
-    }, [isOpen]);
+    }, [isOpen, user]);
 
     const toggleSection = () => {
         setIsOpen(prev => !prev);
@@ -57,10 +67,29 @@ const CertificationsSection = ({ hasPermissionToEdit, certifications }) => {
     const toggleModal = () => {
         setIsModalOpen(prev => !prev);
     };    
+    const handleDeleteItem = async () => {
+        try {
+            if (!selectedItemToDelete) {
+                console.error("No se ha seleccionado ningún elemento para eliminar.");
+                return;
+            }
+            const apiEndpoint = `http://localhost:8080/api/certifications/${user.username}/${selectedItemToDelete.itemId}`;
+            const config = {
+                httpVerb: 'DELETE',
+                data: null, 
+            };
+            
+            const response = await request(apiEndpoint, config, isAuthenticated);
+            console.log("Respuesta de la API:", response);
+            setIsModalOpen(false);
 
-    const handleDeleteItem = () => {
-        console.log("Elemento eliminado:", selectedItemToDelete);
-        setIsModalOpen(false);
+            // Eliminar el elemento eliminado de los datos de certificaciones
+            const updatedCertifications = certificationsData.filter(certification => certification.id !== selectedItemToDelete.itemId);
+            setCertificationsData(updatedCertifications);
+        } catch (error) {
+            console.error("Error al eliminar el elemento:", error);
+            // Maneja el error de acuerdo a tus necesidades
+        }
     };
 
     const handleEditItem = (item, isDelete = false) => {        
@@ -89,9 +118,10 @@ const CertificationsSection = ({ hasPermissionToEdit, certifications }) => {
                 </div>
             </div>
             <div className={`${styles.infoItems} infoItems`} ref={infoItemsContainerRef}>
-                {isOpen && certifications && certifications.map((certification, index) => (
+                {isOpen && certificationsData && certificationsData.map((certification, index) => (
                     <div key={index} className={`${styles.infoItem} infoItem`}>
                         <InfoItem 
+                            itemId={certification.id}
                             imgSrc={certification.certificationPic ? certification.certificationPic : defaultCertificationPic} 
                             title={certification.degree} 
                             links={[{ pageName: "certification", href: certification.certificationUrl }]}
