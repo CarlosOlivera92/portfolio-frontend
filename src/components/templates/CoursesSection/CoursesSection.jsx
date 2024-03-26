@@ -17,15 +17,19 @@ import { coursesForm } from '../../../utils/form-utils/forms-config';
 const CoursesSection = ({ hasPermissionToEdit, courses }) => {
     const [isOpen, setIsOpen] = useState(false);
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isNewCoursesModalOpen, setIsNewCoursesModalOpen] = useState(false);
     const infoItemsContainerRef = useRef(null);
     const sectionRef = useRef(null);
     const menuAnimationRef = useRef(null);
     const [selectedItem, setSelectedItem] = useState(null);
     const [selectedItemToDelete, setSelectedItemToDelete] = useState(null);
     const { isAuthenticated } = useAuth();
-    const [coursesData, setCoursesData] = useState(courses)
     const { loading, error, request, data } = useApi(); 
     const { user } = useUser();
+    const [coursesData, setCoursesData] = useState(courses);
+    const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+
     useEffect(() => {
         const section = sectionRef.current.querySelectorAll(".infoItems");
         const menuItem = sectionRef.current.querySelectorAll(".infoItem");
@@ -37,11 +41,10 @@ const CoursesSection = ({ hasPermissionToEdit, courses }) => {
           .to(sectionRef.current, {  height:"auto"  }, 0) 
           .to(sectionRef.current, { height:"auto" },0.4);
 
-        // Animación de los elementos del menú
         menuAnimationRef.current.fromTo(
             section,
-            { opacity: 0, y: "0.5em" }, // Configuración inicial
-            { opacity: 1, y: "1em", stagger: 0.1 } // Configuración final
+            { opacity: 0, y: "0.5em" },
+            { opacity: 1, y: "1em", stagger: 0.1 }
         ,0.4);
 
     }, []);
@@ -64,7 +67,20 @@ const CoursesSection = ({ hasPermissionToEdit, courses }) => {
 
     const toggleModal = () => {
         setIsModalOpen(prev => !prev);
-    };    
+    };
+
+    const toggleNewCourseModal = () => {
+        setIsNewCoursesModalOpen(prev => !prev);
+    };
+
+    const toggleEditModal = () => {
+        setIsEditModalOpen(prev => !prev);
+    };
+    
+    const toggleDeleteModal = () => {
+        setIsDeleteModalOpen(prev => !prev);
+    };
+
     const handleDeleteItem = async () => {
         try {
             if (!selectedItemToDelete) {
@@ -79,29 +95,76 @@ const CoursesSection = ({ hasPermissionToEdit, courses }) => {
             
             const response = await request(apiEndpoint, config, isAuthenticated);
             console.log("Respuesta de la API:", response);
+            if (response.ok) {
+                const updatedCourses = coursesData.filter(item => item.id !== selectedItemToDelete.itemId);
+                setCoursesData(updatedCourses);
+    
+                setIsDeleteModalOpen(false);
+            }
 
-            // Actualizar la lista de cursos después de eliminar el elemento
-            setCoursesData(prevCourses => prevCourses.filter(item => item.id !== selectedItemToDelete.itemId));
-
-            setIsModalOpen(false);
         } catch (error) {
             console.error("Error al eliminar el elemento:", error);
-            // Maneja el error de acuerdo a tus necesidades
         }
     };
 
-    const handleEditItem = (item, isDelete = false) => {        
+    const handleFormSubmit = async (formData) => {
+        try {
+            const apiEndpoint = `http://localhost:8080/api/courses/${user.username}`;
+            const config = {
+                httpVerb: 'POST',
+                data: formData,
+            };
+            const response = await request(apiEndpoint, config, isAuthenticated);
+            if (response.ok) {
+                const newResponse = await response.json();
+                const newCourse = { ...newResponse, id: newResponse.id };
+                setCoursesData(prevData => [...prevData, newCourse]);
+                setIsNewCoursesModalOpen(false); // Cerrar el modal después de enviar el formulario
+            } else {
+                throw new Error("Error al crear el nuevo curso");
+            }
+        } catch (error) {
+            console.error("Error al crear el nuevo curso: ", error);
+        }
+    };
+
+    const handleFormEditSubmit = async (formData) => {
+        try {
+            const apiEndpoint = `http://localhost:8080/api/courses/${user.username}/item/${selectedItem.itemId}`;
+            const config = {
+                httpVerb: 'PUT',
+                data: formData,
+            };
+            const response = await request(apiEndpoint, config, isAuthenticated);
+            if (response.ok) {
+                const newResponse = await response.json();
+                const updatedCourses = { ...newResponse, id: newResponse.id };
+                setCoursesData(prevData => prevData.map(item => {
+                    if (item.id === updatedCourses.id) {
+                        return updatedCourses;
+                    }
+                    return item;
+                }));
+                setIsEditModalOpen(false);
+            } else {
+                throw new Error("Error al editar la información del curso");
+            }
+        } catch (error) {
+            console.error("Error al editar la información del curso:", error);
+        }
+    };
+
+    const handleEditItem = async (item, isDelete = false) => {        
         if (isDelete) {
             setSelectedItem(null);
             setSelectedItemToDelete(item);
-            setIsModalOpen(true);
+            setIsDeleteModalOpen(true);
         } else {
             setSelectedItemToDelete(null);
             setSelectedItem(item);
-            setIsModalOpen(true);
+            setIsEditModalOpen(true);
         }
     };
-
     return (
         <section className={`${styles.coursesInfo} coursesInfo`} ref={sectionRef}>
             <div className={`${styles.actionsContainer}`}>
@@ -111,7 +174,7 @@ const CoursesSection = ({ hasPermissionToEdit, courses }) => {
                         <ActionIcon classList={isOpen ? "fa-chevron-up" : "fa-chevron-down"} />
                     </div>
                     {hasPermissionToEdit && (
-                        <ActionIcon classList={"fa-plus"} />
+                        <ActionIcon classList={"fa-plus"} onClick={toggleNewCourseModal}/>
                     )}
                 </div>
             </div>
@@ -133,36 +196,43 @@ const CoursesSection = ({ hasPermissionToEdit, courses }) => {
                     </div>
                 ))}
             </div>
-            <Modal showModal={isModalOpen} title={"Editar cursos"} closeModal={toggleModal} isForm={true}>
-                {(selectedItem || selectedItemToDelete) && (
+            {/* Modal para agregar nuevo curso */}
+            <Modal showModal={isNewCoursesModalOpen} title={"Agregar nuevo curso"} closeModal={toggleNewCourseModal} isForm={true}>
+                <Form fields={coursesForm} onSubmit={handleFormSubmit} toggleModal={toggleNewCourseModal}/>
+            </Modal>
+            {/* Modal para editar el curso*/}
+            <Modal showModal={isEditModalOpen} title={"Editar información del curso"} isForm={true}>
+                {selectedItem && (
                     <>
-                        {selectedItem && !selectedItemToDelete && (
-                            <InfoItem 
-                                title={selectedItem.title} 
-                                subtitle={selectedItem.subtitle}
-                                startDate={selectedItem.startDate}
-                                endDate={selectedItem.endDate} 
-                                classList={styles.modalInfoItem}
-                            />
-                        )}
-                        {(selectedItemToDelete && !selectedItem) && (
-                            <TextContent text={"¿Está seguro que desea eliminar este elemento?"}/>
-                        )}
-                        {(selectedItem && !selectedItemToDelete) && (
-                            <Form fields={coursesForm} />
-                        )}
+                        <InfoItem 
+                            itemId={selectedItem.id}
+                            title={selectedItem.title} 
+                            subtitle={selectedItem.subtitle}
+                            startDate={selectedItem.startDate}
+                            endDate={selectedItem.endDate} 
+                            classList={styles.modalInfoItem}
+                        />
+                        <Form fields={coursesForm} onSubmit={handleFormEditSubmit} toggleModal={toggleEditModal}/>
+                    </>
+                )}
+            </Modal>
+            {/* Modal para eliminar un curso */}
+            <Modal showModal={isDeleteModalOpen} title={"Eliminar curso"} isForm={true}>
+                {selectedItemToDelete && (
+                    <>
+                        <TextContent text={"¿Está seguro que desea eliminar este elemento?"}/>
                         <ModalFooter classList={styles.modalFooter}>
                             <ActionButton 
                                 name={"Cancelar"}
-                                type={"submit"}
-                                onClick={toggleModal}
+                                type={"button"}
+                                onClick={toggleDeleteModal}
                                 classList={styles.modalBtn}
                             />
                             <ActionButton 
-                                name={selectedItemToDelete ? "Confirmar" : "Editar"}
-                                type={"submit"}
-                                onClick={handleDeleteItem }
-                                classList={selectedItemToDelete ? `${styles.modalBtn} ${styles.modalBtnDanger}` : styles.modalBtn}
+                                name={"Confirmar"}
+                                type={"button"}
+                                onClick={handleDeleteItem}
+                                classList={`${styles.modalBtn} ${styles.modalBtnDanger}`}
                                 disabled={false}
                             />
                         </ModalFooter>

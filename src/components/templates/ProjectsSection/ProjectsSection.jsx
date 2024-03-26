@@ -3,33 +3,38 @@ import gsap from 'gsap';
 
 import styles from './ProjectsSection.module.css'; 
 import InfoItem from "../../molecules/info-item/InfoItem";
-import defaultProjectPic from '../../../assets/img/defaultProjectsPicture.jpg'; 
+import defaultProjectPic from '../../../assets/img/defaultProjectsPicture.jpg';
+import ActionIcon from "../../atoms/action-icon/ActionIcon";
 import Modal from '../../organisms/modal/modal';
 import ModalFooter from '../../molecules/modal-footer/modal-footer';
 import ActionButton from '../../atoms/action-button/action-button';
 import Form from '../../organisms/form/form';
-import { projectsForm } from '../../../utils/form-utils/forms-config'; // Configuración del formulario para proyectos
 import TextContent from '../../atoms/text-content/text-content';
 import { useApi } from '../../../utils/api/useApi';
 import { useUser } from '../../../utils/context/userContext';
 import { useAuth } from '../../../utils/hooks/useAuth';
-import ActionIcon from '../../atoms/action-icon/ActionIcon';
+import { projectsForm } from '../../../utils/form-utils/forms-config';
 
 const ProjectsSection = ({ hasPermissionToEdit, projects }) => {
     const [isOpen, setIsOpen] = useState(false);
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isNewProjectModalOpen, setIsNewProjectModalOpen] = useState(false);
     const infoItemsContainerRef = useRef(null);
     const sectionRef = useRef(null);
     const menuAnimationRef = useRef(null);
-    const [selectedItem, setSelectedItem] = useState(null);
-    const [selectedItemToDelete, setSelectedItemToDelete] = useState(null);
+    const [selectedProject, setSelectedProject] = useState(null);
+    const [selectedProjectToDelete, setSelectedProjectToDelete] = useState(null);
     const { isAuthenticated } = useAuth();
-    const { loading, error, request, data } = useApi(); 
     const { user } = useUser();
-    const [projectsData, setProjectsData] = useState(projects); // Nuevo estado para almacenar los datos de proyectos
+    const [projectsData, setProjectsData] = useState(projects);
+    const [formData, setFormData] = useState(null);
+    const [isEditProjectModalOpen, setIsEditProjectModalOpen] = useState(false);
+    const [isDeleteProjectModalOpen, setIsDeleteProjectModalOpen] = useState(false);
+    const { loading, error, request, data } = useApi(); 
 
     useEffect(() => {
         const section = sectionRef.current.querySelectorAll(".infoItems");
+        const menuItem = sectionRef.current.querySelectorAll(".infoItem");
 
         menuAnimationRef.current = gsap.timeline({
           paused: true,
@@ -38,11 +43,10 @@ const ProjectsSection = ({ hasPermissionToEdit, projects }) => {
           .to(sectionRef.current, {  height:"auto"  }, 0) 
           .to(sectionRef.current, { height:"auto" },0.4);
 
-        // Animación de los elementos del menú
         menuAnimationRef.current.fromTo(
             section,
-            { opacity: 0, y: "0.5em" }, // Configuración inicial
-            { opacity: 1, y: "1em", stagger: 0.1 } // Configuración final
+            { opacity: 0, y: "0.5em" },
+            { opacity: 1, y: "1em", stagger: 0.1 }
         ,0.4);
 
     }, []);
@@ -65,48 +69,105 @@ const ProjectsSection = ({ hasPermissionToEdit, projects }) => {
 
     const toggleModal = () => {
         setIsModalOpen(prev => !prev);
-    };    
+    };
 
-    const handleDeleteItem = async () => {
+    const toggleNewProjectModal = () => {
+        setIsNewProjectModalOpen(prev => !prev);
+    };
+
+    const toggleEditProjectModal = () => {
+        setIsEditProjectModalOpen(prev => !prev);
+    };
+    
+    const toggleDeleteProjectModal = () => {
+        setIsDeleteProjectModalOpen(prev => !prev);
+    };
+
+    const handleDeleteProject = async () => {
         try {
-            if (!selectedItemToDelete) {
-                console.error("No se ha seleccionado ningún elemento para eliminar.");
+            if (!selectedProjectToDelete) {
+                console.error("No se ha seleccionado ningún proyecto para eliminar.");
                 return;
             }
-            const apiEndpoint = `http://localhost:8080/api/projects/${user.username}/item/${selectedItemToDelete.itemId}`;
+            const apiEndpoint = `http://localhost:8080/api/projects/${user.username}/item/${selectedProjectToDelete.itemId}`;
             const config = {
                 httpVerb: 'DELETE',
                 data: null, 
             };
             
             const response = await request(apiEndpoint, config, isAuthenticated);
-            console.log("Respuesta de la API:", response);
-            console.log(response.ok)
             if (response.ok) {
                 // Eliminar el elemento eliminado de los datos de proyectos
-                const updatedProjects = projectsData.filter(item => item.id !== selectedItemToDelete.itemId);
+                const updatedProjects = projectsData.filter(item => item.id !== selectedProjectToDelete.itemId);
                 setProjectsData(updatedProjects);
 
-                setIsModalOpen(false);
+                setIsDeleteProjectModalOpen(false);
             } else {
                 throw new Error();
             }
 
         } catch (error) {
-            console.error("Error al eliminar el elemento:", error);
-            // Maneja el error de acuerdo a tus necesidades
+            console.error("Error al eliminar el proyecto:", error);
         }
     };
 
-    const handleEditItem = (item, isDelete = false) => {        
+    const handleFormSubmit = async (formData) => {
+        try {
+            const apiEndpoint = `http://localhost:8080/api/projects/${user.username}`;
+            const config = {
+                httpVerb: 'POST',
+                data: formData,
+            };
+            const response = await request(apiEndpoint, config, isAuthenticated);
+            if (response.ok) {
+                const newResponse = await response.json();
+                const newProject = { ...newResponse, id: newResponse.id };
+                setProjectsData(prevData => [...prevData, newProject]);
+                setIsNewProjectModalOpen(false); // Cerrar el modal después de enviar el formulario
+            } else {
+                throw new Error("Error al crear el nuevo proyecto.");
+            }
+        } catch (error) {
+            console.error("Error al crear el nuevo proyecto:", error);
+        }
+    };
+
+    const handleFormEditSubmit = async (formData) => {
+        try {
+            const apiEndpoint = `http://localhost:8080/api/projects/${user.username}/item/${selectedProject.itemId}`;
+            const config = {
+                httpVerb: 'PUT',
+                data: formData,
+            };
+            const response = await request(apiEndpoint, config, isAuthenticated);
+            if (response.ok) {
+                const newResponse = await response.json();
+                const updatedProject = { ...newResponse, id: newResponse.id };
+                setProjectsData(prevData => prevData.map(item => {
+                    if (item.id === updatedProject.id) {
+                        return updatedProject;
+                    }
+                    return item;
+                }));
+                setIsEditProjectModalOpen(false);
+            } else {
+                throw new Error("Error al editar el proyecto.");
+            }
+        } catch (error) {
+            console.error("Error al editar el proyecto:", error);
+        }
+    };
+
+    const handleEditProjectItem = async (item, isDelete = false) => {        
         if (isDelete) {
-            setSelectedItem(null);
-            setSelectedItemToDelete(item);
-            setIsModalOpen(true);
+            console.log(item)
+            setSelectedProject(null);
+            setSelectedProjectToDelete(item);
+            setIsDeleteProjectModalOpen(true);
         } else {
-            setSelectedItemToDelete(null);
-            setSelectedItem(item);
-            setIsModalOpen(true);
+            setSelectedProjectToDelete(null);
+            setSelectedProject(item);
+            setIsEditProjectModalOpen(true);
         }
     };
 
@@ -119,7 +180,9 @@ const ProjectsSection = ({ hasPermissionToEdit, projects }) => {
                         <ActionIcon classList={isOpen ? "fa-chevron-up" : "fa-chevron-down"} />
                     </div>
                     {hasPermissionToEdit && (
-                        <ActionIcon classList={"fa-plus"} />
+                        <>
+                            <ActionIcon classList={"fa-plus"} onClick={toggleNewProjectModal} />
+                        </>
                     )}
                 </div>
             </div>
@@ -136,42 +199,49 @@ const ProjectsSection = ({ hasPermissionToEdit, projects }) => {
                             ]}
                             description={project.summary} 
                             hasPermissionToEdit={hasPermissionToEdit}
-                            onEdit={(item) => handleEditItem(item)} 
-                            onDelete={(item) => handleEditItem(item, true)}
+                            onEdit={(item) => handleEditProjectItem(item)} 
+                            onDelete={(item) => handleEditProjectItem(item, true)}
                         />
                     </div>
                 ))}
             </div>
-            <Modal showModal={isModalOpen} title={"Editar información del proyecto"} closeModal={toggleModal} isForm={true}>
-                {(selectedItem || selectedItemToDelete) && (
+            {/* Modal para agregar nuevo proyecto */}
+            <Modal showModal={isNewProjectModalOpen} title={"Agregar nuevo proyecto"} closeModal={toggleNewProjectModal} isForm={true}>
+                <Form fields={projectsForm} onSubmit={handleFormSubmit} toggleModal={toggleNewProjectModal}/>
+            </Modal>
+            {/* Modal para editar el proyecto */}
+            <Modal showModal={isEditProjectModalOpen} title={"Editar información del proyecto"} isForm={true}>
+                {selectedProject && (
                     <>
-                        {selectedItem && !selectedItemToDelete && (
-                            <InfoItem 
-                                title={selectedItem.title} 
-                                subtitle={selectedItem.subtitle}
-                                startDate={selectedItem.startDate}
-                                endDate={selectedItem.endDate} 
-                                classList={styles.modalInfoItem}
-                            />
-                        )}
-                        {selectedItemToDelete && !selectedItem && (
-                            <TextContent text={"¿Está seguro que desea eliminar este elemento?"}/>
-                        )}
-                        {!selectedItemToDelete && (
-                            <Form fields={projectsForm} />
-                        )}
+                        <InfoItem 
+                            itemId={selectedProject.id}
+                            title={selectedProject.title} 
+                            subtitle={selectedProject.subtitle}
+                            startDate={selectedProject.startDate}
+                            endDate={selectedProject.endDate} 
+                            classList={styles.modalInfoItem}
+                        />
+                        <Form fields={projectsForm} onSubmit={handleFormEditSubmit} toggleModal={toggleEditProjectModal}/>
+                    </>
+                )}
+            </Modal>
+            {/* Modal para eliminar el proyecto */}
+            <Modal showModal={isDeleteProjectModalOpen} title={"Eliminar proyecto"} isForm={true}>
+                {selectedProjectToDelete && (
+                    <>
+                        <TextContent text={"¿Está seguro que desea eliminar este proyecto?"}/>
                         <ModalFooter classList={styles.modalFooter}>
                             <ActionButton 
                                 name={"Cancelar"}
-                                type={"submit"}
-                                onClick={toggleModal}
+                                type={"button"}
+                                onClick={toggleDeleteProjectModal}
                                 classList={styles.modalBtn}
                             />
                             <ActionButton 
-                                name={selectedItemToDelete ? "Confirmar" : "Editar"}
-                                type={"submit"}
-                                onClick={selectedItemToDelete ? handleDeleteItem : handleDeleteItem }
-                                classList={selectedItemToDelete ? `${styles.modalBtn} ${styles.modalBtnDanger}` : styles.modalBtn}
+                                name={"Confirmar"}
+                                type={"button"}
+                                onClick={handleDeleteProject}
+                                classList={`${styles.modalBtn} ${styles.modalBtnDanger}`}
                                 disabled={false}
                             />
                         </ModalFooter>
@@ -183,3 +253,4 @@ const ProjectsSection = ({ hasPermissionToEdit, projects }) => {
 };
 
 export default ProjectsSection;
+
