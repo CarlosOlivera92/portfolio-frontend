@@ -8,7 +8,7 @@ import defaultProfilePic from '../../../../src/assets/img/defaultProfilePic.jpg'
 
 const DropdownUserMenu = ({ user, username, path }) => {
     const [isOpen, setIsOpen] = useState(false);
-    const profilePicUrl = user.userInfo ? user.userInfo.profilePicUrl : defaultProfilePic;
+    const profilePicUrl = user.userInfo.profilePicUrl != null ? user.userInfo.profilePicUrl : defaultProfilePic;
     
     // Ref para el menú desplegable y para la animación de GSAP
     const dropdownMenuRef = useRef(null);

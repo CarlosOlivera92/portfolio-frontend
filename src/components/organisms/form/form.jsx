@@ -41,7 +41,6 @@ const Form = ({ title, fields, onSubmit, currentStep, steps, isSignUp, isUsernam
     onSubmit: async (values, { setSubmitting }) => {
       await onSubmit(values, currentStep);
       setSubmitting(false); 
-      formik.resetForm() 
     }
   });
 
