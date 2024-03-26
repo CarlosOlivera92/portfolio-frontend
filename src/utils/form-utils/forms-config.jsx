@@ -3,7 +3,11 @@ import * as Yup from 'yup';
 export const signInForm = {
   title: "Sign In",
   fields: [
-    { name: "username", label: "Nombre de usuario", type: "text", validation: Yup.string().required("El nombre de usuario es requerido") },
+    { name: "username", label: "Nombre de usuario", type: "text", validation: Yup.string()
+    .trim() // Elimina espacios en blanco al principio y al final
+    .required("El nombre de usuario es requerido")
+    .min(6, "El nombre de usuario debe tener al menos 6 caracteres")
+    .matches(/^[^@]+$/, "No está permitido el uso del correo electrónico"), },
     { name: "password", label: "Contraseña", type: "password", validation: Yup.string().required("La contraseña es requerida") },
   ],
 };
@@ -15,7 +19,11 @@ export const signUpForm = {
       name: "username",
       label: "Nombre de usuario",
       type: "text",
-      validation: Yup.string().required("El nombre de usuario es requerido").min(6, "El nombre de usuario debe tener al menos 6 caracteres").matches(/^[^@]+$/, "El nombre de usuario no puede ser un correo electrónico"),
+      validation: Yup.string()
+        .trim() // Elimina espacios en blanco al principio y al final
+        .required("El nombre de usuario es requerido")
+        .min(6, "El nombre de usuario debe tener al menos 6 caracteres")
+        .matches(/^[^@]+$/, "El nombre de usuario no puede ser un correo electrónico"),
     },
     // Password
     {
@@ -101,45 +109,44 @@ export const bannerForm = {
   ]
 }
 
+
 export const experienceForm = {
-  title: 'Editar Experiencia Laboral',
-  fields: [
-    {
-      name: 'jobTitle',
-      label: 'Nombre del Cargo',
-      type: 'text',
-      validation: Yup.string().required('El campo es requerido'),
-    },
-    {
-      name: 'company',
-      label: 'Empresa',
-      type: 'text',
-      validation: Yup.string().required('El campo es requerido'),
-    },
-    {
-      name: 'fromDate',
-      label: 'Desde',
-      type: 'date',
-      validation: Yup.date().required('El campo es requerido'),
-    },
-    {
-      name: 'toDate',
-      label: 'Hasta',
-      type: 'date',
-      validation: Yup.date()
-        .nullable()
-        .when('fromDate', (fromDate, schema) =>
-          schema.min(fromDate, 'Debe ser mayor que la fecha de inicio')
-        ),
-    },
-    {
-      name: 'description',
-      label: 'Descripción',
-      type: 'textarea',
-      validation: Yup.string().required('El campo es requerido'),
-    },
-  ],
+    title: 'Editar Experiencia Laboral',
+    fields: [
+        {
+            name: 'jobTitle',
+            label: 'Nombre del Cargo',
+            type: 'text',
+            validation: Yup.string().trim().required('El campo es requerido')
+        },
+        {
+            name: 'companyName',
+            label: 'Empresa',
+            type: 'text',
+            validation: Yup.string().trim().required('El campo es requerido'),
+        },
+        {
+            name: 'startDate',
+            label: 'Desde',
+            type: 'date',
+            validation: Yup.date().required("La fecha de inicio es requerida").min(new Date("1960-01-01"), "La fecha debe ser posterior a 1960-01-01"),
+        },
+        {
+            name: 'endDate',
+            label: 'Hasta',
+            type: 'date',
+            validation: Yup.date()
+            .nullable()
+        },
+        {
+            name: 'summary',
+            label: 'Descripción',
+            type: 'textarea',
+            validation: Yup.string().trim(),
+        },
+    ],
 };
+
 export const educationForm = {
   title: 'Editar Educación',
   fields: [
@@ -156,23 +163,20 @@ export const educationForm = {
       validation: Yup.string().required('El campo es requerido'),
     },
     {
-      name: 'fromDate',
+      name: 'startDate',
       label: 'Desde',
       type: 'date',
       validation: Yup.date().required('El campo es requerido'),
     },
     {
-      name: 'toDate',
+      name: 'endDate',
       label: 'Hasta',
       type: 'date',
       validation: Yup.date()
         .nullable()
-        .when('fromDate', (fromDate, schema) =>
-          schema.min(fromDate, 'Debe ser mayor que la fecha de inicio')
-        ),
     },
     {
-      name: 'description',
+      name: 'focusOfStudies',
       label: 'Descripción',
       type: 'textarea',
       validation: Yup.string().required('El campo es requerido'),
@@ -195,23 +199,20 @@ export const coursesForm = {
       validation: Yup.string().required('El campo es requerido'),
     },
     {
-      name: 'fromDate',
+      name: 'startDate',
       label: 'Desde',
       type: 'date',
       validation: Yup.date().required('El campo es requerido'),
     },
     {
-      name: 'toDate',
+      name: 'endDate',
       label: 'Hasta',
       type: 'date',
       validation: Yup.date()
         .nullable()
-        .when('fromDate', (fromDate, schema) =>
-          schema.min(fromDate, 'Debe ser mayor que la fecha de inicio')
-        ),
     },
     {
-      name: 'description',
+      name: 'focusOfStudies',
       label: 'Descripción',
       type: 'textarea',
       validation: Yup.string().required('El campo es requerido'),
@@ -235,7 +236,7 @@ export const certificatesForm = {
       validation: Yup.string().required('El campo es requerido'),
     },
     {
-      name: 'certificateLink',
+      name: 'certificationUrl',
       label: 'Vínculo al Certificado',
       type: 'text',
       validation: Yup.string()
@@ -248,7 +249,7 @@ export const personalDataForm = {
   title: "Editar Datos Personales",
   fields: [
     {
-      name: "currentPosition",
+      name: "jobPosition",
       label: "Puesto o Grado Actual",
       type: "text",
       validation: Yup.string().required("El campo es requerido"),
@@ -289,18 +290,17 @@ export const projectsForm = {
       validation: Yup.string().required('El campo es requerido'),
     },
     {
-      name: 'company',
-      label: 'Empresa',
+      name: 'summary',
+      label: 'Descripción',
       type: 'text',
-      validation: Yup.string().required('El campo es requerido'),
+      validation: Yup.string(),
     },
     {
       name: 'projectUrl',
       label: 'Vínculo al Proyecto',
       type: 'text',
       validation: Yup.string()
-        .url('Formato de URL inválido')
-        .required('El campo es requerido'),
+        .url('Formato de URL inválido'),
     },
     {
       name: 'projectRepoUrl',

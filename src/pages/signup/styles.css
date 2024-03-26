@@ -61,10 +61,11 @@
 
 
 
-.signup-form .form .buttons {
+ .buttons {
     display: flex;
     align-items: flex-end;
     justify-content: flex-end;
+    gap: 1rem;
 }
 .signup-form form .form-header h1  {
     font-size: 1.4rem;
@@ -105,6 +106,7 @@ textarea {
 
 .form .form-button {
     width: 10rem;
+    gap: 1rem !important;
     padding: .5rem;
     color: #005da6; 
     text-transform: uppercase;
@@ -121,22 +123,19 @@ textarea {
     background-color: #005da6;
     color: #fff;
 }
-
-
-  /* Estilo de etiquetas y texto */
-  .form label {
+.form label {
     font-size: 16px;
     font-weight: bold;
-  }
-  
-  .form .error {
+}
+
+.form .error {
     color: #ff0000;
     font-size: 14px;
-  }
-  .form .success {
+}
+.form .success {
     color: #28a745;
     font-size: 14px;
-  }
+}
 
 
 @keyframes gradient {

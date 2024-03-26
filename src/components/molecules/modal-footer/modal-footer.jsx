@@ -18,7 +18,7 @@ const ModalFooter = ({ children, closeModal, redirect, classList }) => {
                         name={"Iniciar Sesión"}
                         onClick={() => closeModal()}
                         type={"button"}
-                        classname={styles.modalBtn}
+                        classList={styles.modalBtn}
                         disabled={false}
                         href={"/signin"}
                     />
@@ -27,7 +27,7 @@ const ModalFooter = ({ children, closeModal, redirect, classList }) => {
                         name={"Cerrar Modal"}
                         onClick={() => closeModal()}
                         type={"button"}
-                        classname={styles.modalBtn}
+                        classList={styles.modalBtn}
                         disabled={false}
                     />
                 )

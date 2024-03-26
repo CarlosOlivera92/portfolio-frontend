@@ -6,16 +6,17 @@ const FormItem = ({ props, type, name, label, required, value, onChange, error }
     <div className={`form-item ${type === "textarea" ? "col-12" : "col-md-6"}`}>
       {type === "checkbox" ? (
         <>
-          <InputItem id={props.id} props={props} type={type} name={name} value={value} onChange={onChange} required={false}/>
-          <label className="btn-icon">
+          <label htmlFor={name} className="btn-icon" >
             <span className="icon-wrapper"></span>
             {props.name}
           </label>
+          <InputItem id={name} props={props} type={type} name={name} value={value} onChange={onChange} required={false}/>
+
         </>
       ) : (
         <div className="form-item d-flex flex-column">
           <label htmlFor={name}>{label}</label>
-          <InputItem {...props} type={type} name={name} value={value} onChange={onChange} required={false}/>
+          <InputItem id={name} type={type} name={name} value={value} onChange={onChange} required={required}/>
           {!isValid && <div className="error">{error}</div>}
         </div>
       )}

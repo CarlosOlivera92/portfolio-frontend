@@ -3,23 +3,26 @@ import PersonalData from "../../molecules/personal-data/PersonalData";
 import Profile from "../../molecules/profile/Profile";
 import defaultProfilePic from '../../../../src/assets/img/defaultProfilePic.jpg';
 import styles from './UserInfo.module.css';
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Form from "../form/form";
-import ModalFooter from "../../molecules/modal-footer/modal-footer";
-import ActionButton from "../../atoms/action-button/action-button";
 import Modal from "../modal/modal";
 import { bannerForm } from "../../../utils/form-utils/forms-config";
 import { profilePicUrl } from "../../../utils/form-utils/forms-config";
 import { personalDataForm } from "../../../utils/form-utils/forms-config";
-import InfoItem from "../../molecules/info-item/InfoItem";
-const UserInfo = ({ user, userInfo, hasPermissionToEdit }) => {
+import { useApi } from "../../../utils/api/useApi";
+import { useAuth } from "../../../utils/hooks/useAuth";
+const UserInfo = ({ user, userInfo, hasPermissionToEdit, updateUserInfo  }) => {
     const defaultImageUrl = "https://t4.ftcdn.net/jpg/04/95/28/65/360_F_495286577_rpsT2Shmr6g81hOhGXALhxWOfx1vOQBa.jpg"; 
-    const bannerPicUrl = userInfo ? userInfo.bannerPicUrl : defaultImageUrl;
-    const profilePic = userInfo ? userInfo.profilePicUrl : defaultProfilePic;
+    const bannerPicUrl = userInfo.bannerPicUrl != null ? userInfo.bannerPicUrl : defaultImageUrl;
+    const profilePic = userInfo.profilePicUrl != null ? userInfo.profilePicUrl : defaultProfilePic;
+    console.log(userInfo)
     const [selectedItem, setSelectedItem] = useState(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
-
-
+    const { loading, error, request, data } = useApi(); 
+    const { isAuthenticated } = useAuth();
+    const [isDataEdited, setIsDataEdited] = useState(false); 
+    let modalContent = null;
+    let modalTitle = "";
     const toggleModal = () => {
         setIsModalOpen(prev => !prev);
     };    
@@ -28,23 +31,70 @@ const UserInfo = ({ user, userInfo, hasPermissionToEdit }) => {
         setSelectedItem(item);
         setIsModalOpen(true);
     };
-    let modalContent = null;
-    let modalTitle = "";
+
+    const handleFormSubmit = async (formData) => {
+        try {
+            for (const key in formData) {
+                if (formData.hasOwnProperty(key) && formData[key] === "") {
+                    formData[key] = null;
+                }
+            }
+            let apiEndpoint = '';
+            let config = {};
+
+            switch (selectedItem.type) {
+                case 'banner':
+                    apiEndpoint = `http://localhost:8080/api/users/userinfo/${user.username}`;
+                    config = {
+                        httpVerb: 'PUT',
+                        data: formData,
+                    };
+                    break;
+                case 'profile':
+                    apiEndpoint = `http://localhost:8080/api/users/userinfo/${user.username}`;
+                    config = {
+                        httpVerb: 'PUT',
+                        data: formData,
+                    };
+                    break;
+                case 'personalData':
+                    apiEndpoint = `http://localhost:8080/api/users/userinfo/${user.username}`;
+                    config = {
+                        httpVerb: 'PUT',
+                        data: formData,
+                    };
+                    break;
+                default:
+                    throw new Error("Tipo de componente no válido.");
+            }
+
+            const response = await request(apiEndpoint, config, isAuthenticated);
+            if (response.ok) {
+                setIsDataEdited(true);
+                setIsModalOpen(false);
+                updateUserInfo();
+            } else {
+                throw new Error("Error al editar la información. ");
+            }
+        } catch (error) {
+            console.error("Error al editar la información: ", error);
+        }
+    };
+
     if (selectedItem) {
         switch (selectedItem.type) {
             case 'banner':
                 modalTitle = "Editar banner";
-                modalContent = <Form fields={bannerForm} />;
+                modalContent = <Form fields={bannerForm} onSubmit={handleFormSubmit} toggleModal={toggleModal}/>;
                 break;
             case 'profile':
                 modalTitle = "Editar foto de perfil";
-                modalContent = <Form fields={profilePicUrl}/>;
+                modalContent = <Form fields={profilePicUrl} onSubmit={handleFormSubmit} toggleModal={toggleModal}/>;
                 break;
             case 'personalData':
                 modalTitle = "Editar información personal";
-                modalContent = <Form fields={personalDataForm}/>;
+                modalContent = <Form fields={personalDataForm} onSubmit={handleFormSubmit} toggleModal={toggleModal}/>;
                 break;
-            // Add more cases for other types of components if needed
             default:
                 modalContent = null;
         }
@@ -70,21 +120,6 @@ const UserInfo = ({ user, userInfo, hasPermissionToEdit }) => {
                 {selectedItem && (
                     <>
                         {modalContent}
-                        <ModalFooter >
-                            <ActionButton 
-                                name={"Cancelar"}
-                                type={"submit"}
-                                onClick={toggleModal}
-                                classList={styles.modalBtn}
-                            />
-                            <ActionButton 
-                                name={"Editar"}
-                                type={"submit"}
-                                onClick={null}
-                                classList={styles.modalBtn}
-                                disabled={true}
-                            />
-                        </ModalFooter>
                     </>
                 )}
             </Modal>

@@ -11,19 +11,27 @@ import Form from '../../organisms/form/form';
 import ModalFooter from '../../molecules/modal-footer/modal-footer';
 import ActionButton from '../../atoms/action-button/action-button';
 import TextContent from '../../atoms/text-content/text-content';
-
+import { useApi } from '../../../utils/api/useApi';
+import { useUser } from '../../../utils/context/userContext';
+import { useAuth } from '../../../utils/hooks/useAuth';
 const ProfessionalSection = ({ hasPermissionToEdit, professions }) => {
     const [isOpen, setIsOpen] = useState(false);
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isNewExperienceModalOpen, setIsNewExperienceModalOpen] = useState(false); 
     const infoItemsContainerRef = useRef(null);
     const sectionRef = useRef(null);
     const menuAnimationRef = useRef(null);
     const [selectedItem, setSelectedItem] = useState(null);
     const [selectedItemToDelete, setSelectedItemToDelete] = useState(null);
-
+    const { isAuthenticated } = useAuth();
+    const [professionsData, setProfessionsData] = useState(professions); 
+    const [formData, setFormData] = useState(null);
+    const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+    const { loading, error, request, data } = useApi(); 
+    const { user } = useUser();
     useEffect(() => {
         const section = sectionRef.current.querySelectorAll(".infoItems");
-        const menuItem = sectionRef.current.querySelectorAll(".infoItem");
 
         menuAnimationRef.current = gsap.timeline({
           paused: true,
@@ -56,27 +64,126 @@ const ProfessionalSection = ({ hasPermissionToEdit, professions }) => {
     const toggleSection = () => {
         setIsOpen(prev => !prev);
     };
-
-    const toggleModal = () => {
-        setIsModalOpen(prev => !prev);
-    };    
-    const handleDeleteItem = () => {
-
-        console.log("Elemento eliminado:", selectedItemToDelete);
-        setIsModalOpen(false);
+    
+    const toggleEditModal = () => {
+        setIsEditModalOpen(prev => !prev);
     };
+    
+    const toggleDeleteModal = () => {
+        setIsDeleteModalOpen(prev => !prev);
+    };
+
+    // Función para abrir o cerrar el modal de nueva experiencia laboral
+    const toggleNewExperienceModal = () => {
+        setIsNewExperienceModalOpen(prev => !prev);
+    };
+
+    const handleDeleteItem = async () => {
+        try {
+            if (!selectedItemToDelete) {
+                console.error("No se ha seleccionado ningún elemento para eliminar.");
+                return;
+            }
+            const apiEndpoint = `http://localhost:8080/api/professional/${user.username}/item/${selectedItemToDelete.itemId}`;
+            const config = {
+                httpVerb: 'DELETE',
+                data: null, 
+            };
+            
+            const response = await request(apiEndpoint, config, isAuthenticated);
+
+            if (response.ok) {
+                // Eliminar el elemento eliminado de los datos de proyectos
+                const updatedProfessions = professionsData.filter(item => item.id !== selectedItemToDelete.itemId);
+                setProfessionsData(updatedProfessions);
+
+                setIsDeleteModalOpen(false);
+            } else {
+                throw new Error();
+            }
+
+        } catch (error) {
+            console.error("Error al eliminar el elemento:", error);
+            // Maneja el error de acuerdo a tus necesidades
+        }
+    };
+    // Método para manejar la creación de una nueva experiencia
+    const handleCreateExperience = async (formData) => {
+        try {
+            // Enviar los datos del formulario al backend
+            const apiEndpoint = `http://localhost:8080/api/professional/${user.username}`;
+            const config = {
+                httpVerb: 'POST',
+                data: formData,
+            };
+            const response = await request(apiEndpoint, config, isAuthenticated);
+            if (response.ok) {
+                const newResponse = await response.json();
+                const newExperience = { ...newResponse, id: newResponse.id };
+                setProfessionsData(prevData => [...prevData, newExperience]);
+                setIsNewExperienceModalOpen(false);
+            } else {
+                throw new Error("Error al crear la nueva experiencia.");
+            }
+        } catch (error) {
+            console.error("Error al crear la nueva experiencia:", error);
+        }
+    };
+    const handleEditExperience = async (formData, id) => {
+        try {
+            // Enviar los datos del formulario al backend
+            const apiEndpoint = `http://localhost:8080/api/professional/${user.username}/item/${id}`;
+            const config = {
+                httpVerb: 'PUT',
+                data: formData,
+            };
+            const response = await request(apiEndpoint, config, isAuthenticated);
+            if (response.ok) {
+                const newResponse = await response.json();
+                const updatedExperience = { ...newResponse, id: newResponse.id };
+            // Actualizar el elemento existente en professionsData
+            setProfessionsData(prevData => prevData.map(item => {
+                if (item.id === updatedExperience.id) {
+                    return updatedExperience;
+                }
+                return item;
+            }));     
+            setIsEditModalOpen(false);
+            } else {
+                throw new Error("Error al editar la experiencia existente.");
+            }
+        } catch (error) {
+            console.error("Error al editar la experiencia:", error);
+        }
+    };
+    const handleFormSubmit = (formData) => {
+        setFormData(formData);
+        if (formData) {
+            handleCreateExperience(formData);
+        }
+    };
+    const handleFormEditSubmit = (formData) => {
+        const adjustedFormData = Object.entries(formData).reduce((acc, [key, value]) => {
+            acc[key] = value === "" ? null : value;
+            return acc;
+        }, {});
+    
+        setFormData(adjustedFormData);
+        if (adjustedFormData) {
+            handleEditExperience(adjustedFormData, selectedItem.itemId);
+        }
+    }
     const handleEditItem = (item, isDelete = false) => {        
         if (isDelete) {
             setSelectedItem(null);
             setSelectedItemToDelete(item);
-            setIsModalOpen(true);
+            setIsDeleteModalOpen(true);
         } else {
             setSelectedItemToDelete(null);
             setSelectedItem(item);
-            setIsModalOpen(true);
+            setIsEditModalOpen(true);
         }
     };
-
     return (
         <section className={`${styles.professionalInfo} professionalInfo`} ref={sectionRef}>
             <div className={`${styles.actionsContainer}`}  ref={infoItemsContainerRef}>
@@ -86,12 +193,14 @@ const ProfessionalSection = ({ hasPermissionToEdit, professions }) => {
                         <ActionIcon classList={isOpen ? "fa-chevron-up" : "fa-chevron-down"} />
                     </div>
                     {hasPermissionToEdit && (
-                        <ActionIcon classList={"fa-plus"} />
+                        <>
+                            <ActionIcon classList={"fa-plus"} onClick={toggleNewExperienceModal} />
+                        </>
                     )}
                 </div>
             </div>
             <div className={`${styles.infoItems} infoItems`}>
-                {isOpen && professions && professions.map((profession, index) => (
+                {isOpen && professions && professionsData.map((profession, index) => (
                     <div key={index} className={`${styles.infoItem} infoItem`}>
                         <InfoItem 
                             itemId={profession.id}
@@ -108,37 +217,44 @@ const ProfessionalSection = ({ hasPermissionToEdit, professions }) => {
                     </div>
                 ))}
             </div>
-            <Modal showModal={isModalOpen} title={"Editar información profesional"} closeModal={toggleModal} isForm={true}>
-                {(selectedItem || selectedItemToDelete) && (
+             {/* Modal para agregar nueva experiencia */}
+                <Modal showModal={isNewExperienceModalOpen} title={"Agregar nueva experiencia laboral"} closeModal={toggleNewExperienceModal} isForm={true}>
+                    <Form fields={experienceForm} onSubmit={handleFormSubmit} toggleModal={toggleNewExperienceModal}/>
+                </Modal>
+             {/* Modal para editar la experiencia laboral */}
+            <Modal showModal={isEditModalOpen} title={"Editar información de la experiencia laboral"} isForm={true}>
+                {selectedItem && (
                     <>
-                        {selectedItem && !selectedItemToDelete && (
-                            <InfoItem 
-                                title={selectedItem.title} 
-                                subtitle={selectedItem.subtitle}
-                                startDate={selectedItem.startDate}
-                                endDate={selectedItem.endDate} 
-                                classList={styles.modalInfoItem}
-                            />
-                        )}
-                        {(selectedItemToDelete && !selectedItem) && (
-                            <TextContent text={"¿Está seguro que desea eliminar este elemento?"}/>
-                        )}
-                        {(selectedItem && !selectedItemToDelete) && (
-                            <Form fields={experienceForm} />
-                        )}
+                        <InfoItem 
+                            itemId={selectedItem.id}
+                            title={selectedItem.title} 
+                            subtitle={selectedItem.subtitle}
+                            startDate={selectedItem.startDate}
+                            endDate={selectedItem.endDate} 
+                            classList={styles.modalInfoItem}
+                        />
+                        <Form fields={experienceForm} onSubmit={handleFormEditSubmit} toggleModal={toggleEditModal}/>
+                    </>
+                )}
+            </Modal>
+            {/* Modal para eliminar la experiencia laboral */}
+            <Modal showModal={isDeleteModalOpen} title={"Eliminar experiencia laboral"} isForm={true}>
+                {selectedItemToDelete && (
+                    <>
+                        <TextContent text={"¿Está seguro que desea eliminar este elemento?"}/>
                         <ModalFooter classList={styles.modalFooter}>
                             <ActionButton 
                                 name={"Cancelar"}
-                                type={"submit"}
-                                onClick={toggleModal}
+                                type={"button"}
+                                onClick={toggleDeleteModal}
                                 classList={styles.modalBtn}
                             />
                             <ActionButton 
-                                name={selectedItemToDelete ? "Confirmar" : "Editar"}
-                                type={"submit"}
-                                onClick={ selectedItemToDelete ? handleDeleteItem : null }
-                                classList={selectedItemToDelete ? `${styles.modalBtn} ${styles.modalBtnDanger}` : styles.modalBtn}
-                                disabled={true}
+                                name={"Confirmar"}
+                                type={"button"}
+                                onClick={handleDeleteItem}
+                                classList={`${styles.modalBtn} ${styles.modalBtnDanger}`}
+                                disabled={false}
                             />
                         </ModalFooter>
                     </>

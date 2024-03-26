@@ -4,7 +4,7 @@ const Logo = () => {
     return (
         <div className={`${styles.logo} d-flex flex-row align-items-center`}>
             <img src={logoImage} alt="Logo" />
-            <h1 className='m-0'>Solo Resume</h1>
+            <h1 className='m-0 '>Solo Resume</h1>
         </div>
     )
 }
