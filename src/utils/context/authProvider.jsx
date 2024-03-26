@@ -30,7 +30,6 @@ const AuthProvider = ({ children }) => {
                 localStorage.removeItem('token');
                 localStorage.removeItem('username');
                 localStorage.removeItem('refreshToken');    
-
             } catch (error) {
                 console.error("Error al parsear la respuesta JSON:", error);
             }

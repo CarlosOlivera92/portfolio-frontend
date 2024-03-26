@@ -35,6 +35,7 @@ const Signup = () => {
         try {
             const response = await request(endpoint, config);
             if (!response.ok) {
+                setIsRegisterSuccess(false);
                 throw new Error(`HTTP Error: ${response.status} - ${response.statusText}`);
             }
             const responseData = await response.json();

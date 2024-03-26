@@ -9,12 +9,12 @@ const ActionButton = ( {name, onClick, type, classList, disabled, href} ) => {
             <>
                 {href ? (
                     <a href={href}>
-                        <button className={`button ${classList}`} onClick={handleClick} type={type} disabled={disabled}>
+                        <button className={`${styles.button} ${classList}`} onClick={handleClick} type={type} disabled={disabled}>
                             {name} 
                         </button>
                     </a>
                 ) : (
-                    <button className={`button ${classList}`} onClick={handleClick} type={type} disabled={disabled}>
+                    <button className={`${styles.button} ${classList}`} onClick={handleClick} type={type} disabled={disabled}>
                         {name} 
                     </button>
                 )}
