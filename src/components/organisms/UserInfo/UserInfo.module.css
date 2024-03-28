@@ -53,7 +53,8 @@
 .modalBtn:hover {
     background-color: #005da6;
     color: #fff;
-}.modalBtnDanger:hover {
+}
+.modalBtnDanger:hover {
     color: #fff;
     background-color: #f44336;
 }

@@ -10,13 +10,14 @@ import CoursesSection from "../../../components/templates/CoursesSection/Courses
 import EducationSection from "../../../components/templates/EducationSection/EducationSection";
 import UserInfo from "../../../components/organisms/UserInfo/UserInfo";
 import Spinner from "../../../components/atoms/spinner/spinner";
+import { useUser } from "../../../utils/context/userContext";
 const PersonalArea = ({user, loadingData}) => {
     const location = useLocation();
     const [hasPermissionToEdit, setHasPermissionToEdit] = useState(false);
     const { isAuthenticated } = useAuth();
 
     const { loading, error, request, data } = useApi();
-    const [userInfo, setUserInfo] = useState(user.userInfo);
+    const {userInfo, setUserInfo} = useUser();
     let educationalBackground;
     let courses;
     let professions;
@@ -30,21 +31,7 @@ const PersonalArea = ({user, loadingData}) => {
         projects = userInfo.projects;
     }
 
-    const updateUserInfo = async () => {
-        try {
-            const apiEndpoint = `http://localhost:8080/api/users/userinfo/${user.username}`
-            const config = {
-                httpVerb: "GET",
-            };
-            const response = await request(apiEndpoint, config, isAuthenticated);
-            if (response.ok) {
-                const updatedUserInfo = await response.json(); 
-                setUserInfo(updatedUserInfo);
-            }
-        } catch (error) {
-            console.error("Error al actualizar la información del usuario: ", error);
-        }
-    };
+
     const hasEditPermission = async (endpoint) => {
         try {
             const config = {
@@ -81,7 +68,7 @@ const PersonalArea = ({user, loadingData}) => {
     }
     return (
         <div className="container">
-            <UserInfo hasPermissionToEdit={hasPermissionToEdit} user={user} userInfo={userInfo} updateUserInfo={updateUserInfo} />
+            <UserInfo hasPermissionToEdit={hasPermissionToEdit} user={user} userInfo={userInfo}/>
             <ProfessionalSection hasPermissionToEdit={hasPermissionToEdit} professions={professions} />
             <EducationSection hasPermissionToEdit={hasPermissionToEdit} educationalBackground={educationalBackground} />
             <CoursesSection hasPermissionToEdit={hasPermissionToEdit} courses={courses} />

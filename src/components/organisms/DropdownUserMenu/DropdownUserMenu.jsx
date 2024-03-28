@@ -5,10 +5,12 @@ import gsap from 'gsap';
 import styles from './DropdownUserMenu.module.css'; 
 import Profile from '../../molecules/profile/Profile';
 import defaultProfilePic from '../../../../src/assets/img/defaultProfilePic.jpg';
+import { useUser } from '../../../utils/context/userContext';
 
 const DropdownUserMenu = ({ user, username, path }) => {
     const [isOpen, setIsOpen] = useState(false);
-    const profilePicUrl = user.userInfo.profilePicUrl != null ? user.userInfo.profilePicUrl : defaultProfilePic;
+    const {profilePic} = useUser();
+    const profilePicUrl = profilePic ? profilePic : defaultProfilePic;
     
     // Ref para el menú desplegable y para la animación de GSAP
     const dropdownMenuRef = useRef(null);

@@ -14,7 +14,7 @@ import Spinner from '../../components/atoms/spinner/spinner';
 const Portfolio = () => {
     const [token, setToken] = useState();
     const [currentRefreshToken, setCurrentRefreshToken] = useState();
-    const {user, setUser} = useUser();
+    const { user, setUser, setProfilePic, userInfo, setUserInfo } = useUser(); 
     const { isAuthenticated } = useAuth();
     const {username} = useParams();
     const { loading, error, request, data } = useApi();
@@ -47,6 +47,7 @@ const Portfolio = () => {
             try {
                 const responseBody = await response.json();
                 setUser(responseBody);
+                setUserInfo(responseBody.userInfo)
             } catch (error) {
                 console.error("Error al parsear la respuesta JSON:", error);
             }
@@ -85,17 +86,33 @@ const Portfolio = () => {
             console.error('Error al procesar la solicitud de refresh token:', error);
         }
     };
+    const getProfilePic = async () => {
+        try {
+            const apiEndpoint = `http://localhost:8080/api/users/profile-pic/${user.username}`;
+            const config = {
+                httpVerb: "GET"
+            };
+            const response = await request(apiEndpoint, config, isAuthenticated);
+            if (response.ok) {
+                const base64String = await response.text(); 
+                const imageUrl = `data:image/png;base64,${base64String}`;
+                setProfilePic(imageUrl);
+            } else {
+                console.error("Error al cargar la foto de perfil: ", response.statusText);
+            }
+        } catch (error) {
+            console.error("Error al cargar la foto de perfil: ", error);
+        }
+    };
     const setupTokenRefresh = (expirationTime) => {
-        const currentTime = Math.floor(Date.now() / 1000); // Tiempo actual en segundos UNIX
-        const timeUntilRefresh = expirationTime - currentTime - 500; 
+        let currentTime = Math.floor(Date.now() / 1000); // Tiempo actual en segundos UNIX
+        let timeUntilRefresh = expirationTime - currentTime - 500; 
         if (timeUntilRefresh > 0) {
           // Configura el temporizador para refrescar el token justo antes de que expire
+          setExpired(false);
           setTimeout( () => refreshToken( "http://localhost:8080/api/auth/refreshtoken" , currentRefreshToken) , timeUntilRefresh * 1000); // Multiplica por 1000 para convertir a milisegundos
         } else {
           console.error('El tiempo para refrescar el token ya ha pasado');
-          localStorage.removeItem('token');
-          localStorage.removeItem('refreshToken')
-          localStorage.removeItem('username')
 
           setExpired(true);
         }
@@ -113,13 +130,13 @@ const Portfolio = () => {
             const decodedToken = decodeToken(storedToken);
             setupTokenRefresh(decodedToken.exp);
         }
-      
         getUser(`http://localhost:8080/api/users/user/${username}`);
 
-    }, [token, expired]);
+    }, [token]);
     useEffect(() => {
         if (user) {
             setUserData(user);
+            getProfilePic();
         }
     }, [user]);
     if (loading) {
