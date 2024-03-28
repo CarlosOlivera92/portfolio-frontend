@@ -24,7 +24,6 @@ const UserInfo = ({ user, userInfo, hasPermissionToEdit  }) => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const { loading, error, request, data } = useApi(); 
     const { isAuthenticated } = useAuth();
-    const [isDataEdited, setIsDataEdited] = useState(false); 
 
     const [showToast, setShowToast] = useState(false);
     const [message, setMessage] = useState(null);
@@ -47,7 +46,7 @@ const UserInfo = ({ user, userInfo, hasPermissionToEdit  }) => {
     const handleFormSubmit = async (formData) => {
         setShowToast(true);
         try {
-            if (selectedItem.type == "personalData") {
+            if (selectedItem.type == "personalData" || selectedItem.type == "banner") {
                 for (const key in formData) {
                     if (formData.hasOwnProperty(key) && formData[key] === "") {
                         formData[key] = null;
@@ -86,7 +85,6 @@ const UserInfo = ({ user, userInfo, hasPermissionToEdit  }) => {
             }
             const response = await request(apiEndpoint, config, isAuthenticated);
             if (response.ok) {
-                setIsDataEdited(true);
                 setIsModalOpen(false);
                 setErrorApi(false);
                 setMessage("Datos actualizados!");
