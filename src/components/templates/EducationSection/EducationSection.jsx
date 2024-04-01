@@ -114,7 +114,7 @@ const EducationSection = ({ hasPermissionToEdit, educationalBackground }) => {
 
         } catch (error) {
             setErrorApi(true);
-            setMessage("Ha habido un error intentando eliminarl el elemento seleccionado.");
+            setMessage("Ha habido un error intentando eliminar el elemento seleccionado.");
             console.error("Error al eliminar el elemento:", error);
         }
     };
