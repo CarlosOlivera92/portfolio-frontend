@@ -14,16 +14,13 @@ export const useApi = () => {
         headers['Authorization'] = `Bearer ${token}`;
       }
 
-      // Verificar si config.headers está definido pero vacío
       const isEmptyHeaders = config.headers && Object.keys(config.headers).length === 0;
 
-      // Fusionar los headers proporcionados en el config con los headers predeterminados
       const requestHeaders = {
         ...headers,
-        ...(isEmptyHeaders ? {} : config.headers) // Fusionar solo si config.headers no está vacío
+        ...(isEmptyHeaders ? {} : config.headers) 
       };
 
-      // Si el tipo es file, crear un nuevo objeto de configuración solo con el encabezado de autorización
       if (config.headers && config.headers.type === "file") {
         const file = new FormData();
         file.append("file", config.data);

@@ -40,7 +40,7 @@ const GeneralSettings = ({ userData }) => {
 const SecuritySettings = () => {
     const [showModal, setShowModal] = useState(false);
     const navigate = useNavigate(); 
-    const {user} = useUser();
+    const {currentUser} = useUser();
     const { isAuthenticated } = useAuth();
     const { loading, error, request, data } = useApi(); 
 
@@ -51,7 +51,7 @@ const SecuritySettings = () => {
     const handleDeleteAccount = async () => {
         try {
 
-            const apiEndpoint = `http://localhost:8080/api/users/${user.username}`;
+            const apiEndpoint = `http://localhost:8080/api/users/${currentUser.username}`;
             const config = {
                 httpVerb: 'DELETE',
                 data: null, 
@@ -123,13 +123,13 @@ const AsideMenu = ({ onSelect, selectedOption }) => {
 
 // Settings Component
 const Settings = ({ userData }) => {
-  const { user } = useUser();
+  const { currentUser } = useUser();
   const [selectedOption, setSelectedOption] = useState('general');
 
   return (
     <div className={`${styles.settingsContainer} container`}>
       <AsideMenu onSelect={setSelectedOption} selectedOption={selectedOption} />
-      {selectedOption === 'general' && <GeneralSettings userData={user} />}
+      {selectedOption === 'general' && <GeneralSettings userData={currentUser} />}
       {selectedOption === 'security' && <SecuritySettings />}
     </div>
   );

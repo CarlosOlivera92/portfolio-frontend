@@ -12,14 +12,11 @@ import TextContent from '../../components/atoms/text-content/text-content';
 import { useTheme } from '../../utils/context/themeContext';
 import Spinner from '../../components/atoms/spinner/spinner';
 const Portfolio = () => {
-    const [token, setToken] = useState();
-    const [currentRefreshToken, setCurrentRefreshToken] = useState();
     const { user, setUser, setProfilePic, userInfo, setUserInfo } = useUser(); 
-    const { isAuthenticated } = useAuth();
+    const { isAuthenticated, expired } = useAuth();
     const {username} = useParams();
     const { loading, error, request, data } = useApi();
     const [userData, setUserData] = useState({})
-    const [expired, setExpired] = useState(null);
     const { darkTheme, toggleTheme } = useTheme();
     const decodeToken = (token) => {
         const tokenParts = token.split('.'); // Separar el token en sus partes
@@ -35,23 +32,28 @@ const Portfolio = () => {
           return null;
         }
     };
-    const getUser = async (endpoint) => {
+    const getUser = async () => {
         try {
+            const apiEndpoint = `http://localhost:8080/api/users/user/${username}`;
+
             const config = {
                 httpVerb: "GET",
             };
-            const response = await request(endpoint, config, isAuthenticated);
+            const response = await request(apiEndpoint, config, isAuthenticated);
             if (!response.ok) {
-                throw response;
+                const parsedResponse = await response.json();
+                console.log(parsedResponse)
+                throw parsedResponse;
             }
             try {
                 const responseBody = await response.json();
                 setUser(responseBody);
                 setUserInfo(responseBody.userInfo)
             } catch (error) {
-                console.error("Error al parsear la respuesta JSON:", error);
+                console.error("Error al obtener el usuario: ", error);
             }
         } catch (error) {
+            console.log(error)
             if (error.status === 500) {
                 console.log(error)
             } else if (error.status === 403) {
@@ -60,32 +62,6 @@ const Portfolio = () => {
         }
     };
 
-    const refreshToken = async (endpoint, refreshToken) => {
-        try {
-            const config = {
-                httpVerb: "POST",
-                data: {
-                    refreshToken: refreshToken
-                }
-            };
-            const response = await request(endpoint, config, isAuthenticated);
-            if (response.ok) {
-                const data = await response.json();
-                const newToken = data.accessToken; // Suponiendo que el nuevo token está en la respuesta
-                // Guardar el nuevo token en el almacenamiento local o en el estado de la aplicación
-                localStorage.setItem('token', newToken);
-                localStorage.setItem('refreshToken', data.refreshToken)
-                // O actualiza el estado con el nuevo token
-                setToken(newToken);
-                setCurrentRefreshToken(data.refreshToken)
-
-            } else {
-                console.error('Error al obtener el nuevo token');
-            }
-            } catch (error) {
-            console.error('Error al procesar la solicitud de refresh token:', error);
-        }
-    };
     const getProfilePic = async () => {
         try {
             const apiEndpoint = `http://localhost:8080/api/users/profile-pic/${user.username}`;
@@ -104,35 +80,13 @@ const Portfolio = () => {
             console.error("Error al cargar la foto de perfil: ", error);
         }
     };
-    const setupTokenRefresh = (expirationTime) => {
-        let currentTime = Math.floor(Date.now() / 1000); // Tiempo actual en segundos UNIX
-        let timeUntilRefresh = expirationTime - currentTime - 500; 
-        if (timeUntilRefresh > 0) {
-          // Configura el temporizador para refrescar el token justo antes de que expire
-          setExpired(false);
-          setTimeout( () => refreshToken( "http://localhost:8080/api/auth/refreshtoken" , currentRefreshToken) , timeUntilRefresh * 1000); // Multiplica por 1000 para convertir a milisegundos
-        } else {
-          console.error('El tiempo para refrescar el token ya ha pasado');
 
-          setExpired(true);
-        }
-    };
     useEffect(() => {
-        const storedToken = localStorage.getItem('token');
-        const storedRefreshToken = localStorage.getItem('refreshToken');
-        if (storedToken && storedRefreshToken) {
-            setToken(storedToken);
-            setCurrentRefreshToken(storedRefreshToken);
+        if(username) {
+            getUser();
         }
-        if(token) {
-            
-            // Decodificar el token para obtener los claims (payload)
-            const decodedToken = decodeToken(storedToken);
-            setupTokenRefresh(decodedToken.exp);
-        }
-        getUser(`http://localhost:8080/api/users/user/${username}`);
 
-    }, [token]);
+    }, [username]);
     useEffect(() => {
         if (user) {
             setUserData(user);

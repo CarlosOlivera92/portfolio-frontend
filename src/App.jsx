@@ -17,22 +17,22 @@ import { ThemeProvider } from './utils/context/themeContext';
 function App() {
   return (
     <Router history={history}>
-      <AuthProvider>
-        <UserProvider>
-          <ThemeProvider >
-            <Header/>
-            <Routes>
-              <Route path="/" element={<Home/>}/>
-              <Route path="/signin" element={<Signin />} />
-              <Route path="/signup" element={<Singup />} />
-              <Route path='/forgotpassword' element={<ForgotPassword/>} />
-              <Route path='/resetpassword' element={<ResetPassword/>} />
-              <Route path='/logout' element={<Logout/>}/>
-              <Route path='/portfolio/:username/*' element={<Portfolio/>}/>
-            </Routes>
-          </ThemeProvider>
-        </UserProvider>
-      </AuthProvider>
+      <UserProvider>
+        <AuthProvider >
+        <ThemeProvider >
+          <Header/>
+          <Routes>
+            <Route path="/" element={<Home/>}/>
+            <Route path="/signin" element={<Signin />} />
+            <Route path="/signup" element={<Singup />} />
+            <Route path='/forgotpassword' element={<ForgotPassword/>} />
+            <Route path='/resetpassword' element={<ResetPassword/>} />
+            <Route path='/logout' element={<Logout/>}/>
+            <Route path='/portfolio/:username/*' element={<Portfolio/>}/>
+          </Routes>
+        </ThemeProvider>
+        </AuthProvider>
+      </UserProvider>
     </Router>
   )
 }

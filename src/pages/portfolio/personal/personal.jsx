@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useParams } from "react-router-dom";
 import { useApi } from "../../../utils/api/useApi";
 import { useAuth } from "../../../utils/hooks/useAuth";
 import { useEffect } from "react";
@@ -15,7 +15,8 @@ const PersonalArea = ({user, loadingData}) => {
     const location = useLocation();
     const [hasPermissionToEdit, setHasPermissionToEdit] = useState(false);
     const { isAuthenticated } = useAuth();
-
+    const {currentUser} = useUser();
+    const {username} = useParams();
     const { loading, error, request, data } = useApi();
     const {userInfo, setUserInfo} = useUser();
     let educationalBackground;
@@ -33,39 +34,29 @@ const PersonalArea = ({user, loadingData}) => {
 
 
     const hasEditPermission = async (endpoint) => {
+        const config = {
+            httpVerb: "POST",
+            data: location.pathname
+        };
+        const response = await request(endpoint, config, isAuthenticated);
+        if (!response.ok) {
+            throw response;
+        }
         try {
-            const config = {
-                httpVerb: "POST",
-                data: location.pathname
-            };
-            const response = await request(endpoint, config, isAuthenticated);
-            if (!response.ok) {
-                throw response;
-            }
-            try {
-                const responseBody = await response.json();
-                setHasPermissionToEdit(true);
-            } catch (error) {
-                console.error("Error al parsear la respuesta JSON:", error);
-            }
+            setHasPermissionToEdit(true);
         } catch (error) {
-            if (error.status === 500) {
-                console.log(error)
-            } else if (error.status === 403) {
-                console.log(error)
-            }
+            console.error("Error al parsear la respuesta JSON:", error);
         }
     };
     useEffect(() => {
-        if (isAuthenticated) {
-            hasEditPermission(`http://localhost:8080/api/check-permission/edit-profile`);
+        if (currentUser && username) {
+            if (currentUser.username == username) {
+                hasEditPermission(`http://localhost:8080/api/check-permission/edit-profile`);
+            }
         }
+
     }, []);
-    if (loading) {
-        return (
-            <Spinner isOpen={loading}/>
-        )
-    }
+
     return (
         <div className="container">
             <UserInfo hasPermissionToEdit={hasPermissionToEdit} user={user} userInfo={userInfo}/>

@@ -9,7 +9,7 @@ import DropdownUserMenu from '../../organisms/DropdownUserMenu/DropdownUserMenu'
 import { useTheme } from '../../../utils/context/themeContext';
 import { useState } from 'react';
 const Navbar = ({isAuthenticated, username}) => {
-    const {user} = useUser();
+    const {currentUser} = useUser();
     const location = useLocation();
     const path = location.pathname;
     const { darkTheme, toggleTheme } = useTheme();
@@ -28,9 +28,9 @@ const Navbar = ({isAuthenticated, username}) => {
                             <NavLink className={`${path === `/` ? styles.active : ""}`} to={`/`}>Inicio</NavLink>
                         </li>
                 )}
-                {isAuthenticated && user ? (
+                {isAuthenticated && currentUser ? (
                     <>
-                        <DropdownUserMenu user={user} username={username} path={path} />
+                        <DropdownUserMenu user={currentUser} username={username} path={path} />
                     </>
                 ) : (
                     <>
