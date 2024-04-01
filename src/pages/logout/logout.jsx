@@ -13,7 +13,7 @@ const Logout = () => {
             setIsLoggedOut(true);
             navigate('/signin'); 
         }
-    }, [isAuthenticated, logout, isLoggedOut, navigate]); 
+    }, [isAuthenticated]); 
   
     return null;
 } 

@@ -13,6 +13,7 @@ import Portfolio from './pages/portfolio/portfolio';
 import  { UserProvider }  from './utils/context/userProvider';
 import '@fortawesome/fontawesome-free/css/all.min.css';
 import { ThemeProvider } from './utils/context/themeContext';
+import NotFound from './pages/NotFound/NotFound';
 
 function App() {
   return (
@@ -29,6 +30,7 @@ function App() {
             <Route path='/resetpassword' element={<ResetPassword/>} />
             <Route path='/logout' element={<Logout/>}/>
             <Route path='/portfolio/:username/*' element={<Portfolio/>}/>
+            <Route path='*' element={<NotFound/>}/>
           </Routes>
         </ThemeProvider>
         </AuthProvider>

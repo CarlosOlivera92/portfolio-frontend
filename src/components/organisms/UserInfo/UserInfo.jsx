@@ -16,7 +16,7 @@ import Spinner from "../../atoms/spinner/spinner";
 import Toast from "../toast/toast";
 const UserInfo = ({ user, userInfo, hasPermissionToEdit  }) => {
     const defaultImageUrl = "https://t4.ftcdn.net/jpg/04/95/28/65/360_F_495286577_rpsT2Shmr6g81hOhGXALhxWOfx1vOQBa.jpg"; 
-    const {profilePic, setProfilePic, setUserInfo} = useUser();
+    const {profilePic, setProfilePic, setUserInfo, setCurrentUserProfilePic} = useUser();
     const bannerPicUrl = userInfo.bannerPicUrl != null ? userInfo.bannerPicUrl : defaultImageUrl;
     const profilePicUrl = !profilePic ? defaultProfilePic : profilePic;
 
@@ -91,7 +91,8 @@ const UserInfo = ({ user, userInfo, hasPermissionToEdit  }) => {
                 if (selectedItem.type == "profile") {
                     const image = formData.file;
                     const imageUrl = URL.createObjectURL(image);
-                    setProfilePic(imageUrl)
+                    setProfilePic(imageUrl);
+                    setCurrentUserProfilePic(imageUrl);
                     setMessage("Foto de perfil actualizada");
                 } else if (selectedItem.type == "banner" || selectedItem.type == "personalData") {
                     const updatedUserInfo = await response.json();

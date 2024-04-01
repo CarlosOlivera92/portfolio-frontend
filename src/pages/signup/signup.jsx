@@ -71,7 +71,7 @@ const Signup = () => {
             registerUser("http://localhost:8080/api/auth/signup");
             setIsRegisterSuccess(true);
         }
-    }, [formCompleted, formData, request, currentStep, isUsernameAvailable, isRegisterSuccess]);
+    }, [formCompleted, formData]);
 
     const handleFormSubmit = async (data) => {
         const { repeatPassword, ...dataWithoutRepeatPassword } = data;

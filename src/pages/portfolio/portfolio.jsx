@@ -11,8 +11,9 @@ import Modal from '../../components/organisms/modal/modal';
 import TextContent from '../../components/atoms/text-content/text-content';
 import { useTheme } from '../../utils/context/themeContext';
 import Spinner from '../../components/atoms/spinner/spinner';
+import NotFound from '../NotFound/NotFound';
 const Portfolio = () => {
-    const { user, setUser, setProfilePic, userInfo, setUserInfo } = useUser(); 
+    const { user, setUser, setProfilePic, userInfo, setUserInfo, currentUser } = useUser(); 
     const { isAuthenticated, expired } = useAuth();
     const {username} = useParams();
     const { loading, error, request, data } = useApi();
@@ -64,17 +65,19 @@ const Portfolio = () => {
 
     const getProfilePic = async () => {
         try {
-            const apiEndpoint = `http://localhost:8080/api/users/profile-pic/${user.username}`;
-            const config = {
-                httpVerb: "GET"
-            };
-            const response = await request(apiEndpoint, config, isAuthenticated);
-            if (response.ok) {
-                const base64String = await response.text(); 
-                const imageUrl = `data:image/png;base64,${base64String}`;
-                setProfilePic(imageUrl);
-            } else {
-                console.error("Error al cargar la foto de perfil: ", response.statusText);
+            if (user) {
+                const apiEndpoint = `http://localhost:8080/api/users/profile-pic/${user.username}`;
+                const config = {
+                    httpVerb: "GET"
+                };
+                const response = await request(apiEndpoint, config, isAuthenticated);
+                if (response.ok) {
+                    const base64String = await response.text(); 
+                    const imageUrl = `data:image/png;base64,${base64String}`;
+                    setProfilePic(imageUrl);
+                } else {
+                    console.error("Error al cargar la foto de perfil: ", response.statusText);
+                }
             }
         } catch (error) {
             console.error("Error al cargar la foto de perfil: ", error);
@@ -85,7 +88,6 @@ const Portfolio = () => {
         if(username) {
             getUser();
         }
-
     }, [username]);
     useEffect(() => {
         if (user) {
@@ -120,11 +122,18 @@ const Portfolio = () => {
                     {user && (
                         <Route path="/personal" element={<PersonalArea user={user} loadingData={loading} />} />
                     )}
-                    <Route path='/settings' element={<Settings/>} />
+                    {isAuthenticated && currentUser.username === username && (
+                        <Route path='/settings' element={<Settings/>} />
+                    )}
                 </Routes>
             </div>
         )
-    }
+    } 
+    return (
+        <Routes>
+            <Route path='*' element={<NotFound/>}/>
+        </Routes>
+    )
     
 }
 export default Portfolio;

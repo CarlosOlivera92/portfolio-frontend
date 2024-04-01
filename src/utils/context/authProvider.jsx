@@ -116,7 +116,6 @@ const AuthProvider = ({ children }) => {
                 throw response;
             }
             try {
-                const responseBody = await response.json();
                 localStorage.removeItem('token');
                 localStorage.removeItem('username');
                 localStorage.removeItem('refreshToken');    
