@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import gsap from 'gsap';
 
-import styles from './EducationALSection.module.css'; 
+import styles from './EducationalSection.module.css'; 
 import InfoItem from "../../molecules/info-item/InfoItem";
 import defaultEducationPic from '../../../assets/img/defaultInstitutionPic.png';
 import ActionIcon from "../../atoms/action-icon/ActionIcon";
