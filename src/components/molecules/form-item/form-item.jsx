@@ -1,6 +1,6 @@
 import InputItem from "../../atoms/input-item/input-item";
 
-const FormItem = ({ props, type, name, label, required, value, onChange, error }) => {
+const FormItem = ({ props, type, name, label, required, value, onChange, error, classList }) => {
   const isValid = !error && value !== "";
   return (
     <div className={`form-item ${type === "textarea" ? "col-12" : "col-md-6"}`}>
@@ -14,7 +14,7 @@ const FormItem = ({ props, type, name, label, required, value, onChange, error }
 
         </>
       ) : (
-        <div className="form-item d-flex flex-column">
+        <div className={`form-item d-flex flex-column ${classList}`}>
           <label htmlFor={name}>{label}</label>
           <InputItem id={name} type={type} name={name} value={value} onChange={onChange} required={required}/>
           {!isValid && <div className="error">{error}</div>}

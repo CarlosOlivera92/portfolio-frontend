@@ -122,7 +122,7 @@ const Portfolio = () => {
                     {user && (
                         <Route path="/personal" element={<PersonalArea user={user} loadingData={loading} />} />
                     )}
-                    {isAuthenticated && currentUser.username === username && (
+                    {currentUser && currentUser.username === username && (
                         <Route path='/settings' element={<Settings/>} />
                     )}
                 </Routes>

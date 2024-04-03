@@ -18,11 +18,13 @@ const FormSection = ({ title, fields, values, errors, handleChange, isUsernameIn
               required={false}
             />
           ) : (
-            <input
-              type="file"
+            <FormItem
+              type={field.type}
               name={field.name}
-              onChange={(e) => handleChange(field.name, e.target.files[0])} // Manejar el evento de cambio para campos de tipo "file"
-              accept={field.accept} // Opcional: especifica el tipo de archivos permitidos
+              label={field.label}
+              error={errors[field.name]}
+              onChange={(e) => handleChange(field.name, e.target.files[0])} 
+              classList={"fileItem"}
             />
           )}
           {

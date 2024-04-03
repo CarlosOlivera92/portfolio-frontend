@@ -317,7 +317,7 @@ export const profilePicUrlForm = {
   fields: [
     {
       name: "file",
-      label: "Subir foto de perfil",
+      label: "Sube o arrastra una imágen",
       type: "file", 
       accept: "image/*",
       validation: Yup.mixed()
