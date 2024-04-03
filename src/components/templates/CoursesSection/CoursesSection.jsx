@@ -14,6 +14,8 @@ import { useUser } from '../../../utils/context/userContext';
 import { useApi } from '../../../utils/api/useApi';
 import { useAuth } from '../../../utils/hooks/useAuth';
 import { coursesForm } from '../../../utils/form-utils/forms-config';
+import Toast from '../../organisms/toast/toast';
+import Spinner from '../../atoms/spinner/spinner';
 const CoursesSection = ({ hasPermissionToEdit, courses }) => {
     const [isOpen, setIsOpen] = useState(false);
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -29,6 +31,10 @@ const CoursesSection = ({ hasPermissionToEdit, courses }) => {
     const [coursesData, setCoursesData] = useState(courses);
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+
+    const [showToast, setShowToast] = useState(false);
+    const [message, setMessage] = useState(null);
+    const [errorApi, setErrorApi] = useState();
 
     useEffect(() => {
         const section = sectionRef.current.querySelectorAll(".infoItems");
@@ -65,10 +71,6 @@ const CoursesSection = ({ hasPermissionToEdit, courses }) => {
         setIsOpen(prev => !prev);
     };
 
-    const toggleModal = () => {
-        setIsModalOpen(prev => !prev);
-    };
-
     const toggleNewCourseModal = () => {
         setIsNewCoursesModalOpen(prev => !prev);
     };
@@ -80,8 +82,16 @@ const CoursesSection = ({ hasPermissionToEdit, courses }) => {
     const toggleDeleteModal = () => {
         setIsDeleteModalOpen(prev => !prev);
     };
+    // Funciones para controlar la visibilidad del toast
+    const handleToastVisibility = (visible) => {
+        setShowToast(visible); 
+    };
+    const toggleModal = () => {
+        setIsModalOpen(prev => !prev);
+    };    
 
     const handleDeleteItem = async () => {
+        setShowToast(true);
         try {
             if (!selectedItemToDelete) {
                 console.error("No se ha seleccionado ningún elemento para eliminar.");
@@ -94,8 +104,9 @@ const CoursesSection = ({ hasPermissionToEdit, courses }) => {
             };
             
             const response = await request(apiEndpoint, config, isAuthenticated);
-            console.log("Respuesta de la API:", response);
             if (response.ok) {
+                setErrorApi(false);
+                setMessage("¡Elemento eliminado!");
                 const updatedCourses = coursesData.filter(item => item.id !== selectedItemToDelete.itemId);
                 setCoursesData(updatedCourses);
     
@@ -103,11 +114,14 @@ const CoursesSection = ({ hasPermissionToEdit, courses }) => {
             }
 
         } catch (error) {
+            setErrorApi(true);
+            setMessage("Ha habido un error intentando eliminar el elemento seleccionado.");
             console.error("Error al eliminar el elemento:", error);
         }
     };
 
     const handleFormSubmit = async (formData) => {
+        setShowToast(true);
         try {
             const apiEndpoint = `http://localhost:8080/api/courses/${user.username}`;
             const config = {
@@ -116,6 +130,8 @@ const CoursesSection = ({ hasPermissionToEdit, courses }) => {
             };
             const response = await request(apiEndpoint, config, isAuthenticated);
             if (response.ok) {
+                setErrorApi(false);
+                setMessage("¡Nuevo elemento agregado!");
                 const newResponse = await response.json();
                 const newCourse = { ...newResponse, id: newResponse.id };
                 setCoursesData(prevData => [...prevData, newCourse]);
@@ -124,11 +140,14 @@ const CoursesSection = ({ hasPermissionToEdit, courses }) => {
                 throw new Error("Error al crear el nuevo curso");
             }
         } catch (error) {
+            setErrorApi(true);
+            setMessage("Ha habido un error intentando crear el nuevo elemento.");
             console.error("Error al crear el nuevo curso: ", error);
         }
     };
 
     const handleFormEditSubmit = async (formData) => {
+        setShowToast(true);
         try {
             const apiEndpoint = `http://localhost:8080/api/courses/${user.username}/item/${selectedItem.itemId}`;
             const config = {
@@ -137,6 +156,8 @@ const CoursesSection = ({ hasPermissionToEdit, courses }) => {
             };
             const response = await request(apiEndpoint, config, isAuthenticated);
             if (response.ok) {
+                setErrorApi(false);
+                setMessage("¡Datos actualizados!");
                 const newResponse = await response.json();
                 const updatedCourses = { ...newResponse, id: newResponse.id };
                 setCoursesData(prevData => prevData.map(item => {
@@ -150,6 +171,8 @@ const CoursesSection = ({ hasPermissionToEdit, courses }) => {
                 throw new Error("Error al editar la información del curso");
             }
         } catch (error) {
+            setErrorApi(true);
+            setMessage("Ha habido un error tratando de actualizar su información.");
             console.error("Error al editar la información del curso:", error);
         }
     };
@@ -167,6 +190,9 @@ const CoursesSection = ({ hasPermissionToEdit, courses }) => {
     };
     return (
         <section className={`${styles.coursesInfo} coursesInfo`} ref={sectionRef}>
+            {loading && (
+                <Spinner isOpen={loading} />
+            )}
             <div className={`${styles.actionsContainer}`}>
                 <h2 className={styles.title}>Cursos</h2>
                 <div className={styles.buttonsWrapper}>
@@ -239,6 +265,7 @@ const CoursesSection = ({ hasPermissionToEdit, courses }) => {
                     </>
                 )}
             </Modal>
+            <Toast text={message} error={errorApi} showToasty={showToast} onToastClose={handleToastVisibility}/>
         </section>
     );
 };

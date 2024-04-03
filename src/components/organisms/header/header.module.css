@@ -20,6 +20,10 @@
 @media screen and (max-width: 1024px) {
     .portfolioHeader {
         max-width: 23.6rem ;
+        flex-direction: row !important;
         height: fit-content;
+    }
+    .headerContainer {
+        flex-direction: column;
     }
 }

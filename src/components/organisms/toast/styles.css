@@ -2,7 +2,7 @@
     display: none;
     width: 20rem;
     height: fit-content;
-    position: absolute;
+    position: fixed;
     margin: 4rem 1rem;
     top: 0;
     right: 0;

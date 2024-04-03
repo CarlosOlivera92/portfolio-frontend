@@ -136,6 +136,15 @@ textarea {
     color: #28a745;
     font-size: 14px;
 }
+.fileItem {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+    outline: dashed;
+    border-radius: .7rem;
+    outline-color: #005da6;
+}
 
 
 @keyframes gradient {

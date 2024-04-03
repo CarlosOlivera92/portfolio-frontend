@@ -5,16 +5,15 @@ import { useAuth } from '../../utils/hooks/useAuth';
 const Logout = () => {
     const navigate = useNavigate();
     const { isAuthenticated, logout } = useAuth();
-    const [isLoggedOut, setIsLoggedOut] = useState(false); // Corrección aquí
+    const [isLoggedOut, setIsLoggedOut] = useState(false);
 
     useEffect(() => {
-        console.log("hola")
         if (isAuthenticated && !isLoggedOut) {
             logout();
             setIsLoggedOut(true);
             navigate('/signin'); 
         }
-    }, [isAuthenticated, logout, isLoggedOut, navigate]); 
+    }, [isAuthenticated]); 
   
     return null;
 } 

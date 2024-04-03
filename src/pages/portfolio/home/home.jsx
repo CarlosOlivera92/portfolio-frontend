@@ -1,6 +1,6 @@
 const Home = () => {
     return (
-        <p>hola, qué desea hacer hoy?</p>
+        null
     )
 }
 export default Home;

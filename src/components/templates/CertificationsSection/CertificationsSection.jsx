@@ -14,6 +14,8 @@ import TextContent from '../../atoms/text-content/text-content';
 import { useApi } from '../../../utils/api/useApi';
 import { useUser } from '../../../utils/context/userContext';
 import { useAuth } from '../../../utils/hooks/useAuth';
+import Toast from '../../organisms/toast/toast';
+import Spinner from '../../atoms/spinner/spinner';
 
 const CertificationsSection = ({ hasPermissionToEdit, certifications }) => {
     const [isOpen, setIsOpen] = useState(false);
@@ -30,6 +32,10 @@ const CertificationsSection = ({ hasPermissionToEdit, certifications }) => {
     const [certificationsData, setCertificationsData] = useState(certifications);
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+
+    const [showToast, setShowToast] = useState(false);
+    const [message, setMessage] = useState(null);
+    const [errorApi, setErrorApi] = useState();
 
     useEffect(() => {
         const section = sectionRef.current.querySelectorAll(".infoItems");
@@ -81,8 +87,12 @@ const CertificationsSection = ({ hasPermissionToEdit, certifications }) => {
     const toggleDeleteModal = () => {
         setIsDeleteModalOpen(prev => !prev);
     };
-
+    // Funciones para controlar la visibilidad del toast
+    const handleToastVisibility = (visible) => {
+        setShowToast(visible); 
+    };
     const handleDeleteItem = async () => {
+        setShowToast(true);
         try {
             if (!selectedItemToDelete) {
                 console.error("No se ha seleccionado ningún elemento para eliminar.");
@@ -96,6 +106,8 @@ const CertificationsSection = ({ hasPermissionToEdit, certifications }) => {
             
             const response = await request(apiEndpoint, config, isAuthenticated);
             if (response.ok) {
+                setErrorApi(false);
+                setMessage("¡Elemento eliminado!");
                 const updatedCertifications = certificationsData.filter(item => item.id !== selectedItemToDelete.itemId);
                 setCertificationsData(updatedCertifications);
     
@@ -103,11 +115,14 @@ const CertificationsSection = ({ hasPermissionToEdit, certifications }) => {
             }
 
         } catch (error) {
+            setErrorApi(true);
+            setMessage("Ha habido un error intentando eliminar el elemento seleccionado.");
             console.error("Error al eliminar el elemento:", error);
         }
     };
 
     const handleFormSubmit = async (formData) => {
+        setShowToast(true);
         try {
             const apiEndpoint = `http://localhost:8080/api/certifications/${user.username}`;
             const config = {
@@ -116,6 +131,8 @@ const CertificationsSection = ({ hasPermissionToEdit, certifications }) => {
             };
             const response = await request(apiEndpoint, config, isAuthenticated);
             if (response.ok) {
+                setErrorApi(false);
+                setMessage("¡Nuevo elemento agregado!");
                 const newResponse = await response.json();
                 const newCertification = { ...newResponse, id: newResponse.id };
                 setCertificationsData(prevData => [...prevData, newCertification]);
@@ -124,19 +141,24 @@ const CertificationsSection = ({ hasPermissionToEdit, certifications }) => {
                 throw new Error("Error al crear el nuevo certificado");
             }
         } catch (error) {
+            setErrorApi(true);
+            setMessage("Ha habido un error intentando crear el nuevo elemento.");
             console.error("Error al crear el nuevo certificado: ", error);
         }
     };
 
     const handleFormEditSubmit = async (formData) => {
+        setShowToast(true);
         try {
-            const apiEndpoint = `http://localhost:8080/api/certifications/${user.username}/item/${selectedItem.itemId}`;
+            const apiEndpoint = `http://localhost:8080/api/certifications/${user.username}/${selectedItem.itemId}`;
             const config = {
                 httpVerb: 'PUT',
                 data: formData,
             };
             const response = await request(apiEndpoint, config, isAuthenticated);
             if (response.ok) {
+                setErrorApi(false);
+                setMessage("¡Datos actualizados!");
                 const newResponse = await response.json();
                 const updatedCertification = { ...newResponse, id: newResponse.id };
                 setCertificationsData(prevData => prevData.map(item => {
@@ -147,9 +169,12 @@ const CertificationsSection = ({ hasPermissionToEdit, certifications }) => {
                 }));
                 setIsEditModalOpen(false);
             } else {
+
                 throw new Error("Error al editar la información del curso");
             }
         } catch (error) {
+            setErrorApi(true);
+            setMessage("Ha habido un error tratando de actualizar su información.");
             console.error("Error al editar la información del curso:", error);
         }
     };
@@ -168,6 +193,9 @@ const CertificationsSection = ({ hasPermissionToEdit, certifications }) => {
 
     return (
         <section className={`${styles.certificationsInfo} certificationsInfo`} ref={sectionRef}>
+            {loading && (
+                <Spinner isOpen={loading} />
+            )}
             <div className={styles.actionsContainer} >
                 <h2 className={styles.title}>Certificados</h2>
                 <div className={styles.buttonsWrapper}>
@@ -237,6 +265,7 @@ const CertificationsSection = ({ hasPermissionToEdit, certifications }) => {
                     </>
                 )}
             </Modal>
+            <Toast text={message} error={errorApi} showToasty={showToast} onToastClose={handleToastVisibility}/>
         </section>
     );
 };

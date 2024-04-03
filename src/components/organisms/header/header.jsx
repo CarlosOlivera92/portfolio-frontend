@@ -1,11 +1,11 @@
 import Logo from "../../atoms/logo/logo";
 import Navbar from "../../molecules/navbar/navbar";
-import { useLocation } from 'react-router-dom';
+import { useLocation, useParams } from 'react-router-dom';
 import { useAuth } from "../../../utils/hooks/useAuth";
 import { useUser } from "../../../utils/context/userContext";
 import styles from './header.module.css';
 const Header = () => {
-    const {user} = useUser();
+    const {currentUser} = useUser();
     const location = useLocation();
     const { isAuthenticated, login, logout } = useAuth();
     const isSignupPage = location.pathname === '/signup';
@@ -15,10 +15,10 @@ const Header = () => {
     }
     return (
         <div className={ `${isPortfolioPage ? `${styles.headerContainer} ${styles.portfolioHeader} container my-3` : styles.headerContainer}  p-2` }>
-            {user ? (
+            { currentUser  ? (
                 <>
                     <Logo/>
-                    <Navbar isAuthenticated={isAuthenticated} username={`${user.username}`}></Navbar>
+                    <Navbar isAuthenticated={isAuthenticated} username={`${currentUser.username}`}></Navbar>
                 </>
             ) : (
                 <>

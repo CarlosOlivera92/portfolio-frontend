@@ -14,6 +14,8 @@ import TextContent from '../../atoms/text-content/text-content';
 import { useApi } from '../../../utils/api/useApi';
 import { useUser } from '../../../utils/context/userContext';
 import { useAuth } from '../../../utils/hooks/useAuth';
+import Spinner from '../../atoms/spinner/spinner';
+import Toast from '../../organisms/toast/toast';
 const ProfessionalSection = ({ hasPermissionToEdit, professions }) => {
     const [isOpen, setIsOpen] = useState(false);
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -30,6 +32,11 @@ const ProfessionalSection = ({ hasPermissionToEdit, professions }) => {
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
     const { loading, error, request, data } = useApi(); 
     const { user } = useUser();
+
+    const [showToast, setShowToast] = useState(false);
+    const [message, setMessage] = useState(null);
+    const [errorApi, setErrorApi] = useState();
+
     useEffect(() => {
         const section = sectionRef.current.querySelectorAll(".infoItems");
 
@@ -77,8 +84,15 @@ const ProfessionalSection = ({ hasPermissionToEdit, professions }) => {
     const toggleNewExperienceModal = () => {
         setIsNewExperienceModalOpen(prev => !prev);
     };
-
+    // Funciones para controlar la visibilidad del toast
+    const handleToastVisibility = (visible) => {
+        setShowToast(visible); 
+    };
+    const toggleModal = () => {
+        setIsModalOpen(prev => !prev);
+    };    
     const handleDeleteItem = async () => {
+        setShowToast(true);
         try {
             if (!selectedItemToDelete) {
                 console.error("No se ha seleccionado ningún elemento para eliminar.");
@@ -94,6 +108,8 @@ const ProfessionalSection = ({ hasPermissionToEdit, professions }) => {
 
             if (response.ok) {
                 // Eliminar el elemento eliminado de los datos de proyectos
+                setErrorApi(false);
+                setMessage("¡Elemento eliminado!");
                 const updatedProfessions = professionsData.filter(item => item.id !== selectedItemToDelete.itemId);
                 setProfessionsData(updatedProfessions);
 
@@ -103,14 +119,15 @@ const ProfessionalSection = ({ hasPermissionToEdit, professions }) => {
             }
 
         } catch (error) {
+            setErrorApi(true);
+            setMessage("Ha habido un error intentando eliminar el elemento seleccionado.");
             console.error("Error al eliminar el elemento:", error);
-            // Maneja el error de acuerdo a tus necesidades
         }
     };
     // Método para manejar la creación de una nueva experiencia
     const handleCreateExperience = async (formData) => {
+        setShowToast(true);
         try {
-            // Enviar los datos del formulario al backend
             const apiEndpoint = `http://localhost:8080/api/professional/${user.username}`;
             const config = {
                 httpVerb: 'POST',
@@ -118,6 +135,8 @@ const ProfessionalSection = ({ hasPermissionToEdit, professions }) => {
             };
             const response = await request(apiEndpoint, config, isAuthenticated);
             if (response.ok) {
+                setErrorApi(false);
+                setMessage("¡Nuevo elemento agregado!");
                 const newResponse = await response.json();
                 const newExperience = { ...newResponse, id: newResponse.id };
                 setProfessionsData(prevData => [...prevData, newExperience]);
@@ -126,12 +145,14 @@ const ProfessionalSection = ({ hasPermissionToEdit, professions }) => {
                 throw new Error("Error al crear la nueva experiencia.");
             }
         } catch (error) {
+            setErrorApi(true);
+            setMessage("Ha habido un error intentando crear el nuevo elemento.");
             console.error("Error al crear la nueva experiencia:", error);
         }
     };
     const handleEditExperience = async (formData, id) => {
+        setShowToast(true);
         try {
-            // Enviar los datos del formulario al backend
             const apiEndpoint = `http://localhost:8080/api/professional/${user.username}/item/${id}`;
             const config = {
                 httpVerb: 'PUT',
@@ -139,6 +160,8 @@ const ProfessionalSection = ({ hasPermissionToEdit, professions }) => {
             };
             const response = await request(apiEndpoint, config, isAuthenticated);
             if (response.ok) {
+                setErrorApi(false);
+                setMessage("¡Datos actualizados!");
                 const newResponse = await response.json();
                 const updatedExperience = { ...newResponse, id: newResponse.id };
             // Actualizar el elemento existente en professionsData
@@ -153,6 +176,8 @@ const ProfessionalSection = ({ hasPermissionToEdit, professions }) => {
                 throw new Error("Error al editar la experiencia existente.");
             }
         } catch (error) {
+            setErrorApi(true);
+            setMessage("Ha habido un error tratando de actualizar su información.");
             console.error("Error al editar la experiencia:", error);
         }
     };
@@ -184,8 +209,12 @@ const ProfessionalSection = ({ hasPermissionToEdit, professions }) => {
             setIsEditModalOpen(true);
         }
     };
+
     return (
         <section className={`${styles.professionalInfo} professionalInfo`} ref={sectionRef}>
+            {loading && (
+                <Spinner isOpen={loading} />
+            )}
             <div className={`${styles.actionsContainer}`}  ref={infoItemsContainerRef}>
                 <h2 className={styles.title}>Experiencia laboral</h2>
                 <div className={styles.buttonsWrapper}>
@@ -260,6 +289,7 @@ const ProfessionalSection = ({ hasPermissionToEdit, professions }) => {
                     </>
                 )}
             </Modal>
+            <Toast text={message} error={errorApi} showToasty={showToast} onToastClose={handleToastVisibility}/>
         </section>
     );
 };

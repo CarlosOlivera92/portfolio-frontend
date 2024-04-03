@@ -2,8 +2,7 @@ import { useFormik } from "formik";
 import * as Yup from "yup";
 import FormSection from "../../molecules/form-section/form-section";
 import ActionButton from "../../atoms/action-button/action-button";
-import { useEffect, useState } from "react";
-import { useFormikContext } from "formik";
+import { useEffect, useRef, useState } from "react";
 
 import Logo from "../../atoms/logo/logo";
 
@@ -12,19 +11,21 @@ const Form = ({ title, fields, onSubmit, currentStep, steps, isSignUp, isUsernam
   const [stepTransition, setStepTransition] = useState("form-step-entering");
 
   const initialValues = {};
-  const today = new Date(); // Obtener la fecha de hoy
+  const today = new Date(); 
+  const formRef = useRef();
   for (const fieldName of currentFields) {
     const field = fields.fields.find((f) => {
       return f.name === fieldName;
     });
     if (field) {
-      if (field.type === "date") { // Verificar si el campo es de tipo fecha
-        initialValues[field.name] = today.toISOString().split('T')[0]; // Establecer la fecha de hoy como valor predeterminado
+      if (field.type === "date") { 
+        initialValues[field.name] = today.toISOString().split('T')[0]; 
       } else {
-        initialValues[field.name] = ""; // De lo contrario, establecer un valor vacío
+        initialValues[field.name] = ""; 
       }
     }
   }
+
   const validationSchema = Yup.object().shape(
     currentFields.reduce((acc, fieldName) => {
       const field = fields.fields.find((f) => f.name === fieldName);
@@ -39,7 +40,8 @@ const Form = ({ title, fields, onSubmit, currentStep, steps, isSignUp, isUsernam
     initialValues,
     validationSchema,
     onSubmit: async (values, { setSubmitting }) => {
-      await onSubmit(values, currentStep);
+      
+      onSubmit(values, currentStep);
       setSubmitting(false); 
     }
   });
@@ -48,6 +50,7 @@ const Form = ({ title, fields, onSubmit, currentStep, steps, isSignUp, isUsernam
     formik.setFieldTouched(fieldName, true, false);
     formik.setFieldValue(fieldName, value);
   };
+
   useEffect(() => {
     setStepTransition("form-step-entering");
     if (currentStep > 1) {
@@ -68,7 +71,7 @@ const Form = ({ title, fields, onSubmit, currentStep, steps, isSignUp, isUsernam
   }, [formik.values, onFormComplete]);
 
   return (
-    <form onSubmit={formik.handleSubmit} className={`form ${stepTransition}`}>
+    <form encType={"multipart/form-data"} id="form" ref={formRef} onSubmit={formik.handleSubmit} className={`form ${stepTransition}`}>
       {fields.title === 'Sign In' || fields.title === 'Sign Up' ? (
         <div className="form-header d-flex flex-column">
           <Logo />

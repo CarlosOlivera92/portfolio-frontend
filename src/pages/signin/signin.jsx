@@ -22,6 +22,7 @@ const Signin = () => {
     const { loading, error, request, data } = useApi();
     const [showToast, setShowToast] = useState(false);
     const { isAuthenticated, login, logout } = useAuth();
+    
     const navigate = useNavigate(); 
 
     const signIn = async (endpoint) => {

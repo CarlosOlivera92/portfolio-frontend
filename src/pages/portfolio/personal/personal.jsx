@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useParams } from "react-router-dom";
 import { useApi } from "../../../utils/api/useApi";
 import { useAuth } from "../../../utils/hooks/useAuth";
 import { useEffect } from "react";
@@ -10,13 +10,15 @@ import CoursesSection from "../../../components/templates/CoursesSection/Courses
 import EducationSection from "../../../components/templates/EducationSection/EducationSection";
 import UserInfo from "../../../components/organisms/UserInfo/UserInfo";
 import Spinner from "../../../components/atoms/spinner/spinner";
+import { useUser } from "../../../utils/context/userContext";
 const PersonalArea = ({user, loadingData}) => {
     const location = useLocation();
     const [hasPermissionToEdit, setHasPermissionToEdit] = useState(false);
     const { isAuthenticated } = useAuth();
-
+    const {currentUser} = useUser();
+    const {username} = useParams();
     const { loading, error, request, data } = useApi();
-    const [userInfo, setUserInfo] = useState(user.userInfo);
+    const {userInfo, setUserInfo} = useUser();
     let educationalBackground;
     let courses;
     let professions;
@@ -30,58 +32,34 @@ const PersonalArea = ({user, loadingData}) => {
         projects = userInfo.projects;
     }
 
-    const updateUserInfo = async () => {
-        try {
-            const apiEndpoint = `http://localhost:8080/api/users/userinfo/${user.username}`
-            const config = {
-                httpVerb: "GET",
-            };
-            const response = await request(apiEndpoint, config, isAuthenticated);
-            if (response.ok) {
-                const updatedUserInfo = await response.json(); 
-                setUserInfo(updatedUserInfo);
-            }
-        } catch (error) {
-            console.error("Error al actualizar la información del usuario: ", error);
-        }
-    };
+
     const hasEditPermission = async (endpoint) => {
+        const config = {
+            httpVerb: "POST",
+            data: location.pathname
+        };
+        const response = await request(endpoint, config, isAuthenticated);
+        if (!response.ok) {
+            throw response;
+        }
         try {
-            const config = {
-                httpVerb: "POST",
-                data: location.pathname
-            };
-            const response = await request(endpoint, config, isAuthenticated);
-            if (!response.ok) {
-                throw response;
-            }
-            try {
-                const responseBody = await response.json();
-                setHasPermissionToEdit(true);
-            } catch (error) {
-                console.error("Error al parsear la respuesta JSON:", error);
-            }
+            setHasPermissionToEdit(true);
         } catch (error) {
-            if (error.status === 500) {
-                console.log(error)
-            } else if (error.status === 403) {
-                console.log(error)
-            }
+            console.error("Error al parsear la respuesta JSON:", error);
         }
     };
     useEffect(() => {
-        if (isAuthenticated) {
-            hasEditPermission(`http://localhost:8080/api/check-permission/edit-profile`);
+        if (currentUser && username) {
+            if (currentUser.username == username) {
+                hasEditPermission(`http://localhost:8080/api/check-permission/edit-profile`);
+            }
         }
+
     }, []);
-    if (loading) {
-        return (
-            <Spinner isOpen={loading}/>
-        )
-    }
+
     return (
         <div className="container">
-            <UserInfo hasPermissionToEdit={hasPermissionToEdit} user={user} userInfo={userInfo} updateUserInfo={updateUserInfo} />
+            <UserInfo hasPermissionToEdit={hasPermissionToEdit} user={user} userInfo={userInfo}/>
             <ProfessionalSection hasPermissionToEdit={hasPermissionToEdit} professions={professions} />
             <EducationSection hasPermissionToEdit={hasPermissionToEdit} educationalBackground={educationalBackground} />
             <CoursesSection hasPermissionToEdit={hasPermissionToEdit} courses={courses} />

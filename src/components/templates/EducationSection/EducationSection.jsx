@@ -14,6 +14,8 @@ import TextContent from '../../atoms/text-content/text-content';
 import { useApi } from '../../../utils/api/useApi';
 import { useUser } from '../../../utils/context/userContext';
 import { useAuth } from '../../../utils/hooks/useAuth';
+import Spinner from '../../atoms/spinner/spinner';
+import Toast from '../../organisms/toast/toast';
 
 const EducationSection = ({ hasPermissionToEdit, educationalBackground }) => {
     const [isOpen, setIsOpen] = useState(false);
@@ -31,6 +33,9 @@ const EducationSection = ({ hasPermissionToEdit, educationalBackground }) => {
     const [formData, setFormData] = useState(null);
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+    const [showToast, setShowToast] = useState(false);
+    const [message, setMessage] = useState(null);
+    const [errorApi, setErrorApi] = useState();
 
     useEffect(() => {
         const section = sectionRef.current.querySelectorAll(".infoItems");
@@ -67,10 +72,6 @@ const EducationSection = ({ hasPermissionToEdit, educationalBackground }) => {
         setIsOpen(prev => !prev);
     };
 
-    const toggleModal = () => {
-        setIsModalOpen(prev => !prev);
-    };
-
     const toggleNewEducationModal = () => {
         setIsNewEducationModalOpen(prev => !prev);
     };
@@ -82,8 +83,15 @@ const EducationSection = ({ hasPermissionToEdit, educationalBackground }) => {
     const toggleDeleteModal = () => {
         setIsDeleteModalOpen(prev => !prev);
     };
-
+    // Funciones para controlar la visibilidad del toast
+    const handleToastVisibility = (visible) => {
+        setShowToast(visible); 
+    };
+    const toggleModal = () => {
+        setIsModalOpen(prev => !prev);
+    };    
     const handleDeleteItem = async () => {
+        setShowToast(true);
         try {
             if (!selectedItemToDelete) {
                 console.error("No se ha seleccionado ningún elemento para eliminar.");
@@ -96,20 +104,23 @@ const EducationSection = ({ hasPermissionToEdit, educationalBackground }) => {
             };
             
             const response = await request(apiEndpoint, config, isAuthenticated);
-            console.log("Respuesta de la API:", response);
             if (response.ok) {
+                setErrorApi(false);
+                setMessage("¡Elemento eliminado!");
                 const updatedEducationalBackground = educationData.filter(item => item.id !== selectedItemToDelete.itemId);
                 setEducationData(updatedEducationalBackground);
-    
                 setIsDeleteModalOpen(false);
             }
 
         } catch (error) {
+            setErrorApi(true);
+            setMessage("Ha habido un error intentando eliminar el elemento seleccionado.");
             console.error("Error al eliminar el elemento:", error);
         }
     };
 
     const handleFormSubmit = async (formData) => {
+        setShowToast(true);
         try {
             const apiEndpoint = `http://localhost:8080/api/educational/${user.username}`;
             const config = {
@@ -118,6 +129,8 @@ const EducationSection = ({ hasPermissionToEdit, educationalBackground }) => {
             };
             const response = await request(apiEndpoint, config, isAuthenticated);
             if (response.ok) {
+                setErrorApi(false);
+                setMessage("¡Nuevo elemento agregado!");
                 const newResponse = await response.json();
                 const newEducation = { ...newResponse, id: newResponse.id };
                 setEducationData(prevData => [...prevData, newEducation]);
@@ -126,11 +139,14 @@ const EducationSection = ({ hasPermissionToEdit, educationalBackground }) => {
                 throw new Error("Error al crear la nueva experiencia educativa.");
             }
         } catch (error) {
+            setErrorApi(true);
+            setMessage("Ha habido un error intentando crear el nuevo elemento.");
             console.error("Error al crear la nueva experiencia educativa:", error);
         }
     };
 
     const handleFormEditSubmit = async (formData) => {
+        setShowToast(true);
         try {
             const apiEndpoint = `http://localhost:8080/api/educational/${user.username}/item/${selectedItem.itemId}`;
             const config = {
@@ -139,6 +155,8 @@ const EducationSection = ({ hasPermissionToEdit, educationalBackground }) => {
             };
             const response = await request(apiEndpoint, config, isAuthenticated);
             if (response.ok) {
+                setErrorApi(false);
+                setMessage("¡Datos actualizados!");
                 const newResponse = await response.json();
                 const updatedEducation = { ...newResponse, id: newResponse.id };
                 setEducationData(prevData => prevData.map(item => {
@@ -152,6 +170,8 @@ const EducationSection = ({ hasPermissionToEdit, educationalBackground }) => {
                 throw new Error("Error al editar la experiencia educativa.");
             }
         } catch (error) {
+            setErrorApi(true);
+            setMessage("Ha habido un error tratando de actualizar su información.");
             console.error("Error al editar la experiencia educativa:", error);
         }
     };
@@ -170,6 +190,9 @@ const EducationSection = ({ hasPermissionToEdit, educationalBackground }) => {
 
     return (
         <section className={`${styles.educationalInfo} educationalInfo`} ref={sectionRef}>
+            {loading && (
+                <Spinner isOpen={loading} />
+            )}
             <div className={styles.actionsContainer}>
                 <h2 className={styles.title}>Experiencia Educativa</h2>
                 <div className={styles.buttonsWrapper}>
@@ -244,6 +267,7 @@ const EducationSection = ({ hasPermissionToEdit, educationalBackground }) => {
                     </>
                 )}
             </Modal>
+            <Toast text={message} error={errorApi} showToasty={showToast} onToastClose={handleToastVisibility}/>
         </section>
     );
 };

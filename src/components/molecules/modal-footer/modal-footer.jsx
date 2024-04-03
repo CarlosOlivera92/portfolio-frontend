@@ -20,7 +20,7 @@ const ModalFooter = ({ children, closeModal, redirect, classList }) => {
                         type={"button"}
                         classList={styles.modalBtn}
                         disabled={false}
-                        href={"/signin"}
+                        href={"/logout"}
                     />
                 ) : (
                     <ActionButton

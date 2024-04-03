@@ -13,26 +13,28 @@ import Portfolio from './pages/portfolio/portfolio';
 import  { UserProvider }  from './utils/context/userProvider';
 import '@fortawesome/fontawesome-free/css/all.min.css';
 import { ThemeProvider } from './utils/context/themeContext';
+import NotFound from './pages/NotFound/NotFound';
 
 function App() {
   return (
     <Router history={history}>
-      <AuthProvider>
-        <UserProvider>
-          <ThemeProvider >
-            <Header/>
-            <Routes>
-              <Route path="/" element={<Home/>}/>
-              <Route path="/signin" element={<Signin />} />
-              <Route path="/signup" element={<Singup />} />
-              <Route path='/forgotpassword' element={<ForgotPassword/>} />
-              <Route path='/resetpassword' element={<ResetPassword/>} />
-              <Route path='/logout' element={<Logout/>}/>
-              <Route path='/portfolio/:username/*' element={<Portfolio/>}/>
-            </Routes>
-          </ThemeProvider>
-        </UserProvider>
-      </AuthProvider>
+      <UserProvider>
+        <AuthProvider >
+        <ThemeProvider >
+          <Header/>
+          <Routes>
+            <Route path="/" element={<Home/>}/>
+            <Route path="/signin" element={<Signin />} />
+            <Route path="/signup" element={<Singup />} />
+            <Route path='/forgotpassword' element={<ForgotPassword/>} />
+            <Route path='/resetpassword' element={<ResetPassword/>} />
+            <Route path='/logout' element={<Logout/>}/>
+            <Route path='/portfolio/:username/*' element={<Portfolio/>}/>
+            <Route path='*' element={<NotFound/>}/>
+          </Routes>
+        </ThemeProvider>
+        </AuthProvider>
+      </UserProvider>
     </Router>
   )
 }

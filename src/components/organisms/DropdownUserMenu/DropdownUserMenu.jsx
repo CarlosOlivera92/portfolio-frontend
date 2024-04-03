@@ -5,11 +5,13 @@ import gsap from 'gsap';
 import styles from './DropdownUserMenu.module.css'; 
 import Profile from '../../molecules/profile/Profile';
 import defaultProfilePic from '../../../../src/assets/img/defaultProfilePic.jpg';
+import { useUser } from '../../../utils/context/userContext';
 
 const DropdownUserMenu = ({ user, username, path }) => {
     const [isOpen, setIsOpen] = useState(false);
-    const profilePicUrl = user.userInfo.profilePicUrl != null ? user.userInfo.profilePicUrl : defaultProfilePic;
-    
+    const { currentUserProfilePic } = useUser();
+    const profilePicUrl = currentUserProfilePic ? currentUserProfilePic : defaultProfilePic;
+    const {currentUser} = useUser();
     // Ref para el menú desplegable y para la animación de GSAP
     const dropdownMenuRef = useRef(null);
     const menuAnimationRef = useRef(null);
@@ -32,6 +34,19 @@ const DropdownUserMenu = ({ user, username, path }) => {
             { opacity: 0, y: "0.5em" }, // Configuración inicial
             { opacity: 1, y: "0em", stagger: 0.1 } // Configuración final
         );
+
+        // Event listener para cerrar el menú cuando se hace clic fuera de él
+        const handleClickOutside = (event) => {
+            if (dropdownMenuRef.current && !dropdownMenuRef.current.contains(event.target)) {
+                setIsOpen(false);
+            }
+        };
+
+        document.addEventListener("mousedown", handleClickOutside);
+
+        return () => {
+            document.removeEventListener("mousedown", handleClickOutside);
+        };
     }, []);
 
     useEffect(() => {
@@ -52,7 +67,7 @@ const DropdownUserMenu = ({ user, username, path }) => {
             <nav className={`${styles.dropdownMenu} dropdownMenu`} ref={dropdownMenuRef}>
                 <ul className={`${styles.navItems} navItems`}>
                     <li className={`${styles.navItem} navItem`}>
-                        <NavLink className={`${path === `/portfolio/${username}/settings` ? styles.active : ""}`} to={`portfolio/${username}/settings`}>Configuraciones</NavLink>
+                        <NavLink className={`${path === `/portfolio/${currentUser.username}/settings` ? styles.active : ""}`} to={`portfolio/${username}/settings`}>Configuraciones</NavLink>
                     </li>
                     <li className={`${styles.navItem} ${styles.btnLogout} navItem`}><NavLink to="/logout">Cerrar Sesión</NavLink></li>
                 </ul>
@@ -62,4 +77,3 @@ const DropdownUserMenu = ({ user, username, path }) => {
 };
 
 export default DropdownUserMenu;
-

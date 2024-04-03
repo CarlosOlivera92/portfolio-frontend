@@ -14,6 +14,8 @@ import { useApi } from '../../../utils/api/useApi';
 import { useUser } from '../../../utils/context/userContext';
 import { useAuth } from '../../../utils/hooks/useAuth';
 import { projectsForm } from '../../../utils/form-utils/forms-config';
+import Toast from '../../organisms/toast/toast';
+import Spinner from '../../atoms/spinner/spinner';
 
 const ProjectsSection = ({ hasPermissionToEdit, projects }) => {
     const [isOpen, setIsOpen] = useState(false);
@@ -31,6 +33,10 @@ const ProjectsSection = ({ hasPermissionToEdit, projects }) => {
     const [isEditProjectModalOpen, setIsEditProjectModalOpen] = useState(false);
     const [isDeleteProjectModalOpen, setIsDeleteProjectModalOpen] = useState(false);
     const { loading, error, request, data } = useApi(); 
+
+    const [showToast, setShowToast] = useState(false);
+    const [message, setMessage] = useState(null);
+    const [errorApi, setErrorApi] = useState();
 
     useEffect(() => {
         const section = sectionRef.current.querySelectorAll(".infoItems");
@@ -82,8 +88,13 @@ const ProjectsSection = ({ hasPermissionToEdit, projects }) => {
     const toggleDeleteProjectModal = () => {
         setIsDeleteProjectModalOpen(prev => !prev);
     };
+    // Funciones para controlar la visibilidad del toast
+    const handleToastVisibility = (visible) => {
+        setShowToast(visible); 
+    };
 
     const handleDeleteProject = async () => {
+        setShowToast(true);
         try {
             if (!selectedProjectToDelete) {
                 console.error("No se ha seleccionado ningún proyecto para eliminar.");
@@ -97,6 +108,8 @@ const ProjectsSection = ({ hasPermissionToEdit, projects }) => {
             
             const response = await request(apiEndpoint, config, isAuthenticated);
             if (response.ok) {
+                setErrorApi(false);
+                setMessage("¡Elemento eliminado!");
                 // Eliminar el elemento eliminado de los datos de proyectos
                 const updatedProjects = projectsData.filter(item => item.id !== selectedProjectToDelete.itemId);
                 setProjectsData(updatedProjects);
@@ -107,11 +120,14 @@ const ProjectsSection = ({ hasPermissionToEdit, projects }) => {
             }
 
         } catch (error) {
+            setErrorApi(true);
+            setMessage("Ha habido un error intentando eliminar el elemento seleccionado.");
             console.error("Error al eliminar el proyecto:", error);
         }
     };
 
     const handleFormSubmit = async (formData) => {
+        setShowToast(true);
         try {
             const apiEndpoint = `http://localhost:8080/api/projects/${user.username}`;
             const config = {
@@ -120,6 +136,8 @@ const ProjectsSection = ({ hasPermissionToEdit, projects }) => {
             };
             const response = await request(apiEndpoint, config, isAuthenticated);
             if (response.ok) {
+                setErrorApi(false);
+                setMessage("¡Nuevo elemento agregado!");
                 const newResponse = await response.json();
                 const newProject = { ...newResponse, id: newResponse.id };
                 setProjectsData(prevData => [...prevData, newProject]);
@@ -128,11 +146,14 @@ const ProjectsSection = ({ hasPermissionToEdit, projects }) => {
                 throw new Error("Error al crear el nuevo proyecto.");
             }
         } catch (error) {
+            setErrorApi(true);
+            setMessage("Ha habido un error intentando crear el nuevo elemento.");
             console.error("Error al crear el nuevo proyecto:", error);
         }
     };
 
     const handleFormEditSubmit = async (formData) => {
+        setShowToast(true);
         try {
             const apiEndpoint = `http://localhost:8080/api/projects/${user.username}/item/${selectedProject.itemId}`;
             const config = {
@@ -141,6 +162,8 @@ const ProjectsSection = ({ hasPermissionToEdit, projects }) => {
             };
             const response = await request(apiEndpoint, config, isAuthenticated);
             if (response.ok) {
+                setErrorApi(false);
+                setMessage("¡Datos actualizados!");
                 const newResponse = await response.json();
                 const updatedProject = { ...newResponse, id: newResponse.id };
                 setProjectsData(prevData => prevData.map(item => {
@@ -154,13 +177,14 @@ const ProjectsSection = ({ hasPermissionToEdit, projects }) => {
                 throw new Error("Error al editar el proyecto.");
             }
         } catch (error) {
+            setErrorApi(true);
+            setMessage("Ha habido un error tratando de actualizar su información.");
             console.error("Error al editar el proyecto:", error);
         }
     };
 
     const handleEditProjectItem = async (item, isDelete = false) => {        
         if (isDelete) {
-            console.log(item)
             setSelectedProject(null);
             setSelectedProjectToDelete(item);
             setIsDeleteProjectModalOpen(true);
@@ -173,6 +197,9 @@ const ProjectsSection = ({ hasPermissionToEdit, projects }) => {
 
     return (
         <section className={`${styles.projectsInfo} projectsInfo`} ref={sectionRef}>
+            {loading && (
+                <Spinner isOpen={loading} />
+            )}
             <div className={styles.actionsContainer}>
                 <h2 className={styles.title}>Proyectos</h2>
                 <div className={styles.buttonsWrapper}>
@@ -248,6 +275,7 @@ const ProjectsSection = ({ hasPermissionToEdit, projects }) => {
                     </>
                 )}
             </Modal>
+            <Toast text={message} error={errorApi} showToasty={showToast} onToastClose={handleToastVisibility}/>
         </section>
     );
 };

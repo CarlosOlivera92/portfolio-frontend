@@ -264,19 +264,19 @@ export const personalDataForm = {
       name: "githubProfileUrl",
       label: "Perfil de GitHub",
       type: "text",
-      validation: Yup.string().url("Debe ser una URL válida"),
+      validation: Yup.string().url("Debe ser una URL válida").nullable(),
     },
     {
       name: "linkedinProfileUrl",
       label: "Perfil de LinkedIn",
       type: "text",
-      validation: Yup.string().url("Debe ser una URL válida"),
+      validation: Yup.string().url("Debe ser una URL válida").nullable(),
     },
     {
       name: "aboutMe",
       label: "Acerca de Mí",
       type: "textarea",
-      validation: Yup.string().required("El campo es requerido"),
+      validation: Yup.string().nullable(),
     },
   ],
 };
@@ -312,16 +312,24 @@ export const projectsForm = {
     },
   ],
 };
-export const profilePicUrl = {
+export const profilePicUrlForm = {
   title: "Editar foto de perfil",
   fields: [
     {
-      name: "profilePicUrl",
-      label: "URL de la foto de perfil",
-      type: "text",
-      validation: Yup.string()
-        .url("Formato de URL inválido")
-        .required("El campo es requerido"),
+      name: "file",
+      label: "Sube o arrastra una imágen",
+      type: "file", 
+      accept: "image/*",
+      validation: Yup.mixed()
+        .required("El campo es requerido")
+        .test(
+          "file-size",
+          "La imagen no debe exceder 1 MB",
+          (value) => {
+            if (!value) return true; // Permitir que el campo esté vacío
+            return value && value.size <= 1024 * 1024; // 1 MB en bytes
+          }
+        ),
     }
   ]
 }
