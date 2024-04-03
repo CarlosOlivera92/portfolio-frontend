@@ -98,7 +98,7 @@ const ProfessionalSection = ({ hasPermissionToEdit, professions }) => {
                 console.error("No se ha seleccionado ningún elemento para eliminar.");
                 return;
             }
-            const apiEndpoint = `http://localhost:8080/api/professional/${user.username}/item/${selectedItemToDelete.itemId}`;
+            const apiEndpoint = `https://solo-resume-backend.onrender.com/api/professional/${user.username}/item/${selectedItemToDelete.itemId}`;
             const config = {
                 httpVerb: 'DELETE',
                 data: null, 
@@ -128,7 +128,7 @@ const ProfessionalSection = ({ hasPermissionToEdit, professions }) => {
     const handleCreateExperience = async (formData) => {
         setShowToast(true);
         try {
-            const apiEndpoint = `http://localhost:8080/api/professional/${user.username}`;
+            const apiEndpoint = `https://solo-resume-backend.onrender.com/api/professional/${user.username}`;
             const config = {
                 httpVerb: 'POST',
                 data: formData,
@@ -153,7 +153,7 @@ const ProfessionalSection = ({ hasPermissionToEdit, professions }) => {
     const handleEditExperience = async (formData, id) => {
         setShowToast(true);
         try {
-            const apiEndpoint = `http://localhost:8080/api/professional/${user.username}/item/${id}`;
+            const apiEndpoint = `https://solo-resume-backend.onrender.com/api/professional/${user.username}/item/${id}`;
             const config = {
                 httpVerb: 'PUT',
                 data: formData,

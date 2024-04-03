@@ -98,7 +98,7 @@ const CertificationsSection = ({ hasPermissionToEdit, certifications }) => {
                 console.error("No se ha seleccionado ningún elemento para eliminar.");
                 return;
             }
-            const apiEndpoint = `http://localhost:8080/api/certifications/${user.username}/${selectedItemToDelete.itemId}`;
+            const apiEndpoint = `https://solo-resume-backend.onrender.com/api/certifications/${user.username}/${selectedItemToDelete.itemId}`;
             const config = {
                 httpVerb: 'DELETE',
                 data: null, 
@@ -124,7 +124,7 @@ const CertificationsSection = ({ hasPermissionToEdit, certifications }) => {
     const handleFormSubmit = async (formData) => {
         setShowToast(true);
         try {
-            const apiEndpoint = `http://localhost:8080/api/certifications/${user.username}`;
+            const apiEndpoint = `https://solo-resume-backend.onrender.com/api/certifications/${user.username}`;
             const config = {
                 httpVerb: 'POST',
                 data: formData,
@@ -150,7 +150,7 @@ const CertificationsSection = ({ hasPermissionToEdit, certifications }) => {
     const handleFormEditSubmit = async (formData) => {
         setShowToast(true);
         try {
-            const apiEndpoint = `http://localhost:8080/api/certifications/${user.username}/${selectedItem.itemId}`;
+            const apiEndpoint = `https://solo-resume-backend.onrender.com/api/certifications/${user.username}/${selectedItem.itemId}`;
             const config = {
                 httpVerb: 'PUT',
                 data: formData,

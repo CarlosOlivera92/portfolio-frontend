@@ -53,7 +53,7 @@ const ResetPassword = () => {
     };
     useEffect(() => {
         if (formCompleted) {
-            resetPassword(`http://localhost:8080/api/auth/reset-password?token=${token}`);
+            resetPassword(`https://solo-resume-backend.onrender.com/api/auth/reset-password?token=${token}`);
         }
     }, [formCompleted, formData]);
     return (

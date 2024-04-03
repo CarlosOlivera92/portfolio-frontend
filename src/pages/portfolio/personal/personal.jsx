@@ -51,7 +51,7 @@ const PersonalArea = ({user, loadingData}) => {
     useEffect(() => {
         if (currentUser && username) {
             if (currentUser.username == username) {
-                hasEditPermission(`http://localhost:8080/api/check-permission/edit-profile`);
+                hasEditPermission(`https://solo-resume-backend.onrender.com/api/check-permission/edit-profile`);
             }
         }
 

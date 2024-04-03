@@ -56,7 +56,7 @@ const Signin = () => {
 
     useEffect(() => {
         if (formCompleted && Object.keys(formData).length > 0 && !isAuthenticated) {
-            signIn("http://localhost:8080/api/auth/signin");
+            signIn("https://solo-resume-backend.onrender.com/api/auth/signin");
         }
     }, [formCompleted, formData]);
     const handleToastVisibility = (visible) => {

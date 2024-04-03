@@ -52,7 +52,7 @@ const ForgotPassword = () => {
     };
     useEffect(() => {
         if (formCompleted) {
-            forgotPassword("http://localhost:8080/api/auth/forgotpassword");
+            forgotPassword("https://solo-resume-backend.onrender.com/api/auth/forgotpassword");
         }
     }, [formCompleted, formData]);
     return (

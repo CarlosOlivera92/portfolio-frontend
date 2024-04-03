@@ -57,14 +57,14 @@ const UserInfo = ({ user, userInfo, hasPermissionToEdit  }) => {
             let config = {};
             switch (selectedItem.type) {
                 case 'banner':
-                    apiEndpoint = `http://localhost:8080/api/users/userinfo/${user.username}`;
+                    apiEndpoint = `https://solo-resume-backend.onrender.com/api/users/userinfo/${user.username}`;
                     config = {
                         httpVerb: 'PUT',
                         data: formData,
                     };
                     break;
                 case 'profile':
-                    apiEndpoint = `http://localhost:8080/api/users/profile-pic/${user.username}/file`;
+                    apiEndpoint = `https://solo-resume-backend.onrender.com/api/users/profile-pic/${user.username}/file`;
                     config = {
                         httpVerb: 'PUT',
                         data: formData.file,
@@ -74,7 +74,7 @@ const UserInfo = ({ user, userInfo, hasPermissionToEdit  }) => {
                     };
                     break;
                 case 'personalData':
-                    apiEndpoint = `http://localhost:8080/api/users/userinfo/${user.username}`;
+                    apiEndpoint = `https://solo-resume-backend.onrender.com/api/users/userinfo/${user.username}`;
                     config = {
                         httpVerb: 'PUT',
                         data: formData

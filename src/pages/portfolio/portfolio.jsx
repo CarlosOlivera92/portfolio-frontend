@@ -35,7 +35,7 @@ const Portfolio = () => {
     };
     const getUser = async () => {
         try {
-            const apiEndpoint = `http://localhost:8080/api/users/user/${username}`;
+            const apiEndpoint = `https://solo-resume-backend.onrender.com/api/users/user/${username}`;
 
             const config = {
                 httpVerb: "GET",
@@ -66,7 +66,7 @@ const Portfolio = () => {
     const getProfilePic = async () => {
         try {
             if (user) {
-                const apiEndpoint = `http://localhost:8080/api/users/profile-pic/${user.username}`;
+                const apiEndpoint = `https://solo-resume-backend.onrender.com/api/users/profile-pic/${user.username}`;
                 const config = {
                     httpVerb: "GET"
                 };

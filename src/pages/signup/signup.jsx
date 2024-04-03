@@ -68,7 +68,7 @@ const Signup = () => {
     };
     useEffect(() => {
         if (!isRegisterSuccess && formCompleted) {
-            registerUser("http://localhost:8080/api/auth/signup");
+            registerUser("https://solo-resume-backend.onrender.com/api/auth/signup");
             setIsRegisterSuccess(true);
         }
     }, [formCompleted, formData]);
@@ -76,7 +76,7 @@ const Signup = () => {
     const handleFormSubmit = async (data) => {
         const { repeatPassword, ...dataWithoutRepeatPassword } = data;
         if (currentStep === 1) {    
-            const response = await checkUsername("http://localhost:8080/api/auth/check-username", dataWithoutRepeatPassword);
+            const response = await checkUsername("https://solo-resume-backend.onrender.com/api/auth/check-username", dataWithoutRepeatPassword);
             if(response.ok) {
                 setFormData(dataWithoutRepeatPassword);
                 setCurrentStep(currentStep + 1);

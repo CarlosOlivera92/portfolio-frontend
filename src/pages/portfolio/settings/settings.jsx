@@ -51,7 +51,7 @@ const SecuritySettings = () => {
     const handleDeleteAccount = async () => {
         try {
 
-            const apiEndpoint = `http://localhost:8080/api/users/${currentUser.username}`;
+            const apiEndpoint = `https://solo-resume-backend.onrender.com/api/users/${currentUser.username}`;
             const config = {
                 httpVerb: 'DELETE',
                 data: null, 

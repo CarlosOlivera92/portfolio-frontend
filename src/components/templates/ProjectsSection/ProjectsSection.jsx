@@ -100,7 +100,7 @@ const ProjectsSection = ({ hasPermissionToEdit, projects }) => {
                 console.error("No se ha seleccionado ningún proyecto para eliminar.");
                 return;
             }
-            const apiEndpoint = `http://localhost:8080/api/projects/${user.username}/item/${selectedProjectToDelete.itemId}`;
+            const apiEndpoint = `https://solo-resume-backend.onrender.com/api/projects/${user.username}/item/${selectedProjectToDelete.itemId}`;
             const config = {
                 httpVerb: 'DELETE',
                 data: null, 
@@ -129,7 +129,7 @@ const ProjectsSection = ({ hasPermissionToEdit, projects }) => {
     const handleFormSubmit = async (formData) => {
         setShowToast(true);
         try {
-            const apiEndpoint = `http://localhost:8080/api/projects/${user.username}`;
+            const apiEndpoint = `https://solo-resume-backend.onrender.com/api/projects/${user.username}`;
             const config = {
                 httpVerb: 'POST',
                 data: formData,
@@ -155,7 +155,7 @@ const ProjectsSection = ({ hasPermissionToEdit, projects }) => {
     const handleFormEditSubmit = async (formData) => {
         setShowToast(true);
         try {
-            const apiEndpoint = `http://localhost:8080/api/projects/${user.username}/item/${selectedProject.itemId}`;
+            const apiEndpoint = `https://solo-resume-backend.onrender.com/api/projects/${user.username}/item/${selectedProject.itemId}`;
             const config = {
                 httpVerb: 'PUT',
                 data: formData,
