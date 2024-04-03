@@ -16,7 +16,7 @@ const UserProvider = ({ children }) => {
     }, [currentUser]);
     const getProfilePic = async () => {
         try {
-            const apiEndpoint = `http://localhost:8080/api/users/profile-pic/${currentUser.username}`;
+            const apiEndpoint = `https://solo-resume-backend.onrender.com/api/users/profile-pic/${currentUser.username}`;
             const config = {
                 httpVerb: "GET"
             };

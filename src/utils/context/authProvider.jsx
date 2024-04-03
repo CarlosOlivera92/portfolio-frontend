@@ -9,7 +9,7 @@ const AuthProvider = ({ children }) => {
     const config = {
         httpVerb: "POST",
     };
-    const endpoint = "http://localhost:8080/api/auth/logout"
+    const endpoint = "https://solo-resume-backend.onrender.com/api/auth/logout"
     const { loading, error, request, data } = useApi();
     const [expired, setExpired] = useState(false);
     const { setCurrentUser } = useUser();
@@ -51,7 +51,7 @@ const AuthProvider = ({ children }) => {
     };
     const refreshToken = async (refreshToken) => {
         try {
-            const apiEndpoint = `http://localhost:8080/api/auth/refreshtoken`;
+            const apiEndpoint = `https://solo-resume-backend.onrender.com/api/auth/refreshtoken`;
             const config = {
                 httpVerb: "POST",
                 data: {
@@ -88,7 +88,7 @@ const AuthProvider = ({ children }) => {
     const getCurrentUser = async () => {
         try {
             const username = localStorage.getItem("username")
-            const apiEndpoint = `http://localhost:8080/api/users/user/${username}`;
+            const apiEndpoint = `https://solo-resume-backend.onrender.com/api/users/user/${username}`;
 
             const config = {
                 httpVerb: "GET",
