@@ -55,7 +55,7 @@ const PersonalArea = ({user, loadingData}) => {
             }
         }
 
-    }, []);
+    }, [currentUser]);
 
     return (
         <div className="container">
